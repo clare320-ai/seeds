@@ -105,7 +105,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 .dex td,.dex th{padding:4px 2px;text-align:center;border-bottom:1px solid var(--line)}
 .dex th{font-weight:500;color:var(--muted);font-size:11px}
 .dex td:first-child{text-align:left;white-space:nowrap;padding-right:6px}
-.dex .cell{width:34px;height:38px;margin:auto;display:block}
+.dex .cell{width:56px;height:63px;margin:auto;display:block}
+.dex .vn{display:block;font-size:10px;line-height:1.2;color:var(--muted);max-width:62px;margin:1px auto 0}
+.pt.dec{background:var(--cream);border:2.5px solid var(--c)}
+.pt.dec svg{width:27px;height:27px}
 .tbl-wrap{overflow-x:auto}
 
 .lmlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
@@ -314,30 +317,222 @@ const DB = (() => {
 })();
 
 /* ───────── 圖像（郵票版畫風 SVG） ───────── */
-function decorArt(k, ink, paper){
-  const I = ink, P = paper;
-  switch(k){
-    case 'boba': return `<path d="M8 8h24l-3 28H11z" fill="${I}"/><rect x="5" y="4" width="30" height="5" rx="2" fill="${I}"/><path d="M22 4 L27 -7" stroke="${I}" stroke-width="3.2" stroke-linecap="round"/><path d="M10 15h20" stroke="${P}" stroke-width="2"/><circle cx="15" cy="30" r="2.6" fill="${P}"/><circle cx="21" cy="31" r="2.6" fill="${P}"/><circle cx="25" cy="26" r="2.6" fill="${P}"/>`;
-    case 'teaegg': return `<ellipse cx="20" cy="21" rx="13" ry="16" fill="${I}"/><path d="M11 14 l5 4 l-3 5 l6 3 M25 8 l-2 6 l5 3 M13 30 l6-3 l4 5 l5-2" stroke="${P}" fill="none" stroke-width="1.7"/>`;
-    case 'danbing': return `<rect x="2" y="11" width="34" height="20" rx="10" fill="${I}"/><circle cx="29" cy="21" r="7.5" fill="${P}"/><path d="M29 21 m-3.5 0 a3.5 3.5 0 1 1 3.5 3.5" stroke="${I}" fill="none" stroke-width="1.8"/><path d="M8 16 q4 3 0 6 q-4 3 0 6" stroke="${P}" fill="none" stroke-width="1.6"/>`;
-    case 'pineapple': return `<ellipse cx="20" cy="22" rx="17" ry="14" fill="${I}"/><path d="M9 14 L29 31 M7 24 L22 36 M15 9 L33 24 M9 29 L28 12 M13 34 L32 18 M7 20 L22 9" stroke="${P}" stroke-width="1.5"/>`;
-    case 'basket': return `<path d="M9 13 Q20 -4 31 13" stroke="${I}" stroke-width="3.2" fill="none"/><path d="M3 13h34l-5 22H8z" fill="${I}"/><path d="M8 20h24 M10 27h20" stroke="${P}" stroke-width="1.7"/><path d="M26 13 q4 -9 10 -8 q-2 7 -10 8z" fill="${I}"/>`;
-    case 'bawan': return `<ellipse cx="20" cy="33" rx="18" ry="4.5" fill="${I}"/><path d="M5 31 Q20 2 35 31Z" fill="${I}"/><path d="M11 24 Q20 17 29 24" stroke="${P}" fill="none" stroke-width="2"/><ellipse cx="20" cy="33" rx="13" ry="2" fill="${P}"/>`;
-    case 'amulet': return `<path d="M20 -4 V6" stroke="${I}" stroke-width="2.4"/><rect x="9" y="5" width="22" height="31" rx="3" fill="${I}"/><rect x="12" y="8" width="16" height="25" rx="1.5" fill="none" stroke="${P}" stroke-width="1.4"/><path d="M15 15h10 M20 12v18 M15 22h10 M16 28h8" stroke="${P}" stroke-width="2"/>`;
-    case 'bag': return `<path d="M12 10 Q12 -1 17 -1 Q21 -1 19 10 M21 10 Q20 -1 25 -1 Q29 -1 28 10" stroke="${I}" fill="none" stroke-width="2.6"/><path d="M5 10h30l-2 26H7z" fill="${P}" stroke="${I}" stroke-width="2.2"/><path d="M11 10v26 M17 10v26 M23 10v26 M29 10v26" stroke="${I}" stroke-width="3"/>`;
-    case 'postbox': return `<path d="M2 28 V11 Q2 0 20 0 Q38 0 38 11 V28Z" fill="${I}"/><rect x="10" y="9" width="20" height="3.5" rx="1" fill="${P}"/><path d="M14 18h12 M20 16v9" stroke="${P}" stroke-width="2"/>`;
-    case 'helmet': return `<path d="M4 26 Q4 2 26 2 Q48 2 48 26Z" fill="${I}"/><rect x="0" y="24" width="52" height="5" rx="2.5" fill="${I}"/><path d="M14 13 Q26 6 38 13" stroke="${P}" stroke-width="2.2" fill="none"/>`;
-    case 'boat': return `<path d="M1 22 h38 l-8 12 H9z" fill="${I}"/><path d="M10 22 L20 3 L30 22Z" fill="${I}"/><path d="M20 4 V22" stroke="${P}" stroke-width="1.6"/><path d="M4 37 q4 -3 8 0 q4 3 8 0 q4 -3 8 0 q4 3 8 0" stroke="${I}" fill="none" stroke-width="1.8"/>`;
-    case 'medbag': return `<path d="M7 6 l3 -5 h20 l3 5z" fill="${I}"/><rect x="5" y="6" width="30" height="30" rx="2" fill="${I}"/><path d="M20 12v16M12 20h16" stroke="${P}" stroke-width="4.5"/>`;
-    case 'megaphone': return `<path d="M3 14h8l20-11v32L11 25H3z" fill="${I}"/><rect x="7" y="24" width="6" height="11" rx="1.5" fill="${I}"/><path d="M34 14 q4 6 0 12" stroke="${I}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M6 17h4" stroke="${P}" stroke-width="2"/>`;
-    case 'schoolbag': return `<path d="M12 9 Q20 -3 28 9" stroke="${I}" stroke-width="3.2" fill="none"/><rect x="4" y="8" width="32" height="27" rx="4" fill="${I}"/><path d="M4 17 h32" stroke="${P}" stroke-width="2"/><rect x="16" y="19" width="8" height="5" rx="1" fill="${P}"/>`;
-    case 'banyan': return `<path d="M20 1 Q38 14 22 37 Q2 22 20 1Z" fill="${I}"/><path d="M20 6 Q22 20 22 37 M21 17 l6 -4 M21 25 l-6 -4" stroke="${P}" stroke-width="1.7" fill="none"/>`;
-    case 'strap': return `<rect x="16.5" y="-4" width="7" height="18" rx="1" fill="${I}"/><path d="M20 15 L34 35 H6Z" fill="none" stroke="${I}" stroke-width="4.5" stroke-linejoin="round"/>`;
-    case 'bento': return `<rect x="2" y="10" width="36" height="25" rx="3" fill="${I}"/><path d="M2 17h36" stroke="${P}" stroke-width="1.8"/><rect x="16" y="10" width="7" height="25" fill="${P}"/><path d="M8 26 h4 M28 26 h4" stroke="${P}" stroke-width="2"/>`;
-  }
-  return '';
-}
-const HATS = {postbox:'translate(50 38)', helmet:'translate(44 44)'};
+/* 飾品：17 種 × 4 屬性 = 68 款，每款造型都不一樣（郵票版畫風、深色描邊） */
+const DK = '#2a2622', DW = '#fbf5e8';
+const dO = (c, w = 1.6) => `fill="${c}" stroke="${DK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+const dL = (c, w = 1.6) => `fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"`;
+const dT = (d, c, w) => `<path d="${d}" ${dL(DK, w + 2)}/><path d="${d}" ${dL(c, w)}/>`;   // 有描邊的粗線（吸管、提把）
+const dots = (pts, r, c, w = .8) => pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${r}" ${dO(c, w)}/>`).join('');
+const TC = {red:'#d9443a', yellow:'#e8b13a', blue:'#3f7cc0', green:'#5f9a45'};   // 飾品用的屬性色（比芽仔本體亮一點）
+
+const bobaCup = (drink, inner, straw, deco = '') => dT('M23 7 L28 -6', straw, 3) +
+  `<path d="M9 9h22l-2.6 27H11.6z" fill="#fdfaf2"/><path d="M10.3 15h19.4l-2 20H12.3z" fill="${drink}"/>${inner}` +
+  `<path d="M9 9h22l-2.6 27H11.6z" ${dL(DK)}/><rect x="6" y="5" width="28" height="5" rx="2" ${dO('#f3e3c3')}/>${deco}`;
+const rollBase = (stripe, fill, extra = '') => `<rect x="3" y="11" width="33" height="20" rx="10" ${dO('#f0d29a')}/>` +
+  `<path d="M14 14.5 Q22 12.5 30 14.5" ${dL('#f5c542', 2.4)}/>` +
+  `<circle cx="27" cy="21" r="8" ${dO('#f6dfae')}/><path d="M27 21 m-4 0 a4 4 0 1 1 4 4 a6 6 0 0 1 -6 -6" ${dL('#e2a93c', 1.6)}/>${fill}` +
+  `<path d="M3 14 Q3 11 6 11 H16 V31 H6 Q3 31 3 28Z" ${dO(DW)}/><path d="M9.5 11.8 V30.2" ${dL(stripe, 3)}/>${extra}`;
+const bunHatch = c => `<path d="M8 18 l5 -5 M12 26 l12 -12 M17 31 l14 -14 M26 31 l6 -6 M9 23 l3 3 M10 15 l14 14 M17 11 l15 15 M26 12 l6 6" ${dL(c, 1.4)}/>`;
+const basketBase = (body, rim, contents) => dT('M9 14 Q20 -6 31 14', body, 2.6) + contents +
+  `<path d="M3 13h34l-5 22H8z" ${dO(body)}/><path d="M6.4 19.5h27.2 M7.7 25.5h24.6 M9 31h22 M13 15v20 M20 15v20 M27 15v20" ${dL(DW, 1.3)}/>` +
+  `<path d="M3 13h34l-5 22H8z" ${dL(DK)}/><rect x="2" y="11.5" width="36" height="4" rx="2" ${dO(rim)}/>`;
+const bawanBase = (skin, rim, top, under = '') => `${under}<ellipse cx="20" cy="33" rx="18" ry="4.5" ${dO(DW)}/><ellipse cx="20" cy="33" rx="14" ry="2.8" ${dL(rim, 1.3)}/>` +
+  `<path d="M6 32 Q5 13 20 12 Q35 13 34 32Z" ${dO(skin)}/><path d="M16 13.5 q4 -3.5 8 0" ${dL(DK, 1.2)}/><path d="M10 26 q-1 -6 3 -10" ${dL('#fff8ea', 1.8)}/>${top}`;
+const amuletBag = (bag, tassel, mark) => `<path d="M20 -4 V6" ${dL(DK, 2)}/><path d="M20 35 V40 M18 35.5 l-1.4 5 M22 35.5 l1.4 5" ${dL(tassel, 1.8)}/>` +
+  `<path d="M10 7 Q20 3 30 7 L31 34 Q20 37 9 34Z" ${dO(bag)}/><path d="M12 9 Q20 6.4 28 9" ${dL(DK, 1.1)}/>${mark}`;
+const plasticBag = (stripe, item) => dT('M12 11 Q12 0 17 0 Q21 0 19 11', DW, 1.8) + item + dT('M21 11 Q20 0 25 0 Q29 0 28 11', DW, 1.8) +
+  `<path d="M5 10h30l-2 26H7z" ${dO(DW)}/><path d="M11 10.8v24.4 M17 10.8v24.4 M23 10.8v24.4 M29 10.8v24.4" ${dL(stripe, 3)}/>` +
+  `<path d="M5 10h30l-2 26H7z" ${dL(DK)}/><path d="M9 20 q3 2 6 0 M24 27 q3 2 6 0" ${dL('#cfc4b0', 1)}/>`;
+const megaBody = (body, rim, extra = '') => `<rect x="7" y="24" width="6" height="11" rx="1.5" ${dO('#5a4a3e')}/><path d="M3 14h8l20-11v32L11 25H3z" ${dO(body)}/>` +
+  `<ellipse cx="31" cy="19" rx="2.6" ry="16" ${dO(rim)}/>${extra}`;
+const strapTop = (c, extra = '') => `<rect x="16" y="-4" width="8" height="19" rx="1.5" ${dO(c)}/>${extra}`;
+
+const DECOR_V = {
+  boba: {
+    red:   {n:'洛神花茶', a:() => bobaCup('#c23b4e', `<rect x="13" y="17" width="5" height="5" rx="1" fill="#f6c8cf" transform="rotate(12 15 19)"/><rect x="22" y="18" width="5" height="5" rx="1" fill="#f6c8cf" transform="rotate(-10 24 20)"/>`, TC.red,
+             around(5, a => `<ellipse cx="20" cy="23.4" rx="2.5" ry="3.3" transform="rotate(${a} 20 27)" ${dO('#f4a3b4', 1)}/>`) + `<circle cx="20" cy="27" r="1.4" fill="#7a1f2a"/>`)},
+    yellow:{n:'黑糖珍奶', a:() => bobaCup('#efdcb8', `<path d="M13 15 q3 6 0 12 M19 15 q-3 7 1 13 M26 15 q3 6 -1 12" ${dL('#8a4b22', 2.4)}/>` + dots([[14.5,32],[18.5,32.5],[22.5,32.5],[26,31.5],[16.5,29],[24,28.8],[20.5,29.5]], 2.1, '#3a2a22', .6), TC.yellow)},
+    blue:  {n:'蝶豆花氣泡飲', a:() => bobaCup('#3f6fc4', `<path d="M10.3 15h19.4l-.9 9H11.2z" fill="#a58fd6"/><rect x="14" y="20" width="5" height="5" rx="1" fill="#e6f2fb" opacity=".85" transform="rotate(15 16 22)"/>` + dots([[23,29],[17,31],[25,33],[20,26]], .9, DW, 0), TC.blue,
+             `<circle cx="31.5" cy="10" r="5" ${dO('#f5d547')}/><circle cx="31.5" cy="10" r="3.3" fill="#fbf0a8"/><path d="M31.5 6.8v6.4M28.3 10h6.4" ${dL('#e2b52a', 1)}/>`)},
+    green: {n:'抹茶紅豆拿鐵', a:() => bobaCup('#f2ead6', `<path d="M10.3 15h19.4l-1 11 q-4 -2 -8.7 0 q-4.7 2 -8.7 0z" fill="#6f9f4a"/>` + dots([[15,32],[19,33],[23,32],[26,30],[17,29.5]], 1.5, '#8a2e2e', .6), TC.green,
+             `<path d="M8 6 q-1 -7 7 -8 q0 7 -7 8z" ${dO('#8fc06a', 1.2)}/>`)},
+  },
+  teaegg: {
+    red:   {n:'彌月紅蛋', a:() => `<ellipse cx="20" cy="21" rx="13" ry="16" ${dO('#d9443a')}/><ellipse cx="15" cy="12.5" rx="2.8" ry="5" fill="#f08a7e" transform="rotate(-20 15 12.5)"/>` +
+             `<circle cx="20" cy="20" r="3.2" ${dO('#f2c94c', 1)}/><path d="M11 27 q2.25 -3 4.5 0 q2.25 3 4.5 0 q2.25 -3 4.5 0 q2.25 3 4.5 0" ${dL('#f2c94c', 1.8)}/>`},
+    yellow:{n:'經典茶葉蛋', a:() => `<ellipse cx="18" cy="21" rx="13" ry="16" ${dO('#a8713f')}/><path d="M9 16 l4 3 l-2 5 l5 2 l-1 5 M23 7 l-1 5 l5 3 l-2 5 l5 2 M13 33 l4 -3 l5 3" ${dL('#e3c08f', 1.5)}/>` +
+             around(8, a => `<ellipse cx="32" cy="28.6" rx="1.5" ry="3.2" transform="rotate(${a} 32 32)" ${dO('#7a4a24', .8)}/>`) + `<circle cx="32" cy="32" r="1" fill="#e3c08f"/>`},
+    blue:  {n:'松花皮蛋', a:() => `<ellipse cx="20" cy="21" rx="13" ry="16" ${dO('#3b4658')}/><ellipse cx="20" cy="22" rx="9.5" ry="12.5" fill="#56637a"/>` +
+             `<circle cx="20" cy="25" r="6" ${dO('#5d6b45', 1.2)}/><circle cx="20" cy="25" r="3.2" fill="#c9a24a"/>` +
+             `<path d="M13 11 l3 3 M16 11 l-3 3 M14.5 9.6v5.8 M25 13 l2.6 2.6 M27.6 13 l-2.6 2.6 M26.3 12v5.2" ${dL('#a9d1ec', 1.1)}/>`},
+    green: {n:'鹹鴨蛋', a:() => `<path d="M10 9 C10 -1 30 -1 30 9 Z" transform="rotate(-16 20 6) translate(1 -3)" ${dO('#bfe0c8')}/>` +
+             `<path d="M7.5 17 C7 31 13 37 20 37 C27 37 33 31 32.5 17Z" ${dO('#bfe0c8')}/><ellipse cx="20" cy="17" rx="12.5" ry="4.2" ${dO(DW)}/><ellipse cx="20" cy="17.3" rx="5.4" ry="2.4" ${dO('#ef8a2e', 1)}/>` +
+             dots([[13,26],[25,30],[18,33],[28,23]], .8, '#8fbf9a', 0)},
+  },
+  danbing: {
+    red:   {n:'辣醬蛋餅', a:() => rollBase(TC.red, `<path d="M17 14.5 l2 -2 l2 2 l2 -2 l2 2 l2 -2" ${dL('#d9443a', 2)}/>`, `<path d="M25 5 Q33 1 38 7 Q32 6 25 8Z" ${dO('#d9443a')}/><path d="M25 6.5 l-3 -2" ${dL('#5f9a45', 1.8)}/>`)},
+    yellow:{n:'玉米蛋餅', a:() => rollBase(TC.yellow, dots([[25,19.5],[28.5,18.5],[27,23],[30.5,22],[24,23.5],[29,25.5]], 1.4, '#f5c542'))},
+    blue:  {n:'鮪魚蛋餅', a:() => rollBase(TC.blue, dots([[25,19],[29,20],[26.5,23.5],[30,24]], 1.6, '#f2b5a0', .6), `<path d="M5.5 22 q2.2 -2.6 4.6 0 q-2.4 2.6 -4.6 0z M10 22 l2.2 -1.8 v3.6z" fill="${TC.blue}"/>`)},
+    green: {n:'九層塔蛋餅', a:() => rollBase(TC.green, dots([[24.5,19],[28.5,23.5],[30,19],[25,24]], 1, '#5f9a45', 0), `<path d="M30 14 q5 -8 9 -2 q-4 4 -9 2z" ${dO('#5f9a45')}/><path d="M28 13 q-1 -7 4 -10 q1 6 -4 10z" ${dO('#8fc06a')}/>`)},
+  },
+  pineapple: {
+    red:   {n:'菠蘿紅豆', a:() => `<ellipse cx="20" cy="22" rx="17" ry="13.5" ${dO('#e8b45a')}/>${bunHatch('#c98a30')}` +
+             `<path d="M27 9.5 q-3 4 0 7 q-3 3 1 7 q5 0 9 -5 q-1 -6 -10 -9z" ${dO('#f8ead0')}/><path d="M29 14.5 q4 1 3 6 q-3 1 -3 -2z" fill="#7a2a2a"/>`},
+    yellow:{n:'冰火菠蘿油', a:() => `<path d="M4 25 Q20 38 36 25Z" ${dO('#d9a050')}/><rect x="7" y="19.5" width="27" height="6.5" rx="1.5" transform="rotate(-4 20 23)" ${dO('#f7e08a')}/>` +
+             `<path d="M3 21 Q3 6 20 6 Q37 6 37 21Z" ${dO('#e8b45a')}/><path d="M9 14 l5 -5 M13 19 l9 -9 M20 20 l10 -10 M9 11 l9 9 M17 8 l12 12 M27 8 l7 7" ${dL('#c98a30', 1.3)}/>`},
+    blue:  {n:'藍莓菠蘿', a:() => `<ellipse cx="20" cy="22" rx="17" ry="13.5" ${dO('#e8b45a')}/>${bunHatch('#c98a30')}` +
+             `<path d="M7 15 Q20 5 33 15 q-1 4 -3.2 1 q-2 4 -4.2 0 q-2 4 -4.2 0 q-2 4 -4.2 0 q-2 4 -4.2 0 q-3 3 -2.2 -1z" ${dO('#9aa8e6')}/>` +
+             dots([[15,11],[20,8.5],[25,11]], 2.3, '#3f4fa0', 1) + `<path d="M15 10v2 M14 11h2 M20 7.5v2 M19 8.5h2 M25 10v2 M24 11h2" ${dL('#c9d0f2', .8)}/>`},
+    green: {n:'抹茶菠蘿', a:() => `<ellipse cx="20" cy="22" rx="17" ry="13.5" ${dO('#a7c97a')}/>${bunHatch('#6f9a45')}` +
+             dots([[12,20],[22,16],[27,26],[16,29]], .9, DW, 0) + `<path d="M20 9 q-2 -7 4 -10 q2 6 -4 10z" ${dO('#5f9a45', 1.2)}/>`},
+  },
+  basket: {
+    red:   {n:'番茄紅蘿蔔菜籃', a:() => basketBase(TC.red, '#f08a7e', `<path d="M22 13 L33 -1 L29 13Z" ${dO('#ef8a2e')}/><path d="M33 -1 l3 -4 M33 -1 l4 -1 M33 -1 v-5" ${dL('#5f9a45', 1.8)}/>` +
+             `<circle cx="14" cy="9" r="6" ${dO('#e04a3a')}/><path d="M11.5 4 l2.5 1.5 l2.5 -1.5 M14 5.5 v-2" ${dL('#4f7a3a', 1.4)}/>`)},
+    yellow:{n:'玉米地瓜菜籃', a:() => basketBase(TC.yellow, '#f5d98a', `<ellipse cx="28" cy="9" rx="6.5" ry="3.6" transform="rotate(-25 28 9)" ${dO('#b0507a')}/>` +
+             `<path d="M14 13 Q12 -2 18 -4 Q24 -2 22 13Z" ${dO('#f5c542')}/><path d="M16 1h4 M15.5 5h5 M15 9h6 M18 -3v14" ${dL('#d9a330', 1.1)}/><path d="M12 13 Q7 4 10 -1 Q14 6 17 13Z" ${dO('#8fc06a')}/>`)},
+    blue:  {n:'鮮魚菜籃', a:() => basketBase(TC.blue, '#9cc9e8', `<g transform="rotate(-28 20 8)"><ellipse cx="18" cy="8" rx="10" ry="4.6" ${dO('#9cc9e8')}/><path d="M27 8 l6 -5 v10z" ${dO('#9cc9e8')}/>` +
+             `<path d="M13 4.5 q-1.5 3.5 0 7" ${dL(DK, 1)}/><circle cx="11" cy="7" r="1.1" fill="${DK}"/><path d="M17 6 l2 2 l-2 2 M21 6 l2 2 l-2 2" ${dL('#5a8fbf', .9)}/></g>`)},
+    green: {n:'高麗菜青江菜籃', a:() => basketBase(TC.green, '#a8cf7a', `<path d="M27 13 Q24 0 29 -4 Q34 0 31 13Z" ${dO('#6f9a45')}/><path d="M29 12 V1" ${dL('#e8f2d8', 1.4)}/>` +
+             `<circle cx="15" cy="9" r="7.5" ${dO('#b9dc8c')}/><path d="M15 2 Q11 9 15 16 M10 5 Q13 9 10 14 M20 5 Q17 9 20 14" ${dL('#6f9a45', 1.2)}/>`)},
+  },
+  bawan: {
+    red:   {n:'彰化肉圓', a:() => bawanBase('#efd9b8', TC.red, `<path d="M8 23 Q12 17 20 17 Q28 17 32 23 Q30 27 27 24 Q25 28 22 25 Q19 29 16 25 Q13 28 11 24 Q9 26 8 23Z" ${dO('#d9443a')}/>` +
+             `<path d="M18 15 q-2 -4 1 -6 q2 3 -1 6z M21 15 q1 -4 4 -4 q-1 3 -4 4z" ${dO('#5f9a45', 1)}/>`)},
+    yellow:{n:'酥炸肉圓', a:() => bawanBase('#e6a33c', TC.yellow, dots([[12,22],[17,19],[23,20],[28,24],[15,27],[22,26],[26,29],[11,29]], .9, '#b8761f', 0) + `<path d="M24 16 q4 1 6 5" ${dL('#fff3c4', 1.6)}/>`)},
+    blue:  {n:'清蒸肉圓', a:() => bawanBase('#f3e6d2', TC.blue, `<ellipse cx="20" cy="24" rx="7.5" ry="4.5" fill="#d9a882" opacity=".55"/>` +
+             `<path d="M14 9 q-2 -3 0 -6 q2 -3 0 -6 M20 8 q-2 -3 0 -6 q2 -3 0 -6 M26 9 q-2 -3 0 -6 q2 -3 0 -6" ${dL('#7fb0dc', 1.6)}/>`, '')},
+    green: {n:'香菜肉圓', a:() => bawanBase('#efd9b8', TC.green, `<path d="M9 22 Q14 18 20 18 Q27 18 31 22 Q28 25 25 22 Q22 26 19 22 Q16 25 13 22 Q11 24 9 22Z" ${dO(DW, 1.2)}/>` +
+             [[13,16,-20],[18,13,10],[23,14,-5],[27,17,25],[20,18,40]].map(([x,y,r]) => `<g transform="rotate(${r} ${x} ${y})"><path d="M${x} ${y} q-3 -1 -3 -4 q2 -1 3 1 q1 -3 3 -2 q0 3 -3 5z" ${dO('#5f9a45', .9)}/></g>`).join(''))},
+  },
+  amulet: {
+    red:   {n:'平安符', a:() => amuletBag('#d9443a', '#f2c94c', `<rect x="13" y="10" width="14" height="21" rx="1.5" ${dL('#f2c94c', 1.4)}/><path d="M16 15h8 M17.2 17.6 l1.4 2 M22.8 17.6 l-1.4 2 M15 22h10 M20 15v13" ${dL('#f2c94c', 1.7)}/>`)},
+    yellow:{n:'招財黃符', a:() => `<path d="M20 -4 V5" ${dL(DK, 2)}/><path d="M11 4h18v32l-3 -2 -3 2 -3 -2 -3 2 -3 -2 -3 2z" ${dO('#f5d547')}/>` +
+             `<path d="M20 7 v4 M16 11 h8 M17 14 q6 2 0 4 q6 2 0 4 q6 2 0 4 M20 26 l-3 5 M20 26 l3 5" ${dL('#c23b2e', 1.6)}/><circle cx="20" cy="4" r="1.6" ${dO('#c23b2e', 1)}/>`},
+    blue:  {n:'交通平安符', a:() => amuletBag(TC.blue, '#f2c94c', `<circle cx="20" cy="20" r="6.5" ${dL('#f2c94c', 1.8)}/><path d="M20 13.5v13 M13.5 20h13 M15.4 15.4l9.2 9.2 M24.6 15.4l-9.2 9.2" ${dL('#f2c94c', 1.1)}/><circle cx="20" cy="20" r="1.8" fill="#f2c94c"/>`)},
+    green: {n:'學業進步符', a:() => amuletBag(TC.green, '#d9443a', `<path d="M24.5 11 L16.5 26" ${dL('#f2c94c', 2.8)}/><path d="M16.5 26 l-1.6 3.6 l3.2 -1.9z" fill="${DK}"/>` +
+             `<path d="M24 25 l1 2 2 .3 -1.5 1.4 .4 2 -1.9 -1 -1.9 1 .4 -2 -1.5 -1.4 2 -.3z" fill="#f2c94c"/><circle cx="14" cy="13" r="1.1" fill="#f2c94c"/>`)},
+  },
+  bag: {
+    red:   {n:'金紙紅白袋', a:() => plasticBag('#d9443a', `<g transform="rotate(-10 20 6)"><rect x="13" y="0" width="14" height="11" rx="1" ${dO('#f2c94c')}/><rect x="17.5" y="3" width="5" height="5" ${dO('#d9443a', 1)}/></g>`)},
+    yellow:{n:'香蕉黃白袋', a:() => plasticBag('#e8b13a', `<path d="M14 11 Q12 0 22 -3 Q17 4 19 11Z" ${dO('#f5d547')}/><path d="M18 11 Q18 0 28 -1 Q22 5 23.5 11Z" ${dO('#f5d547')}/><path d="M22 -3 l1.5 -1 M28 -1 l1.6 -.6" ${dL('#6b4a2b', 1.8)}/>`)},
+    blue:  {n:'手搖飲藍白袋', a:() => plasticBag('#3f7cc0', dT('M17 4 L19 -6', '#3f7cc0', 2) + `<path d="M12 11 l1 -7 h9 l1 7z" ${dO('#efdcb8')}/><rect x="11" y="2.5" width="13" height="2.8" rx="1" ${dO(DW, 1.2)}/>` +
+             `<path d="M21 11 l1 -6 h8 l1 6z" ${dO('#c23b4e')}/><rect x="20.5" y="3.6" width="11" height="2.6" rx="1" ${dO(DW, 1.2)}/>`)},
+    green: {n:'青蔥綠白袋', a:() => plasticBag('#5f9a45', dT('M15 11 L12 -4', '#7fb85a', 2) + dT('M19 11 L19 -5', '#7fb85a', 2) + dT('M22 11 L26 -3', '#7fb85a', 2))},
+  },
+  postbox: {
+    red:   {n:'限時郵筒帽', a:() => `<circle cx="20" cy="2" r="2.2" ${dO('#d9443a')}/><path d="M2 28 V12 Q2 1 20 1 Q38 1 38 12 V28Z" ${dO('#d9443a')}/><path d="M2.4 12 H37.6" ${dL(DK, 1.2)}/>` +
+             `<rect x="11" y="14.5" width="18" height="3.5" rx="1.2" ${dO('#5a2a22', 1.2)}/><circle cx="20" cy="23" r="3.6" ${dO(DW, 1.2)}/><path d="M20 21v2.2l1.4 1" ${dL(DK, 1)}/>`},
+    yellow:{n:'郵差帽', a:() => `<path d="M5 22 Q4 4 20 3 Q36 4 35 22Z" ${dO('#e8b13a')}/><rect x="4" y="18" width="32" height="5" rx="1.5" ${dO('#8a5a32')}/>` +
+             `<path d="M3 23 Q20 31 39 24 Q37 21 34 22.5 Q20 26 6 22.5Z" ${dO('#3a3330')}/><path d="M16 8 h8 v6 h-8z" ${dO(DW, 1)}/><path d="M16 8 l4 3.4 l4 -3.4" ${dL(DK, 1)}/>`},
+    blue:  {n:'航空信封帽', a:() => `<path d="M1 26 L20 1 L39 26Z" ${dO(DW)}/><path d="M5.5 24 L20 5.5 L34.5 24" ${dL('#3f7cc0', 2.2)} stroke-dasharray="3 3"/>` +
+             `<path d="M5.5 24 L20 5.5 L34.5 24" ${dL('#d9443a', 2.2)} stroke-dasharray="3 3" stroke-dashoffset="3"/><rect x="16" y="13" width="8" height="9" ${dO('#9cc9e8', 1)}/>` +
+             `<path d="M17.5 19 q1.25 -1.5 2.5 0 q1.25 1.5 2.5 0" ${dL('#3f7cc0', 1)}/><rect x="0" y="24.5" width="40" height="4.5" rx="1.5" ${dO('#3f7cc0')}/>`},
+    green: {n:'平信郵筒帽', a:() => `<path d="M3 28 V6 Q3 2 7 2 H33 Q37 2 37 6 V28Z" ${dO('#4f8a45')}/><path d="M3.4 9 H36.6" ${dL(DK, 1.2)}/>` +
+             `<rect x="11" y="12.5" width="18" height="3.5" rx="1.2" ${dO('#24401f', 1.2)}/><rect x="15.5" y="19.5" width="9" height="6" rx=".6" ${dO(DW, 1.1)}/><path d="M15.5 19.5 l4.5 3.2 l4.5 -3.2" ${dL(DK, 1)}/>`},
+  },
+  helmet: {
+    red:   {n:'復古飛行帽', a:() => `<path d="M5 26 Q5 3 26 3 Q47 3 47 26Z" ${dO('#d9443a')}/><path d="M26 3.8 V25" ${dL(DW, 4)}/><rect x="2" y="24" width="48" height="5" rx="2.5" ${dO('#8a2e24')}/>` +
+             `<path d="M7 17 Q26 11 45 17" ${dL('#6b4a2b', 3)}/><circle cx="20" cy="15" r="5" ${dO('#f2c94c')}/><circle cx="32" cy="15" r="5" ${dO('#f2c94c')}/><circle cx="20" cy="15" r="3" fill="#9cc9e8"/><circle cx="32" cy="15" r="3" fill="#9cc9e8"/>`},
+    yellow:{n:'工地安全帽', a:() => `<path d="M8 25 Q8 4 26 4 Q44 4 44 25Z" ${dO('#f5c542')}/><path d="M26 4.5 V24 M18 6.5 Q15.5 15 16 24 M34 6.5 Q36.5 15 36 24" ${dL('#c9962a', 1.5)}/>` +
+             `<rect x="1" y="23.5" width="50" height="5" rx="2.5" ${dO('#f5c542')}/><path d="M22.5 13h7 M26 9.5v7" ${dL('#5f9a45', 2.6)}/>`},
+    blue:  {n:'全罩安全帽', a:() => `<path d="M6 28 Q6 2 26 2 Q46 2 46 28 Q46 31 42 31 H10 Q6 31 6 28Z" ${dO('#3f7cc0')}/><path d="M12 14 Q26 9 40 14 L40 22 Q26 25 12 22Z" ${dO('#9cc9e8')}/>` +
+             `<path d="M15 15 Q20 13 25 13" ${dL(DW, 1.6)}/><path d="M36 6 l1 2 2 .3 -1.5 1.4 .4 2 -1.9 -1 -1.9 1 .4 -2 -1.5 -1.4 2 -.3z" fill="${DW}"/>`},
+    green: {n:'竹編斗笠', a:() => `<path d="M0 26 L26 2 L52 26 Q26 31 0 26Z" ${dO('#e0c07a')}/><path d="M26 3 L9 26.5 M26 3 L17 28 M26 3 V29 M26 3 L35 28 M26 3 L43 26.5" ${dL('#b8924a', 1.1)}/>` +
+             `<path d="M13 15.5 Q26 19 39 15.5" ${dL('#5f9a45', 3)}/><path d="M36 15 q4 -6 9 -4 q-3 5 -9 4z" ${dO('#8fc06a', 1.1)}/>`},
+  },
+  boat: {
+    red:   {n:'端午龍舟', a:() => `<path d="M20 22 V6 L28 9 L20 12" ${dO('#f2c94c', 1.3)}/><rect x="16.5" y="17" width="7" height="7" rx="1.5" ${dO('#c98a30')}/>` +
+             `<path d="M3 24 Q20 32 37 24 L35 30 Q20 37 5 30Z" ${dO('#d9443a')}/><path d="M4 26 Q0 16 6 12 Q11 10 12 14 L9 16 Q8 21 10 26Z" ${dO('#d9443a')}/>` +
+             `<circle cx="8" cy="14" r="1.1" fill="#f2c94c"/><path d="M6 12 l-2 -3.5 M8.5 11 l.4 -3.5" ${dL('#f2c94c', 1.4)}/><path d="M36 25 Q40 18 38 13 Q35 19 32.5 25Z" ${dO('#d9443a')}/>` +
+             `<path d="M10 29 q2 -2 4 0 q2 -2 4 0 q2 -2 4 0 q2 -2 4 0 q2 -2 4 0" ${dL('#f2c94c', 1.4)}/><path d="M2 37 q4 -3 8 0 q4 3 8 0 q4 -3 8 0 q4 3 8 0" ${dL('#3f7cc0', 1.6)}/>`},
+    yellow:{n:'金紙小船', a:() => `<path d="M1 22 h38 l-8 12 H9z" ${dO('#f2c94c')}/><path d="M10 22 L20 3 L30 22Z" ${dO('#f5d547')}/><path d="M20 3.5 V22 M14 22 L20 12 L26 22" ${dL('#c9a23a', 1.1)}/>` +
+             `<rect x="17.2" y="14.6" width="5.6" height="5.6" ${dO('#d9443a', 1)} transform="rotate(45 20 17.4)"/><path d="M4 37 q4 -3 8 0 q4 3 8 0 q4 -3 8 0 q4 3 8 0" ${dL('#c9a23a', 1.6)}/>`},
+    blue:  {n:'摺紙小船', a:() => `<path d="M10 22 L20 3 L30 22Z" ${dO('#eaf3fa')}/><path d="M1 22 h38 l-8 12 H9z" ${dO(DW)}/><path d="M20 3.5 V22 M15 22 L20 12 L25 22 M9 22 L14 28 L26 28 L31 22" ${dL('#3f7cc0', 1.1)}/>` +
+             `<path d="M0 34 q5 -4 10 0 q5 4 10 0 q5 -4 10 0 q5 4 10 0 V39 H0Z" ${dO('#9cc9e8')}/>`},
+    green: {n:'竹筏', a:() => `<path d="M20 25 V3" ${dL('#8a5a32', 2.2)}/><path d="M21 4 Q34 12 22 23Z" ${dO('#5f9a45')}/><path d="M21.5 6 Q26 13 22 21" ${dL('#a8cf7a', 1.1)}/>` +
+             [25, 29.5, 34].map(y => `<rect x="1" y="${y}" width="38" height="4.5" rx="2.25" ${dO(y === 29.5 ? '#7fb85a' : '#9ccc6e')}/>`).join('') +
+             `<path d="M12 25 v13 M28 25 v13" ${dL('#8a5a32', 1.4)}/><path d="M6 25.5 v4 M33 30 v4 M18 34.5 v4" ${dL('#4f7a3a', 1)}/>`},
+  },
+  medbag: {
+    red:   {n:'急救包', a:() => `<path d="M14 9 V4 Q14 2 16 2 H24 Q26 2 26 4 V9" ${dL(DK, 2.6)}/><rect x="4" y="8" width="32" height="27" rx="4" ${dO('#d9443a')}/>` +
+             `<path d="M17 13h6v5.5h5.5v6h-5.5v5.5h-6v-5.5h-5.5v-6h5.5z" ${dO(DW, 1.3)}/>`},
+    yellow:{n:'中藥包', a:() => `<path d="M5 13 L20 7 L35 13 L35 32 L20 37.5 L5 32Z" ${dO('#d9b46a')}/><path d="M5 13 L20 19 L35 13 M20 19 V37.5" ${dL('#a8823e', 1.3)}/>` +
+             `<path d="M12.5 10 L27.5 16 M27.5 10 L12.5 16 M12.5 16 V35 M27.5 16 V35" ${dL('#c23b2e', 1.5)}/><ellipse cx="27" cy="5" rx="4.5" ry="2.6" ${dO('#efe0b8', 1.2)}/>` +
+             dots([[12,6],[15,4],[14.5,7.5]], 1.5, '#d9443a', .7)},
+    blue:  {n:'藥局藥袋', a:() => `<path d="M7 4 h26 v32 h-26z" ${dO(DW)}/><rect x="7" y="4" width="26" height="8" ${dO('#3f7cc0')}/><path d="M20 5.5v5 M17.5 8h5" ${dL(DW, 1.8)}/>` +
+             `<path d="M11 16h18 M11 20h12" ${dL('#9cc9e8', 1.6)}/><g transform="rotate(-30 22 28)"><rect x="15" y="25" width="14" height="6" rx="3" ${dO(DW)}/><path d="M22 25 h4 a3 3 0 0 1 0 6 h-4z" ${dO('#3f7cc0')}/></g>`},
+    green: {n:'青草茶包', a:() => `<path d="M17 15 Q12 4 16 -2 Q20 5 19.5 15Z" ${dO('#4f8a3a')}/><path d="M22 15 Q26 3 32 1 Q31 10 23 15Z" ${dO('#a8cf7a')}/>` +
+             `<path d="M8 16 Q4 36 20 36 Q36 36 32 16 Q26 19 20 15 Q14 19 8 16Z" ${dO('#7fb85a')}/><path d="M13.5 15.5 Q20 19 26.5 15.5" ${dL('#8a5a32', 2.4)}/>` +
+             dots([[13,24],[20,27],[27,24],[16,31],[24,31]], 1, '#e8f2d8', 0)},
+  },
+  megaphone: {
+    red:   {n:'廟會大聲公', a:() => megaBody('#d9443a', '#f2c94c', `<path d="M6 17h4" ${dL(DW, 2)}/><path d="M22 30 V35" ${dL('#f2c94c', 1.4)}/><circle cx="22" cy="37" r="2.2" ${dO('#f2c94c', 1)}/>` +
+             `<path d="M35 13 q3 6 0 12" ${dL(DK, 2)}/>`)},
+    yellow:{n:'里長廣播喇叭', a:() => `<rect x="17" y="17" width="4.5" height="21" ${dO('#9a948a')}/><rect x="5" y="11" width="8" height="9" rx="1.5" ${dO('#9a948a')}/>` +
+             `<path d="M12 13 L30 3 Q37 13 30 25 L12 18Z" ${dO('#f2c94c')}/><ellipse cx="31" cy="14" rx="3.6" ry="11" transform="rotate(-8 31 14)" ${dO('#d9a330')}/>` +
+             `<path d="M37 8 q3 6 0 12 M39.5 5 q5 9 0 18" ${dL(DK, 1.4)}/>`},
+    blue:  {n:'救生員大聲公', a:() => megaBody('#3f7cc0', DW, `<path d="M17 9 v20 M23 6 v26" ${dL(DW, 2.6)}/><path d="M36 9 l-3 5 h4 l-3 6 M38 22 q2 3 0 6" ${dL('#3f7cc0', 1.8)}/>`)},
+    green: {n:'運動會加油筒', a:() => `<path d="M3 17 L34 3 Q38 19 34 35Z" ${dO('#a8cf7a')}/><path d="M11 13.5 L14 25 M19 10 L23.5 29.5 M27 6.5 L31 33" ${dL('#6f9a45', 1.4)}/>` +
+             `<ellipse cx="35" cy="19" rx="2.6" ry="16" ${dO('#7fb85a')}/><path d="M3 17 l-3 -4.5 M3 17 l-3 4.5" ${dL('#d9443a', 1.8)}/>` +
+             `<path d="M20 18 l1 2 2 .3 -1.5 1.4 .4 2 -1.9 -1 -1.9 1 .4 -2 -1.5 -1.4 2 -.3z" fill="#f2c94c" stroke="${DK}" stroke-width=".7"/>`},
+  },
+  schoolbag: {
+    red:   {n:'紅色後背書包', a:() => dT('M13 9 Q20 -2 27 9', '#d9443a', 2) + `<rect x="5" y="8" width="30" height="28" rx="6" ${dO('#d9443a')}/><path d="M8 14 Q20 11 32 14" ${dL(DK, 1.2)}/>` +
+             `<rect x="10" y="20" width="20" height="12" rx="3" ${dO('#b8362c')}/><path d="M10.8 25 h18.4" ${dL('#f2c94c', 2)}/><circle cx="31" cy="13.6" r="1.4" ${dO('#f2c94c', .8)}/>`},
+    yellow:{n:'帆布斜背書包', a:() => dT('M5 16 Q20 -12 35 16', '#a8823e', 2.4) + `<rect x="3" y="14" width="34" height="22" rx="3" ${dO('#e2c27a')}/>` +
+             `<path d="M3 17 Q3 14 6 14 H34 Q37 14 37 17 V26 Q20 30 3 26Z" ${dO('#d4ac5a')}/><path d="M5.5 17 H34.5" ${dL('#8a6a32', .9)} stroke-dasharray="1.6 1.6"/><rect x="17" y="24.5" width="6" height="5" rx="1" ${dO('#8a5a32', 1.2)}/>`},
+    blue:  {n:'水壺書包', a:() => dT('M10 9 Q17 -2 24 9', '#3f7cc0', 2) + `<rect x="2" y="8" width="29" height="28" rx="6" ${dO('#3f7cc0')}/><rect x="7" y="19" width="19" height="12" rx="3" ${dO('#6d9ed4')}/>` +
+             `<path d="M30 20 h8" ${dL(DK, 1.2)}/><rect x="30" y="16" width="8" height="19" rx="3" ${dO('#9cc9e8')}/><rect x="31" y="11.5" width="6" height="5" rx="1.5" ${dO(DW, 1.2)}/><path d="M32 22 v8" ${dL(DW, 1.4)}/>`},
+    green: {n:'綠色書包', a:() => dT('M13 9 Q20 -2 27 9', '#4f8a45', 2) + `<rect x="5" y="8" width="30" height="28" rx="4" ${dO('#4f8a45')}/>` +
+             `<path d="M5 12 Q5 8 9 8 H31 Q35 8 35 12 V22 Q20 26 5 22Z" ${dO('#5f9a45')}/><rect x="13" y="27" width="14" height="5.5" rx="1" ${dO(DW, 1.1)}/>` +
+             `<path d="M15 29.8 h10" ${dL('#9a948a', 1)}/><path d="M20 22 v4" ${dL(DK, 1)}/><path d="M20 26 q-4 3 0 7 q4 -4 0 -7z" ${dO('#f2c94c', 1)}/>`},
+  },
+  banyan: {
+    red:   {n:'榕果葉', a:() => `<path d="M20 1 Q38 14 22 37 Q2 22 20 1Z" ${dO('#6f9a45')}/><path d="M20 6 Q22 20 22 36 M21 16 l6 -4 M21 24 l-6 -4 M21.6 30 l5 -3" ${dL('#cfe5b0', 1.4)}/>` +
+             `<circle cx="31" cy="30" r="4.2" ${dO('#d9443a')}/><circle cx="35.5" cy="24" r="3.4" ${dO('#e46a50')}/><circle cx="34" cy="35.5" r="3" ${dO('#b8362c')}/>` +
+             dots([[29.6,28.6],[34.6,22.8]], .8, DW, 0)},
+    yellow:{n:'黃金落葉', a:() => `<path d="M19 1 Q40 12 24 36 Q-1 26 19 1Z" ${dO('#f2c94c')}/><path d="M19 5 Q22 20 24 35 M20.5 14 l7 -3 M21.5 21 l-8 -3 M22.6 27 l7 -2" ${dL('#a8701f', 1.3)}/>` +
+             `<circle cx="14" cy="24" r="2.2" ${dO(DW, 1.1)}/><path d="M24 36 q2 3 5 3" ${dL('#a8701f', 1.6)}/>`},
+    blue:  {n:'荷葉露珠', a:() => `<path d="M20 20 L35.85 18.1 A16 16 0 1 0 35.85 21.9 Z" ${dO('#5fa59a')}/>` +
+             `<path d="M20 20 L20 4.5 M20 20 L7 11 M20 20 L5 25 M20 20 L14 35 M20 20 L28 34" ${dL('#a8d8cc', 1.2)}/><circle cx="20" cy="20" r="1.6" fill="#a8d8cc"/>` +
+             `<path d="M12 10 Q16.5 16 12 18.5 Q7.5 16 12 10Z" ${dO('#9cc9e8', 1.2)}/><path d="M11 14 q0 2 1.5 2.6" ${dL(DW, 1)}/>`},
+    green: {n:'氣根榕葉', a:() => `<path d="M17 25 q-2 6 0 13 M20.5 26 q1.5 5 -1 12 M24 24 q3 6 1 13" ${dL('#8a5a32', 1.5)}/>` +
+             `<path d="M20 0 Q35 9 22 27 Q5 17 20 0Z" ${dO('#5f9a45')}/><path d="M20 4 Q21.5 15 22 26 M21 12 l5 -3 M21.5 19 l-5 -3" ${dL('#cfe5b0', 1.3)}/>` +
+             `<path d="M27 22 Q37 19 37 10 Q29 12 27 22Z" ${dO('#8fc06a', 1.3)}/>`},
+  },
+  strap: {
+    red:   {n:'福氣拉環', a:() => strapTop('#d9443a') + dT('M20 14.5 L34 35 H6Z', '#f0e6d4', 3.4) + `<path d="M20 15 V22" ${dL('#d9443a', 1.2)}/><path d="M20 21.5 l4 4 l-4 4 l-4 -4z" ${dO('#f2c94c', 1.2)}/><path d="M20 29.5 v4" ${dL('#d9443a', 1.4)}/>`},
+    yellow:{n:'博愛座拉環', a:() => strapTop('#9a948a') + `<circle cx="20" cy="26" r="10" ${dL(DK, 6)}/><circle cx="20" cy="26" r="10" ${dL('#f5c542', 3.6)}/><path d="M17 26 q3 -4 6 0 q-3 4 -6 0z" fill="#e8b13a"/>`},
+    blue:  {n:'捷運拉環', a:() => strapTop('#3f7cc0', `<path d="M20 0 v11" ${dL('#9cc9e8', 1.4)}/>`) + `<rect x="9" y="16" width="22" height="20" rx="7.5" ${dL(DK, 6)}/><rect x="9" y="16" width="22" height="20" rx="7.5" ${dL('#9cc9e8', 3.6)}/>`},
+    green: {n:'竹節拉環', a:() => strapTop('#5f9a45', `<path d="M18 4 q2 -3 4 0 q-2 3 -4 0z" fill="#a8cf7a"/>`) + `<path d="M8 15.5 H32 Q34 36 20 36 Q6 36 8 15.5Z" ${dL(DK, 6)}/>` +
+             `<path d="M8 15.5 H32 Q34 36 20 36 Q6 36 8 15.5Z" ${dL('#a8cf7a', 3.6)}/><path d="M7.6 24 l2.6 .6 M32.4 24 l-2.6 .6 M20 34.2 v3.6" ${dL('#4f7a3a', 1.4)}/>`},
+  },
+  bento: {
+    red:   {n:'排骨便當', a:() => `<rect x="4" y="2" width="34" height="8" rx="2.5" transform="rotate(-8 21 6)" ${dO('#d9443a')}/><rect x="15" y="3.6" width="11" height="4.6" rx="1" transform="rotate(-8 21 6)" ${dO(DW, 1)}/>` +
+             `<rect x="2" y="14" width="36" height="21" rx="3" ${dO('#d9443a')}/><rect x="5" y="17" width="30" height="15" rx="2" ${dO(DW)}/>` +
+             `<path d="M8 22 Q12 17 20 19 Q24 21 21 26 Q15 30 9 27Z" ${dO('#a8642e')}/><path d="M11 22 l6 3 M13 20.5 l5 2.5" ${dL('#7a4420', 1)}/>` +
+             `<ellipse cx="28" cy="22" rx="4" ry="3.2" ${dO('#c98a50', 1.2)}/><circle cx="28" cy="22" r="1.6" fill="#f2c94c"/><path d="M24.5 28.5 h8" ${dL('#7fb85a', 2.6)}/>`},
+    yellow:{n:'圓形鐵路便當', a:() => `<path d="M3 18 V30 Q20 38 37 30 V18Z" ${dO('#c9c2b0')}/><path d="M3 24 Q20 32 37 24" ${dL('#f2c94c', 2.6)}/>` +
+             `<ellipse cx="20" cy="18" rx="17" ry="6" ${dO('#e2dccd')}/><ellipse cx="20" cy="18" rx="12" ry="3.8" ${dL('#b0a890', 1)}/>` +
+             `<rect x="14.5" y="15.6" width="11" height="4.4" rx="1.2" ${dO('#e8b13a', 1)}/><circle cx="17" cy="20.6" r=".9" fill="${DK}"/><circle cx="23" cy="20.6" r=".9" fill="${DK}"/>` +
+             `<path d="M7 11 L33 6 M8 13.5 L34 8.5" ${dL('#a8823e', 1.8)}/>`},
+    blue:  {n:'鯖魚海味便當', a:() => `<path d="M0 34 h40 l-3 4 H3z" ${dO('#9cc9e8', 1.2)}/><path d="M8 34.5 l-1.5 3 M16 34.5 l-1 3 M24 34.5 l1 3 M32 34.5 l1.5 3" ${dL(DW, 1.6)}/>` +
+             `<rect x="2" y="12" width="36" height="22" rx="3" ${dO('#3f7cc0')}/><rect x="5" y="15" width="18" height="16" rx="2" ${dO(DW)}/><rect x="25" y="15" width="10" height="16" rx="2" ${dO('#f3ecd8')}/>` +
+             `<ellipse cx="14" cy="23" rx="7" ry="4" ${dO('#7d8fa6')}/><path d="M21 23 l3 -2.5 v5z" ${dO('#7d8fa6', 1.2)}/><path d="M11 20 l2 6 M15 20 l2 6" ${dL('#4a5668', 1.1)}/>` +
+             `<path d="M27 20 h6 M27 24 h6" ${dL('#2f4a3a', 2.4)}/><path d="M28 28 a2.4 2.4 0 0 1 4.8 0z" ${dO('#f5d547', 1)}/>`},
+    green: {n:'竹筒飯', a:() => `<path d="M30 9 Q38 3 38 -4 Q30 -2 28 7Z" ${dO('#5f9a45')}/><rect x="10" y="6" width="20" height="31" rx="3" ${dO('#7fb85a')}/>` +
+             `<path d="M10.4 22 h19.2" ${dL('#4f7a3a', 1.8)}/><path d="M14 9 v11 M14 25 v9" ${dL('#a8cf7a', 1.6)}/><ellipse cx="20" cy="6" rx="10" ry="3.2" ${dO('#f6efe0')}/>` +
+             dots([[17,5.6],[22.5,6.2]], 1.2, '#8a5a32', .6) + `<circle cx="20" cy="5" r="1" fill="#d9443a"/>`},
+  },
+};
+const decorName = (d, t) => d ? (DECOR_V[d] && DECOR_V[d][t] ? DECOR_V[d][t].n : DECOR[d].name) : '';
+function decorArt(k, type){ const v = DECOR_V[k] && (DECOR_V[k][type] || DECOR_V[k][DECOR[k].type]); return v ? v.a() : ''; }
+const decorBox = k => k === 'helmet' ? '-2 -6 56 44' : k === 'postbox' ? '-2 -4 44 40' : '-4 -7 48 49';
+/* 飾品外圍的米色描邊（halo），以及圖鑑未取得時的剪影 */
+const decorDefs = (P, sil) => `<defs><filter id="dh" x="-25%" y="-25%" width="150%" height="150%"><feMorphology in="SourceAlpha" operator="dilate" radius="2.4" result="d"/><feFlood flood-color="${CREAM}"/><feComposite in2="d" operator="in" result="h"/><feMerge><feMergeNode in="h"/><feMergeNode in="SourceGraphic"/></feMerge></filter>` +
+  `<filter id="ds" x="-25%" y="-25%" width="150%" height="150%"><feMorphology in="SourceAlpha" operator="dilate" radius="2.4" result="d"/><feFlood flood-color="#efe5cf"/><feComposite in2="d" operator="in" result="h"/><feFlood flood-color="#d8c8a8"/><feComposite in2="SourceAlpha" operator="in" result="s"/><feMerge><feMergeNode in="h"/><feMergeNode in="s"/></feMerge></filter></defs>`;
+const HATS = {postbox:'translate(43 33) scale(1.35)', helmet:'translate(39 35) scale(1.2)'};
 function topArt(type, I){
   switch(type){
     case 'red': return `<path d="M70 58 C61 48 63 40 69 34 C75 28 72 20 67 13 C82 19 87 32 79 42 C76 47 73 52 70 58Z" fill="${I}"/>`;
@@ -355,8 +550,8 @@ function sproutArt(sp, ink, paper){
     `<path d="M64 102 Q70 108 76 102" stroke="${P}" stroke-width="3" fill="none" stroke-linecap="round"/>` +
     `<rect x="51" y="123" width="10" height="8" rx="2" fill="${I}"/><rect x="79" y="123" width="10" height="8" rx="2" fill="${I}"/>`;
   if(sp.decor){
-    const pos = HATS[sp.decor] || 'translate(96 92) scale(.95)';
-    s += `<g transform="${pos}"><g stroke="${P}" stroke-width="6" stroke-linejoin="round">${decorArt(sp.decor,P,P)}</g>${decorArt(sp.decor,I,P)}</g>`;
+    const pos = HATS[sp.decor] || 'translate(88 76) scale(1.3)';
+    s += decorDefs() + `<g transform="${pos}" filter="url(#${ink ? 'ds' : 'dh'})">${decorArt(sp.decor, sp.type)}</g>`;
   }
   return s;
 }
@@ -627,7 +822,7 @@ function iconFor(p){
   }
   if(p.kind === 'wild') return L.divIcon({className:'', html:`<div class="pt wild ${isCool(p)?'cool':''}">${flowerIcon(FLOWERS[flowerNow()].c)}</div>`, iconSize:[26,26], iconAnchor:[13,13]});
   if(p.kind === 'corner') return L.divIcon({className:'', html:`<div class="pt wild ${isCool(p)?'cool':''}">${signIcon(INK[p.type])}</div>`, iconSize:[26,26], iconAnchor:[13,13]});
-  return L.divIcon({className:'', html:`<div class="pt ${isCool(p)?'cool':''}" style="--c:${INK[p.type]}"><svg viewBox="-4 -10 48 52">${decorArt(p.decor, CREAM, INK[p.type])}</svg></div>`, iconSize:[38,38], iconAnchor:[19,19]});
+  return L.divIcon({className:'', html:`<div class="pt dec ${isCool(p)?'cool':''}" style="--c:${INK[p.type]}"><svg viewBox="${decorBox(p.decor)}">${decorArt(p.decor, p.type)}</svg></div>`, iconSize:[38,38], iconAnchor:[19,19]});
 }
 /* 以「地圖正在看的範圍」為準畫點（以前只畫玩家身邊 700 公尺，地圖一拖走點就不見）。
    放大到 16 以上：全部；15：只畫店家廟宇等真實地點；14 以下只畫景點，並提示放大。 */
@@ -680,10 +875,10 @@ function openPoint(p){
       <div class="row">${inRange ? `<button class="btn pri" id="lmStamp">${done?'再拍一張明信片':'打卡＋拍明信片'}</button>` : `<span class="btn" aria-disabled="true">走到 ${rangeOf(p)} 公尺內就能打卡</span>`}</div>`;
   } else {
     const cool = isCool(p);
-    const gives = wildish(p) ? `花瓣，有機會撿到${p.kind==='corner'?TYPES[p.type].name:''}種子` : `花瓣，有機會撿到「${DECOR[p.decor].name}」${TYPES[p.type].name}種子`;
+    const gives = wildish(p) ? `花瓣，有機會撿到${p.kind==='corner'?TYPES[p.type].name:''}種子` : `花瓣，有機會撿到「${decorName(p.decor, p.type)}」${TYPES[p.type].name}種子`;
     const icon = p.kind==='wild' ? `<div class="ic" style="background:${CREAM};border:1.5px solid var(--ink)">${flowerIcon(FLOWERS[flowerNow()].c)}</div>` :
       p.kind==='corner' ? `<div class="ic" style="background:${CREAM};border:1.5px solid var(--ink)"><span style="width:40px;height:40px;display:block">${signIcon(INK[p.type])}</span></div>` :
-      `<div class="ic" style="background:${INK[p.type]}"><svg viewBox="-4 -10 48 52">${decorArt(p.decor, CREAM, INK[p.type])}</svg></div>`;
+      `<div class="ic" style="background:${CREAM};border:2.5px solid ${INK[p.type]}"><svg viewBox="${decorBox(p.decor)}">${decorArt(p.decor, p.type)}</svg></div>`;
     const kindLabel = p.kind==='wild' ? '野生點' : p.kind==='corner' ? '街角招牌' : DECOR[p.decor].label;
     body = `<div class="pcard">${icon}<div><div class="t">${esc(pointLabel(p))}</div><div class="s">${kindLabel} · ${gives}</div></div></div>
       <div class="meter">${d==null?'還沒取得你的位置':'距離 '+fmtM(d)}${cool?' · 剛收集過，'+Math.ceil((COOL_MS-(Date.now()-S.cool[p.id]))/36e5)+' 小時後再來':''}</div>
@@ -871,12 +1066,12 @@ function renderBed(){
     const s = slots[i];
     if(!s){ h += `<div class="slot"><div class="nm" style="margin:auto">空位<br>去地圖上收集種子</div></div>`; continue; }
     const pct = Math.round(s.prog/s.need*100), ready = s.prog >= s.need;
-    h += `<div class="slot full">${seedSVG(s.type, s.big)}<div class="nm">${TYPES[s.type].name}${s.decor?'<br>'+DECOR[s.decor].name:''}<br>來自 ${esc(s.src||'路邊')}</div>
+    h += `<div class="slot full">${seedSVG(s.type, s.big)}<div class="nm">${TYPES[s.type].name}${s.decor?'<br>'+decorName(s.decor, s.type):''}<br>來自 ${esc(s.src||'路邊')}</div>
       <div class="bar"><i style="width:${pct}%"></i></div><div class="pr">${fmtN(s.prog)} / ${fmtN(s.need)} 步</div>
       ${ready ? `<button class="btn pri" data-hatch="${s.id}">拔起來</button>` : ''}</div>`;
   }
   h += `</div><h3>種子袋 ${bag.length} / 9</h3>`;
-  h += bag.length ? `<p class="hint">點一下可以換到芽床第一格。</p><div class="bag">${bag.map(s => `<button data-front="${s.id}">${seedSVG(s.type, s.big)}${TYPES[s.type].name}${s.decor?' · '+DECOR[s.decor].name:''}</button>`).join('')}</div>` : `<p class="hint">還沒有備用的種子。</p>`;
+  h += bag.length ? `<p class="hint">點一下可以換到芽床第一格。</p><div class="bag">${bag.map(s => `<button data-front="${s.id}">${seedSVG(s.type, s.big)}${TYPES[s.type].name}${s.decor?' · '+decorName(s.decor, s.type):''}</button>`).join('')}</div>` : `<p class="hint">還沒有備用的種子。</p>`;
   h += `<h3>存檔</h3><p class="hint">資料只存在這支手機的瀏覽器裡。偶爾備份一次，換手機或清除資料時才不會不見（明信片照片不含在備份內）。</p>
     <div class="row"><button class="btn" id="expBtn">備份存檔</button><button class="btn ghost" id="impBtn">從備份還原</button></div>`;
   $('#bedBody').innerHTML = h;
@@ -896,7 +1091,7 @@ function hatch(id){
   meMarker.setIcon(meIcon());
   const unlockMsg = s.decor && same + 1 === 10 ? `<p>「${DECOR[s.decor].name}」集滿 10 隻，之後更容易出珍藏款！</p>` : '';
   modal(`<div class="big pop">${stampSVG(sp, '#fbf5e8')}</div><h2>${sp.rare?'珍藏款！':'新夥伴！'}</h2>
-    <p>${TYPES[sp.type].name}${sp.decor?' · 戴著'+DECOR[sp.decor].name:''}<br>來自 ${esc(sp.src||'路邊')}</p>${unlockMsg}
+    <p>${TYPES[sp.type].name}${sp.decor?' · 戴著'+decorName(sp.decor, sp.type):''}<br>來自 ${esc(sp.src||'路邊')}</p>${unlockMsg}
     <input id="nameIn" maxlength="8" value="${esc(sp.name)}" aria-label="名字"><div class="row" style="justify-content:center"><button class="btn pri" id="nameOk">就叫這個名字</button></div>`,
     m => { m.querySelector('#nameOk').onclick = () => { const v = m.querySelector('#nameIn').value.trim(); if(v) sp.name = v; save(); closeModal(); renderBed(); }; });
 }
@@ -913,7 +1108,7 @@ function renderDex(){
   h += `<h3>圖鑑 ${found} / ${(DECOR_KEYS.length+1)*4}</h3><div class="tbl-wrap"><table class="dex"><tr><th></th>${TYPE_ORDER.map(t => `<th style="color:${INK[t]}">${TYPES[t].name}</th>`).join('')}</tr>`;
   for(const d of [null, ...DECOR_KEYS]){
     h += `<tr><td>${d ? DECOR[d].name+'<br><span style="color:var(--muted);font-size:11px">'+DECOR[d].label+'</span>' : '無飾品<br><span style="color:var(--muted);font-size:11px">野生點、景點</span>'}</td>`;
-    for(const t of TYPE_ORDER) h += `<td><span class="cell">${stampSVG({type:t, decor:d}, '#fbf5e8', {unknown:!has(t,d), label:false})}</span></td>`;
+    for(const t of TYPE_ORDER) h += `<td><span class="cell">${stampSVG({type:t, decor:d}, '#fbf5e8', {unknown:!has(t,d), label:false})}</span>${d ? `<span class="vn">${has(t,d) ? decorName(d, t) : '？？？'}</span>` : ''}</td>`;
     h += `</tr>`;
   }
   h += `</table></div>`;
@@ -923,7 +1118,7 @@ function renderDex(){
 function showSprout(id){
   const sp = S.sprouts.find(s => s.id === id); if(!sp) return;
   modal(`<div class="big">${stampSVG(sp, '#fbf5e8')}</div><input id="nameIn" maxlength="8" value="${esc(sp.name)}" aria-label="名字">
-    <p>${TYPES[sp.type].name}${sp.decor?' · '+DECOR[sp.decor].name:''}${sp.rare?' · 珍藏款':''}<br>${new Date(sp.at).toLocaleDateString('zh-TW')} 在 ${esc(sp.src||'路邊')} 孵出</p>
+    <p>${TYPES[sp.type].name}${sp.decor?' · '+decorName(sp.decor, sp.type):''}${sp.rare?' · 珍藏款':''}<br>${new Date(sp.at).toLocaleDateString('zh-TW')} 在 ${esc(sp.src||'路邊')} 孵出</p>
     <div class="row" style="justify-content:center"><button class="btn pri" id="nameOk">儲存</button><button class="btn ghost" id="cx">關閉</button></div>`,
     m => { m.querySelector('#nameOk').onclick = () => { const v = m.querySelector('#nameIn').value.trim(); if(v){ sp.name = v; save(); } closeModal(); renderDex(); };
            m.querySelector('#cx').onclick = closeModal; });
