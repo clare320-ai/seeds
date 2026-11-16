@@ -197,6 +197,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 <input type="file" id="importInput" accept="application/json,.json" hidden>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="places-hsinchu.js"></script>
 <script>
 'use strict';
 /* ───────── 基本資料 ───────── */
@@ -207,8 +208,8 @@ const TYPE_ORDER = ['red','yellow','blue','green'];
 const TYPES = {
   red:   {name:'香火芽', where:'廟宇、古蹟、小吃店', power:'傍晚 5 點後收集花瓣變多（每 3 隻 +1，最多 +3）'},
   yellow:{name:'稻穗芽', where:'市場、麵包店、便利商店、飲料店', power:'撿到種子的機率提高（每隻 +2%，最多 +16%）'},
-  blue:  {name:'溪流芽', where:'河邊、湖邊、海邊', power:'有牠在，水邊地點的花瓣加倍'},
-  green: {name:'竹風芽', where:'公園、學校、車站、公車站', power:'種子孵化需要的步數變少（每隻 −4%，最多 −20%）'},
+  blue:  {name:'溪流芽', where:'河邊、湖邊、海邊、藥局診所', power:'有牠在，水邊地點的花瓣加倍'},
+  green: {name:'竹風芽', where:'公園、學校、車站、公車站、活動中心', power:'種子孵化需要的步數變少（每隻 −4%，最多 −20%）'},
 };
 const DECOR = {
   boba:     {name:'珍奶杯',    label:'飲料店',   type:'yellow'},
@@ -222,6 +223,8 @@ const DECOR = {
   postbox:  {name:'郵筒帽',    label:'郵筒',     type:'red'},
   helmet:   {name:'安全帽',    label:'機車行',   type:'red'},
   boat:     {name:'小紙船',    label:'水邊',     type:'blue'},
+  medbag:   {name:'藥包袋',    label:'藥局診所', type:'blue'},
+  megaphone:{name:'大聲公',    label:'活動中心', type:'green'},
   schoolbag:{name:'書包',      label:'學校',     type:'green'},
   banyan:   {name:'榕樹葉',    label:'公園',     type:'green'},
   strap:    {name:'公車拉環',  label:'公車站',   type:'green'},
@@ -314,6 +317,8 @@ function decorArt(k, ink, paper){
     case 'postbox': return `<path d="M2 28 V11 Q2 0 20 0 Q38 0 38 11 V28Z" fill="${I}"/><rect x="10" y="9" width="20" height="3.5" rx="1" fill="${P}"/><path d="M14 18h12 M20 16v9" stroke="${P}" stroke-width="2"/>`;
     case 'helmet': return `<path d="M4 26 Q4 2 26 2 Q48 2 48 26Z" fill="${I}"/><rect x="0" y="24" width="52" height="5" rx="2.5" fill="${I}"/><path d="M14 13 Q26 6 38 13" stroke="${P}" stroke-width="2.2" fill="none"/>`;
     case 'boat': return `<path d="M1 22 h38 l-8 12 H9z" fill="${I}"/><path d="M10 22 L20 3 L30 22Z" fill="${I}"/><path d="M20 4 V22" stroke="${P}" stroke-width="1.6"/><path d="M4 37 q4 -3 8 0 q4 3 8 0 q4 -3 8 0 q4 3 8 0" stroke="${I}" fill="none" stroke-width="1.8"/>`;
+    case 'medbag': return `<path d="M7 6 l3 -5 h20 l3 5z" fill="${I}"/><rect x="5" y="6" width="30" height="30" rx="2" fill="${I}"/><path d="M20 12v16M12 20h16" stroke="${P}" stroke-width="4.5"/>`;
+    case 'megaphone': return `<path d="M3 14h8l20-11v32L11 25H3z" fill="${I}"/><rect x="7" y="24" width="6" height="11" rx="1.5" fill="${I}"/><path d="M34 14 q4 6 0 12" stroke="${I}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M6 17h4" stroke="${P}" stroke-width="2"/>`;
     case 'schoolbag': return `<path d="M12 9 Q20 -3 28 9" stroke="${I}" stroke-width="3.2" fill="none"/><rect x="4" y="8" width="32" height="27" rx="4" fill="${I}"/><path d="M4 17 h32" stroke="${P}" stroke-width="2"/><rect x="16" y="19" width="8" height="5" rx="1" fill="${P}"/>`;
     case 'banyan': return `<path d="M20 1 Q38 14 22 37 Q2 22 20 1Z" fill="${I}"/><path d="M20 6 Q22 20 22 37 M21 17 l6 -4 M21 25 l-6 -4" stroke="${P}" stroke-width="1.7" fill="none"/>`;
     case 'strap': return `<rect x="16.5" y="-4" width="7" height="18" rx="1" fill="${I}"/><path d="M20 15 L34 35 H6Z" fill="none" stroke="${I}" stroke-width="4.5" stroke-linejoin="round"/>`;
@@ -399,7 +404,23 @@ $('#locBtn').onclick = () => { follow = true; if(me) map.setView([me.lat, me.lng
 /* ───────── 地點：OpenStreetMap ───────── */
 const POIS = new Map();          // id → poi
 const cellState = new Map();     // key → 'loading' | 'done'
-const CELL = 0.01;
+const CELL = 0.005;
+/* 空間索引：用來避免野生點和真實地點疊在一起 */
+const GRID = new Map(), GSTEP = 0.0005;
+const gkey = (lat, lng) => Math.floor(lat/GSTEP) + '_' + Math.floor(lng/GSTEP);
+function addPoi(p){
+  if(POIS.has(p.id)) return;
+  POIS.set(p.id, p);
+  const k = gkey(p.lat, p.lng); if(!GRID.has(k)) GRID.set(k, []); GRID.get(k).push(p);
+}
+function nearPoi(lat, lng, r){
+  const ci = Math.floor(lat/GSTEP), cj = Math.floor(lng/GSTEP);
+  for(let a=-1; a<=1; a++) for(let b=-1; b<=1; b++){
+    const l = GRID.get((ci+a)+'_'+(cj+b)); if(!l) continue;
+    for(const p of l) if(dist({lat,lng}, p) < r) return true;
+  }
+  return false;
+}
 const OVERPASS = ['https://overpass-api.de/api/interpreter','https://overpass.private.coffee/api/interpreter','https://maps.mail.ru/osm/tools/overpass/api/interpreter'];
 const cellFails = new Map();
 let poiLoading = 0, poiFailed = false;
@@ -418,16 +439,18 @@ function classify(t){
   if(t.railway==='station' || t.railway==='halt' || t.public_transport==='station') return 'bento';
   if(t.shop==='convenience') return 'teaegg';
   if(['bakery','pastry','confectionery'].includes(t.shop)) return 'pineapple';
-  if(t.shop==='beverages' || t.shop==='tea' || t.amenity==='cafe' || /bubble_tea|tea|coffee/.test(t.cuisine||'') || ((t.amenity||t.shop) && /茶|飲|咖啡/.test(n))) return 'boba';
+  if(t.shop==='beverages' || t.shop==='tea' || t.amenity==='cafe' || t.amenity==='ice_cream' || /bubble_tea|tea|coffee/.test(t.cuisine||'') || ((t.amenity||t.shop) && /茶|飲|咖啡/.test(n))) return 'boba';
   if(/早餐|早午餐/.test(n) || /breakfast/.test(t.cuisine||'')) return 'danbing';
   if(['restaurant','fast_food','food_court'].includes(t.amenity)) return 'bawan';
   if(t.amenity==='marketplace' || ['supermarket','greengrocer','butcher','seafood'].includes(t.shop)) return 'basket';
   if(t.shop==='motorcycle' || t.shop==='motorcycle_repair') return 'helmet';
+  if(['pharmacy','clinic','doctors','dentist','hospital','veterinary'].includes(t.amenity) || t.shop==='chemist' || t.shop==='medical_supply') return 'medbag';
+  if(['community_centre','townhall','social_facility','police','fire_station'].includes(t.amenity) || t.office==='government') return 'megaphone';
   if(['school','library','university','college','kindergarten'].includes(t.amenity)) return 'schoolbag';
-  if(['park','garden','playground','nature_reserve'].includes(t.leisure) || t.natural==='wood') return 'banyan';
-  if(t.natural==='water' || t.waterway || t.natural==='beach' || t.amenity==='fountain' || t.leisure==='marina') return 'boat';
+  if(['park','garden','playground','nature_reserve','pitch','dog_park','sports_centre','fitness_station'].includes(t.leisure) || t.natural==='wood' || t.tourism==='viewpoint' || t.tourism==='artwork') return 'banyan';
+  if(t.natural==='water' || ['river','canal','stream'].includes(t.waterway) || t.natural==='beach' || t.amenity==='fountain' || t.leisure==='marina') return 'boat';
   if(t.historic || t.tourism==='attraction' || t.tourism==='museum') return t.historic ? 'amulet' : 'schoolbag';
-  if(t.shop) return 'bag';
+  if(t.shop || t.amenity==='bank' || t.amenity==='atm') return 'bag';
   return null;
 }
 const PRIORITY = {amulet:5, bento:5, postbox:4, boat:4, banyan:4, schoolbag:3, strap:2};
@@ -436,17 +459,17 @@ async function loadCell(ci, cj){
   if(cellState.has(key)) return;
   cellState.set(key, 'loading');
   const cached = await DB.get('cells', key);
-  if(cached && Date.now() - cached.t < 14*864e5){ cached.p.forEach(p => POIS.set(p.id, p)); cellState.set(key,'done'); renderPoints(); return; }
+  if(cached && Date.now() - cached.t < 14*864e5){ cached.p.forEach(addPoi); cellState.set(key,'done'); renderPoints(); return; }
   const s = ci*CELL, w = cj*CELL, n = s+CELL, e = w+CELL, bb = `(${s.toFixed(4)},${w.toFixed(4)},${n.toFixed(4)},${e.toFixed(4)})`;
   const q = `[out:json][timeout:25];(
-node[amenity~"^(place_of_worship|post_box|post_office|cafe|restaurant|fast_food|food_court|marketplace|school|library|university|college|kindergarten|fountain)$"]${bb};
-node[shop]${bb};node[highway=bus_stop]${bb};
+node[amenity~"^(place_of_worship|post_box|post_office|cafe|ice_cream|restaurant|fast_food|food_court|marketplace|school|library|university|college|kindergarten|fountain|pharmacy|clinic|doctors|dentist|hospital|veterinary|community_centre|townhall|social_facility|police|fire_station|bank|atm)$"]${bb};
+node[shop]${bb};node[highway=bus_stop]${bb};node[tourism~"^(viewpoint|artwork)$"]${bb};node[office=government]${bb};
 nwr[railway~"^(station|halt)$"]${bb};
-way[amenity~"^(place_of_worship|school|university|college|marketplace)$"]${bb};
-way[leisure~"^(park|garden|playground)$"]${bb};
+way[amenity~"^(place_of_worship|school|university|college|kindergarten|marketplace|hospital|clinic|community_centre|townhall|police|fire_station)$"]${bb};
+way[leisure~"^(park|garden|playground|pitch|dog_park|sports_centre)$"]${bb};
 way[natural=water]${bb};way[waterway~"^(river|canal|stream)$"]${bb};node[natural=beach]${bb};way[natural=beach]${bb};
 nwr[historic]${bb};nwr[tourism~"^(attraction|museum)$"]${bb};
-);out center tags 600;`;
+);out center tags;`;
   let data = null;
   setPoiStatus(1);
   for(const url of OVERPASS){
@@ -459,7 +482,7 @@ nwr[historic]${bb};nwr[tourism~"^(attraction|museum)$"]${bb};
   }
   if(!data){
     const tries = (cellFails.get(key) || 0) + 1; cellFails.set(key, tries);
-    if(cached){ cached.p.forEach(p => POIS.set(p.id, p)); cellState.set(key,'done'); setPoiStatus(-1); renderPoints(); return; }
+    if(cached){ cached.p.forEach(addPoi); cellState.set(key,'done'); setPoiStatus(-1); renderPoints(); return; }
     cellState.delete(key); setPoiStatus(-1, true);
     setTimeout(() => ensureCells(), Math.min(300, 20 * 2 ** tries) * 1000);
     return;
@@ -473,8 +496,8 @@ nwr[historic]${bb};nwr[tourism~"^(attraction|museum)$"]${bb};
   }
   raw.sort((a,b) => b.pr - a.pr);
   const kept = [];
-  for(const p of raw){ if(kept.every(k => dist(k,p) > 28)) kept.push(p); }
-  kept.forEach(p => { delete p.pr; POIS.set(p.id, p); });
+  for(const p of raw){ if(kept.every(k => dist(k,p) > 15)) kept.push(p); }
+  kept.forEach(p => { delete p.pr; if(!POIS.has(p.id)) addPoi(p); });
   DB.put('cells', {t:Date.now(), p:kept}, key);
   cellState.set(key, 'done');
   renderPoints();
@@ -500,10 +523,22 @@ function wildAround(c, r){
     const ci = ci0+i, cj = cj0+j, h = hash2(ci, cj);
     if(h % 100 >= 60) continue;
     const p = {id:'w'+ci+'_'+cj, lat:(ci + ((h>>>8)%1000)/1000)*WSTEP, lng:(cj + ((h>>>18)%1000)/1000)*WSTEP, kind:'wild', name:'路邊野花', type:(h%2?'green':'yellow'), decor:null};
-    if(dist(c,p) <= r) out.push(p);
+    if(dist(c,p) <= r && !nearPoi(p.lat, p.lng, 40)) out.push(p);
   }
   return out;
 }
+/* 內建地點（places-hsinchu.js）：伺服器忙碌時也看得到 */
+(function loadLocal(){
+  for(const [id, lat, lng, decor, name] of (window.LOCAL_PLACES || [])){
+    if(DECOR[decor]) addPoi({id, lat, lng, name, decor, type:DECOR[decor].type, kind:'poi'});
+  }
+  for(const [id, lat, lng, name] of (window.LOCAL_CORNERS || [])){
+    const h = hash2(Math.round(lat*1e5), Math.round(lng*1e5));
+    addPoi({id, lat, lng, name, decor:null, type:(h%2 ? 'green' : 'yellow'), kind:'corner'});
+  }
+})();
+const wildish = p => p.kind === 'wild' || p.kind === 'corner';
+const signIcon = c => `<svg viewBox="0 0 24 24"><path d="M8 15v7M16 15v7" stroke="#2a2622" stroke-width="2.2"/><rect x="2.5" y="3" width="19" height="12" rx="2.5" fill="${c}" stroke="#2a2622" stroke-width="1.5"/><path d="M7 9h10" stroke="${CREAM}" stroke-width="2" stroke-linecap="round"/></svg>`;
 
 /* ───────── 地點標記 ───────── */
 const markers = new Map();
@@ -515,12 +550,13 @@ function iconFor(p){
     return L.divIcon({className:'', html:`<div class="pt lmk ${done?'done':''}" style="--c:${INK[p.type]}">景</div>`, iconSize:[48,48], iconAnchor:[24,24]});
   }
   if(p.kind === 'wild') return L.divIcon({className:'', html:`<div class="pt wild ${isCool(p)?'cool':''}">${flowerIcon(FLOWERS[flowerNow()].c)}</div>`, iconSize:[26,26], iconAnchor:[13,13]});
+  if(p.kind === 'corner') return L.divIcon({className:'', html:`<div class="pt wild ${isCool(p)?'cool':''}">${signIcon(INK[p.type])}</div>`, iconSize:[26,26], iconAnchor:[13,13]});
   return L.divIcon({className:'', html:`<div class="pt ${isCool(p)?'cool':''}" style="--c:${INK[p.type]}"><svg viewBox="-4 -10 48 52">${decorArt(p.decor, CREAM, INK[p.type])}</svg></div>`, iconSize:[38,38], iconAnchor:[19,19]});
 }
 function renderPoints(){
   const c = me || map.getCenter();
   const want = new Map();
-  for(const p of POIS.values()) if(dist(c,p) < 900) want.set(p.id, p);
+  for(const p of POIS.values()) if(dist(c,p) < 700) want.set(p.id, p);
   for(const p of wildAround(c, 650)) want.set(p.id, p);
   for(const p of LANDMARKS) if(dist(c,p) < 20000) want.set(p.id, p);
   for(const [id, m] of markers){ if(!want.has(id)){ m.remove(); markers.delete(id); } }
@@ -528,7 +564,7 @@ function renderPoints(){
     const state = p.kind==='landmark' ? !!S.stamps[id] : isCool(p);
     const m = markers.get(id);
     if(m){ if(m._st !== state){ m.setIcon(iconFor(p)); m._st = state; } continue; }
-    const nm = L.marker([p.lat, p.lng], {icon:iconFor(p), zIndexOffset:p.kind==='landmark'?500:(p.kind==='wild'?-100:0)}).addTo(map);
+    const nm = L.marker([p.lat, p.lng], {icon:iconFor(p), zIndexOffset:p.kind==='landmark'?500:(wildish(p)?-100:0)}).addTo(map);
     nm._st = state; nm.on('click', () => openPoint(p)); markers.set(id, nm);
   }
 }
@@ -550,10 +586,12 @@ function openPoint(p){
       <div class="row">${inRange ? `<button class="btn pri" id="lmStamp">${done?'再拍一張明信片':'打卡＋拍明信片'}</button>` : `<span class="btn" aria-disabled="true">走到 ${rangeOf(p)} 公尺內就能打卡</span>`}</div>`;
   } else {
     const cool = isCool(p);
-    const gives = p.kind==='wild' ? '花瓣，有機會撿到種子' : `花瓣，有機會撿到「${DECOR[p.decor].name}」${TYPES[p.type].name}種子`;
+    const gives = wildish(p) ? `花瓣，有機會撿到${p.kind==='corner'?TYPES[p.type].name:''}種子` : `花瓣，有機會撿到「${DECOR[p.decor].name}」${TYPES[p.type].name}種子`;
     const icon = p.kind==='wild' ? `<div class="ic" style="background:${CREAM};border:1.5px solid var(--ink)">${flowerIcon(FLOWERS[flowerNow()].c)}</div>` :
+      p.kind==='corner' ? `<div class="ic" style="background:${CREAM};border:1.5px solid var(--ink)"><span style="width:40px;height:40px;display:block">${signIcon(INK[p.type])}</span></div>` :
       `<div class="ic" style="background:${INK[p.type]}"><svg viewBox="-4 -10 48 52">${decorArt(p.decor, CREAM, INK[p.type])}</svg></div>`;
-    body = `<div class="pcard">${icon}<div><div class="t">${esc(pointLabel(p))}</div><div class="s">${p.kind==='wild'?'野生點':DECOR[p.decor].label} · ${gives}</div></div></div>
+    const kindLabel = p.kind==='wild' ? '野生點' : p.kind==='corner' ? '街角招牌' : DECOR[p.decor].label;
+    body = `<div class="pcard">${icon}<div><div class="t">${esc(pointLabel(p))}</div><div class="s">${kindLabel} · ${gives}</div></div></div>
       <div class="meter">${d==null?'還沒取得你的位置':'距離 '+fmtM(d)}${cool?' · 剛收集過，'+Math.ceil((COOL_MS-(Date.now()-S.cool[p.id]))/36e5)+' 小時後再來':''}</div>
       <div class="row">${cool ? '' : inRange ? `<button class="btn pri" id="ptGet">收集</button>` : `<span class="btn" aria-disabled="true">走到 ${rangeOf(p)} 公尺內就能收集</span>`}</div>`;
   }
@@ -570,15 +608,15 @@ function giveSeed(type, decor, base, src){
 }
 function collect(p){
   if(isCool(p)) return;
-  let petals = p.kind==='wild' ? 2 + Math.floor(Math.random()*3) : 3 + Math.floor(Math.random()*3);
+  let petals = wildish(p) ? 2 + Math.floor(Math.random()*3) : 3 + Math.floor(Math.random()*3);
   if(new Date().getHours() >= 17) petals += Math.min(3, Math.floor(owned('red')/3));
   if(p.decor === 'boat' && owned('blue') > 0) petals *= 2;
   S.petals += petals; S.cool[p.id] = Date.now();
-  const chance = (p.kind==='wild' ? .14 : .32) + Math.min(.16, owned('yellow')*.02);
+  const chance = (wildish(p) ? .14 : .32) + Math.min(.16, owned('yellow')*.02);
   let msg = `花瓣 +${petals}`;
   if(Math.random() < chance){
-    const type = p.kind==='wild' ? p.type : (Math.random() < .75 ? p.type : pick(TYPE_ORDER));
-    if(giveSeed(type, p.decor, p.kind==='wild' ? 1000 : 2000, pointLabel(p))) msg += `，撿到${TYPES[type].name}的種子！`;
+    const type = wildish(p) ? p.type : (Math.random() < .75 ? p.type : pick(TYPE_ORDER));
+    if(giveSeed(type, p.decor, wildish(p) ? 1000 : 2000, pointLabel(p))) msg += `，撿到${TYPES[type].name}的種子！`;
   }
   toast(msg); save(); refreshAll(); closeSheets();
   const m = markers.get(p.id); if(m){ m.setIcon(iconFor(p)); m._st = true; }

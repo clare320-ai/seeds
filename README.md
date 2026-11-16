@@ -9,7 +9,7 @@ iPhone 的定位與動作感測器只在 HTTPS 網址下運作，所以要先把
 1. 到 github.com 註冊並登入。
 2. 右上角「+」→ New repository，名稱填 `yaya`，選 **Public**，按 Create repository。
 3. 在新的 repo 頁面點「uploading an existing file」，把這個資料夾裡的所有檔案
-   （index.html、sw.js、manifest.webmanifest、icon-180.png、icon-192.png、icon-512.png）拖進去，按 Commit changes。
+   （index.html、places-hsinchu.js、sw.js、manifest.webmanifest、icon-180.png、icon-192.png、icon-512.png）拖進去，按 Commit changes。
 4. 到 Settings → Pages，Source 選「Deploy from a branch」，Branch 選 `main`、資料夾 `/ (root)`，按 Save。
 5. 等一兩分鐘，網址會是 `https://你的帳號.github.io/yaya/`。
 
@@ -28,7 +28,7 @@ iPhone 的定位與動作感測器只在 HTTPS 網址下運作，所以要先把
 
 - **計步**：畫面亮著時用動作感測器即時計步。放口袋請按「口袋模式」，畫面全黑但保持亮著繼續計步，長按圓圈解鎖。
   畫面關掉的時間不會計步（下一版會加 Apple 健康同步）。
-- **地點**：彩色圓章是 OpenStreetMap 上的店家、廟宇、公園等；小黃花是野生點；方形「景」是景點。走到 45 公尺內（景點 150 公尺）點一下就能收集。同一個點 4 小時後可再收集。
+- **地點**：彩色圓章是 OpenStreetMap 上的店家、廟宇、公園、藥局診所、活動中心等；小招牌是街角點；小黃花是野生點；方形「景」是景點。走到 45 公尺內（景點 150 公尺）點一下就能收集。同一個點 4 小時後可再收集。
 - **種子**：前 3 顆在芽床跟著步數長大，走滿就能拔起來。在哪類地點撿到，就會戴對應的飾品。
 - **種花**：打開後每走 10 公尺種一朵當季的花，用掉 1 片花瓣。
 - **明信片**：在景點打卡，或在郵便頁「在這裡拍明信片」，照片會印成郵票風明信片，可以分享到 LINE 或存進相簿。
@@ -37,6 +37,11 @@ iPhone 的定位與動作感測器只在 HTTPS 網址下運作，所以要先把
 ## 測試用
 
 網址後面加 `#sim`，點地圖就會模擬走過去（不需要真的出門）。
+
+## 內建地點
+
+`places-hsinchu.js` 內建振興里、新興里、南大路沿線、公園里、東園里的 227 個真實地點和 212 個街角招牌，
+伺服器忙碌或沒網路時也看得到，平均每 35 公尺就有一個點。
 
 ## 已知限制
 
