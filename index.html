@@ -163,6 +163,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     <div class="chip" title="花瓣">花瓣 <b id="petals">0</b></div>
     <button class="chip" id="motionChip" hidden>點我開啟計步</button>
     <div class="chip" id="poiChip" hidden></div>
+    <div class="chip" id="zoomChip" hidden>放大地圖才看得到地點</div>
     <div class="chip" id="gpsChip"><span class="dot" id="gpsDot"></span><span id="gpsTxt">定位中</span></div>
   </div>
 </div>
@@ -198,6 +199,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="places-hsinchu.js"></script>
+<script src="places-taichung.js"></script>
 <script>
 'use strict';
 /* ───────── 基本資料 ───────── */
@@ -260,6 +262,15 @@ const LANDMARKS = [
   ['hcc-hukou','湖口老街','新竹縣',24.8810,121.0470,'red'],
   ['hcc-beipu','北埔老街','新竹縣',24.6996,121.0567,'red'],
   ['hcc-neiwan','內灣老街','新竹縣',24.7055,121.1828,'red'],
+  ['tc-taiyuan','太原車站','台中市',24.1642,120.6999,'green'],
+  ['tc-juancun','臺中市眷村文物館','台中市',24.1613,120.6952,'yellow'],
+  ['tc-yide','一德洋樓','台中市',24.1661,120.6929,'red'],
+  ['tc-broadcast','臺中放送局','台中市',24.1499,120.6909,'yellow'],
+  ['tc-martyr','臺中忠烈祠','台中市',24.1546,120.6912,'red'],
+  ['tc-confucius','臺中孔廟','台中市',24.1527,120.6893,'red'],
+  ['tc-park','臺中公園湖心亭','台中市',24.1437,120.6842,'blue'],
+  ['tc-mango','百年芒果樹（米奇樹）','台中市',24.1787,120.7070,'green'],
+  ['tc-zhaoan','詔安堂','台中市',24.1861,120.7033,'red'],
 ].map(([id,name,city,lat,lng,type]) => ({id,name,city,lat,lng,type,kind:'landmark'}));
 
 const NICK = ['阿竹','小米','豆豆','圓仔','阿福','麻糬','粿仔','布丁','芋圓','湯圓','丸子','米苔目','阿柚','小芽','仙草','愛玉','番薯','花生','糖糖','阿蔥','小欒','桐桐','風風','貢丸'];
@@ -363,7 +374,45 @@ function seedSVG(type, big){
   const I = INK[type];
   return `<svg viewBox="0 0 60 70" aria-hidden="true"><path d="M30 ${big?2:8} C47 22 51 40 47 52 C43 65 17 65 13 52 C9 40 13 22 30 ${big?2:8}Z" fill="${I}"/><path d="M30 20 Q24 36 30 56" stroke="${CREAM}" stroke-width="3" fill="none"/>${big?`<path d="M22 30 l4 3 M38 30 l-4 3" stroke="${CREAM}" stroke-width="2.4"/>`:''}</svg>`;
 }
-const flowerIcon = c => `<svg viewBox="0 0 20 20"><g fill="${c}" stroke="#2a2622" stroke-width="1">${[0,72,144,216,288].map(a=>`<ellipse cx="10" cy="5" rx="3.4" ry="4.4" transform="rotate(${a} 10 10)"/>`).join('')}</g><circle cx="10" cy="10" r="2.6" fill="#f2c230" stroke="#2a2622" stroke-width="1"/></svg>`;
+/* 當季花朵：郵票版畫風的小圖，地圖上種下的花、野生點都用這組 */
+const FO = 'stroke="#2a2622" stroke-width="1.6" stroke-linejoin="round"';
+const around = (n, f, off = 0) => Array.from({length:n}, (_, i) => f(off + i*360/n, i)).join('');
+const FLOWER_ART = [
+  // 梅花：圓瓣淡粉、紅心、黃花蕊
+  () => around(5, a => `<circle cx="20" cy="10.5" r="7.2" transform="rotate(${a} 20 20)" fill="#f7d5de" ${FO}/>`) +
+        `<circle cx="20" cy="20" r="4.2" fill="#e27d92" ${FO}/>` +
+        around(8, a => `<g transform="rotate(${a} 20 20)"><path d="M20 16 V11.8" stroke="#a4384f" stroke-width="1"/><circle cx="20" cy="11.2" r="1.4" fill="#f2c230"/></g>`, 22),
+  // 木棉：厚實橘紅五瓣、深色花心
+  () => around(5, a => `<g transform="rotate(${a} 20 20)"><path d="M20 20 C13 16 13 6 20 2.5 C27 6 27 16 20 20Z" fill="#e0632f" ${FO}/><path d="M20 17 C18.6 13 18.6 8.5 20 5.5" stroke="#a83a1b" stroke-width="1.2" fill="none"/></g>`) +
+        `<circle cx="20" cy="20" r="5" fill="#7a3418" ${FO}/>` + around(7, a => `<circle cx="20" cy="16.6" r="1.3" fill="#f2c230" transform="rotate(${a} 20 20)"/>`),
+  // 油桐花：白色五瓣、瓣尖微凹、花瓣基部粉紅紋
+  () => around(5, a => `<g transform="rotate(${a} 20 20)"><path d="M20 19 C14 15 13 6 16.8 3.4 Q20 6 23.2 3.4 C27 6 26 15 20 19Z" fill="#fdfcf6" ${FO}/><path d="M20 16.5 V12 M18.4 15.8 L17.6 12.6 M21.6 15.8 L22.4 12.6" stroke="#d9677a" stroke-width="1.1" stroke-linecap="round"/></g>`) +
+        `<circle cx="20" cy="20" r="3" fill="#e9d36a" ${FO}/>`,
+  // 阿勃勒：垂掛的黃色花串
+  () => `<path d="M5 3 Q15 2 21 8 L20.5 35" stroke="#4f7a3a" stroke-width="1.8" fill="none"/><path d="M5 3 C3 9 8 13 12 10.5 C14 6.5 10 2.5 5 3Z" fill="#7aa14f" ${FO}/>` +
+        [[21,8,4.2],[16,13,4],[25.5,13.5,4],[20.5,18,4],[15,22,3.6],[25.5,22.5,3.6],[20,26.5,3.4],[23.5,30.5,3],[17.5,31.5,2.8],[20.5,35.5,2.4]]
+          .map(([x,y,r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#f2c230" ${FO}/><circle cx="${x}" cy="${y}" r="${(r*.35).toFixed(2)}" fill="#c98f12"/>`).join(''),
+  // 鳳凰花：大紅寬瓣，一片帶紅斑的淡黃旗瓣，長花蕊
+  () => around(5, (a, i) => `<g transform="rotate(${a} 20 20)"><path d="M20 20 C17 17 11 10.5 13 5.5 C15 2 25 2 27 5.5 C29 10.5 23 17 20 20Z" fill="${i ? '#d9382c' : '#f6e6b4'}" ${FO}/>${i ? '' : '<path d="M20 17 L17 9 M20 17 L20 7 M20 17 L23 9" stroke="#d9382c" stroke-width="1.2" stroke-linecap="round"/>'}</g>`) +
+        around(5, a => `<g transform="rotate(${a} 20 20)"><path d="M20 20 Q25 24 26 31" stroke="#8a1f18" stroke-width="1.1" fill="none"/><circle cx="26" cy="31" r="1.4" fill="#f2c230"/></g>`, 36),
+  // 台灣欒樹：秋天的粉紅蒴果燈籠＋小黃花
+  () => `<path d="M20 4 L13 15 M20 4 L27 14 M20 4 L20 22" stroke="#6b4a2b" stroke-width="1.5" fill="none"/>` +
+        [[13,23,-18,'#e07a88'],[27,21,16,'#d9566a'],[20,31,0,'#ec9aa6']].map(([x,y,r,c]) => `<g transform="translate(${x} ${y}) rotate(${r})"><path d="M0 -9 C5 -6 7 2 4.5 7 Q0 9.5 -4.5 7 C-7 2 -5 -6 0 -9Z" fill="${c}" ${FO}/><path d="M0 -8 Q1.2 0 0 8.5" stroke="#8a2e3c" stroke-width="1" fill="none"/></g>`).join('') +
+        [[15,6],[19,3],[24,5.5],[27.5,9],[12,10]].map(([x,y]) => `<circle cx="${x}" cy="${y}" r="2.2" fill="#f2c230" ${FO}/>`).join(''),
+  // 聖誕紅：尖形紅苞片、綠葉襯底、黃色小花心
+  () => around(3, a => `<path d="M20 20 C15 14 15 5 20 1.5 C25 5 25 14 20 20Z" transform="rotate(${a} 20 20)" fill="#4f7a3a" ${FO}/>`, 30) +
+        around(6, a => `<g transform="rotate(${a} 20 20)"><path d="M20 20 C16 15 16 8 20 3 C24 8 24 15 20 20Z" fill="#c4263a" ${FO}/><path d="M20 18 V6.5" stroke="#8a1428" stroke-width="1"/></g>`) +
+        around(5, a => `<circle cx="20" cy="17.6" r="1.6" fill="#f2c230" ${FO.replace('1.6"','1"')} transform="rotate(${a} 20 20)"/>`),
+];
+const flowerSVG = k => `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">${(FLOWER_ART[k] || FLOWER_ART[0])()}</svg>`;
+const flowerIcon = () => flowerSVG(flowerNow());
+/* 地圖花朵用的點陣圖（畫在 canvas 上，三萬朵也不卡） */
+const FSPR = FLOWER_ART.map((_, k) => {
+  const img = new Image(64, 64);
+  img.onload = () => { img.ok = true; if(typeof canvasR !== 'undefined' && canvasR._map) canvasR._redraw(); };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(flowerSVG(k).replace('<svg ', '<svg width="64" height="64" '));
+  return img;
+});
 
 /* ───────── 小工具 ───────── */
 let toastT;
@@ -388,9 +437,20 @@ const map = L.map('map', {zoomControl:false, attributionControl:true, tap:true})
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap 貢獻者'}).addTo(map);
 const flowerLayer = L.layerGroup().addTo(map);
 const canvasR = L.canvas({padding:.3});
+/* 每朵花畫成當時季節的花樣；地圖放越大花越大 */
+const flowerPx = z => z >= 19 ? 24 : z >= 18 ? 19 : z >= 17 ? 15 : z >= 16 ? 11 : z >= 15 ? 8 : 5;
+const FlowerMark = L.CircleMarker.extend({
+  _updatePath(){
+    const r = this._renderer; if(!r._drawing || this._empty()) return;
+    const img = FSPR[this.options.k] || FSPR[0], p = this._point;
+    if(!img.ok){ r._updateCircle(this); return; }
+    const s = flowerPx(r._map.getZoom());
+    r._ctx.globalAlpha = 1; r._ctx.drawImage(img, p.x - s/2, p.y - s/2, s, s);
+  }
+});
 function drawFlower(f){
-  const c = FLOWERS[f[2]] ? FLOWERS[f[2]].c : '#e8b13a';
-  L.circleMarker([f[0], f[1]], {renderer:canvasR, radius:5, color:'#2a2622', weight:1, fillColor:c, fillOpacity:1, interactive:false}).addTo(flowerLayer);
+  const k = FLOWERS[f[2]] ? f[2] : 0;
+  new FlowerMark([f[0], f[1]], {renderer:canvasR, radius:12, k, stroke:false, fillColor:FLOWERS[k].c, fillOpacity:1, interactive:false}).addTo(flowerLayer);
 }
 FL.forEach(drawFlower);
 
@@ -503,8 +563,24 @@ nwr[historic]${bb};nwr[tourism~"^(attraction|museum)$"]${bb};
   renderPoints();
 }
 let cellQueue = Promise.resolve();
+/* 舊版（1 公里方格）留在手機裡的地點，當作備援先拿出來用 */
+const legacyDone = new Set();
+function loadLegacy(c){
+  const ci = Math.floor(c.lat*100), cj = Math.floor(c.lng*100);
+  for(let a=-1; a<=1; a++) for(let b=-1; b<=1; b++){
+    const key = (ci+a)+'_'+(cj+b); if(legacyDone.has(key)) continue; legacyDone.add(key);
+    DB.get('cells', key).then(v => { if(v && v.p){ v.p.forEach(addPoi); renderPoints(); } });
+  }
+}
+/* 玩家身邊和地圖中心都要載入（地圖拖到別處時，那邊的點也要補上） */
 function ensureCells(){
-  const c = me || map.getCenter(); const ci = Math.floor(c.lat/CELL), cj = Math.floor(c.lng/CELL);
+  const v = map.getCenter();
+  if(map.getZoom() >= 15) ensureCellsAt({lat:v.lat, lng:v.lng});
+  if(me && (dist(me, v) > 300 || map.getZoom() < 15)) ensureCellsAt(me);
+}
+function ensureCellsAt(c){
+  loadLegacy(c);
+  const ci = Math.floor(c.lat/CELL), cj = Math.floor(c.lng/CELL);
   const order = [[0,0],[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
   for(const [a,b] of order){
     const key = (ci+a)+'_'+(cj+b); if(cellState.has(key)) continue;
@@ -553,12 +629,30 @@ function iconFor(p){
   if(p.kind === 'corner') return L.divIcon({className:'', html:`<div class="pt wild ${isCool(p)?'cool':''}">${signIcon(INK[p.type])}</div>`, iconSize:[26,26], iconAnchor:[13,13]});
   return L.divIcon({className:'', html:`<div class="pt ${isCool(p)?'cool':''}" style="--c:${INK[p.type]}"><svg viewBox="-4 -10 48 52">${decorArt(p.decor, CREAM, INK[p.type])}</svg></div>`, iconSize:[38,38], iconAnchor:[19,19]});
 }
+/* 以「地圖正在看的範圍」為準畫點（以前只畫玩家身邊 700 公尺，地圖一拖走點就不見）。
+   放大到 16 以上：全部；15：只畫店家廟宇等真實地點；14 以下只畫景點，並提示放大。 */
 function renderPoints(){
-  const c = me || map.getCenter();
+  const z = map.getZoom(), view = map.getBounds().pad(0.15), c = map.getCenter();
   const want = new Map();
-  for(const p of POIS.values()) if(dist(c,p) < 700) want.set(p.id, p);
-  for(const p of wildAround(c, 650)) want.set(p.id, p);
-  for(const p of LANDMARKS) if(dist(c,p) < 20000) want.set(p.id, p);
+  const cand = [];
+  if(z >= 15){
+    const sw = view.getSouthWest(), ne = view.getNorthEast();
+    const i0 = Math.floor(sw.lat/GSTEP), i1 = Math.floor(ne.lat/GSTEP), j0 = Math.floor(sw.lng/GSTEP), j1 = Math.floor(ne.lng/GSTEP);
+    for(let i=i0; i<=i1; i++) for(let j=j0; j<=j1; j++){
+      const l = GRID.get(i+'_'+j); if(!l) continue;
+      for(const p of l) if((z >= 16 || !wildish(p)) && view.contains(p)) cand.push([dist(c,p), p]);
+    }
+    if(z >= 16){
+      const r = Math.min(1500, dist(c, ne));
+      for(const p of wildAround(c, r)) if(view.contains(p)) cand.push([dist(c,p), p]);
+    }
+    cand.sort((a,b) => a[0]-b[0]);
+  }
+  // 自己身邊 60 公尺內的點一定畫出來（就算地圖拖到別處也能點）
+  if(me) for(const p of POIS.values()) if(Math.abs(p.lat-me.lat) < 0.001 && dist(me,p) < 60) want.set(p.id, p);
+  for(const [,p] of cand.slice(0, 500)) want.set(p.id, p);
+  for(const p of LANDMARKS) if(view.contains(p) || dist(c,p) < 3000) want.set(p.id, p);
+  $('#zoomChip').hidden = z >= 15;
   for(const [id, m] of markers){ if(!want.has(id)){ m.remove(); markers.delete(id); } }
   for(const [id, p] of want){
     const state = p.kind==='landmark' ? !!S.stamps[id] : isCool(p);
@@ -568,7 +662,7 @@ function renderPoints(){
     nm._st = state; nm.on('click', () => openPoint(p)); markers.set(id, nm);
   }
 }
-map.on('moveend', () => { if(!me){ ensureCells(); } renderPoints(); });
+map.on('moveend', () => { ensureCells(); renderPoints(); });
 
 /* ───────── 地點卡片與收集 ───────── */
 let curPoint = null;

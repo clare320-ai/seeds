@@ -9,7 +9,7 @@ iPhone 的定位與動作感測器只在 HTTPS 網址下運作，所以要先把
 1. 到 github.com 註冊並登入。
 2. 右上角「+」→ New repository，名稱填 `yaya`，選 **Public**，按 Create repository。
 3. 在新的 repo 頁面點「uploading an existing file」，把這個資料夾裡的所有檔案
-   （index.html、places-hsinchu.js、sw.js、manifest.webmanifest、icon-180.png、icon-192.png、icon-512.png）拖進去，按 Commit changes。
+   （index.html、places-hsinchu.js、places-taichung.js、sw.js、manifest.webmanifest、icon-180.png、icon-192.png、icon-512.png）拖進去，按 Commit changes。
 4. 到 Settings → Pages，Source 選「Deploy from a branch」，Branch 選 `main`、資料夾 `/ (root)`，按 Save。
 5. 等一兩分鐘，網址會是 `https://你的帳號.github.io/yaya/`。
 
@@ -40,8 +40,11 @@ iPhone 的定位與動作感測器只在 HTTPS 網址下運作，所以要先把
 
 ## 內建地點
 
-`places-hsinchu.js` 內建振興里、新興里、南大路沿線、公園里、東園里的 227 個真實地點和 212 個街角招牌，
-伺服器忙碌或沒網路時也看得到，平均每 35 公尺就有一個點。
+伺服器忙碌或沒網路時也看得到：
+- `places-hsinchu.js`：新竹火車站方圓 3 公里，2,663 個真實地點＋1,936 個街角招牌（城隍廟舊城區、新竹公園周邊、振興里、新興里、南大路沿線、公園里、東園里較密）。
+- `places-taichung.js`：台中太原車站方圓 3 公里，3,451 個真實地點＋3,781 個街角招牌，另有 9 個台中景點可打卡。
+
+地圖放大到一定程度才會畫出地點（太遠看會顯示「放大地圖才看得到地點」）。
 
 ## 已知限制
 
