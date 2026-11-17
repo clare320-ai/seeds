@@ -17,12 +17,18 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
-/* 郵票版畫：米色紙張、朱紅與靛藍兩色印墨、硬邊錯位陰影像印刷套色 */
+/* 繪本童話風：水彩紙質感、色鉛筆暖棕線條、蠟筆色塊、圓潤柔和的陰影 */
 :root{
-  --paper:#f3e9d4; --card:#fbf5e8; --ink:#2a2622; --muted:#7a6d5e; --line:#d8c8a8;
-  --red:#c8452c; --gold:#b8861f; --indigo:#2d5a8a; --leaf:#4f7a3a; --cream:#f6ecd8;
+  --paper:#f6eedb; --card:#fffaf0; --ink:#4b3a2f; --muted:#8a7766; --line:#e3d3b6;
+  --red:#e0694a; --gold:#e2a83a; --indigo:#5b8fc4; --leaf:#72a24e; --cream:#fdf6e6;
   --disp:"LXGW WenKai TC","Kaiti TC","BiauKai","STKaiti",serif;
-  --body:"Noto Sans TC",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --body:"LXGW WenKai TC","Kaiti TC","BiauKai",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  /* 紙張纖維顆粒 */
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .3 0 0 0 0 .18 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* 大塊的水彩暈染 */
+  --wash:radial-gradient(ellipse 60% 40% at 15% 10%,rgba(244,162,131,.18),transparent 70%),radial-gradient(ellipse 55% 45% at 90% 85%,rgba(156,194,230,.2),transparent 70%),radial-gradient(ellipse 50% 40% at 80% 20%,rgba(243,207,122,.18),transparent 70%);
+  --soft:0 2px 0 rgba(75,58,47,.16),0 6px 16px rgba(75,58,47,.12);
+  --soft-sm:0 1.5px 0 rgba(75,58,47,.18),0 3px 8px rgba(75,58,47,.12);
   --sb:env(safe-area-inset-bottom,0px); --st:env(safe-area-inset-top,0px);
   --sl:env(safe-area-inset-left,0px); --sr:env(safe-area-inset-right,0px);
 }
@@ -133,9 +139,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .me{position:relative;width:60px;height:86px;pointer-events:none}
 .me svg{width:100%;height:100%;display:block}
 .me .ring{position:absolute;left:50%;top:62px;width:44px;height:16px;margin:-8px 0 0 -22px;border-radius:50%;border:2.5px solid var(--c);animation:ring 1.8s ease-out infinite}
-.me .shadow{position:absolute;left:50%;top:62px;width:30px;height:9px;margin:-4.5px 0 0 -15px;border-radius:50%;background:rgba(42,38,34,.38)}
+.me .shadow{position:absolute;left:50%;top:62px;width:30px;height:9px;margin:-4.5px 0 0 -15px;border-radius:50%;background:rgba(75,58,47,.38)}
 .me .bob{position:absolute;left:4px;top:2px;width:52px;height:60px;transform-origin:50% 100%;animation:idle 2.4s ease-in-out infinite;pointer-events:auto;cursor:pointer}
-.me .fl{width:100%;height:100%;filter:drop-shadow(1.5px 2px 0 rgba(42,38,34,.45))}
+.me .fl{width:100%;height:100%;filter:drop-shadow(1.5px 2px 0 rgba(75,58,47,.45))}
 .left .me .fl{transform:scaleX(-1)}
 .walk .me .bob{animation:hop .42s ease-in-out infinite}
 .me .tag{position:absolute;left:50%;top:67px;transform:translateX(-50%);background:var(--c);color:var(--cream);font-family:var(--disp);font-size:11px;line-height:1.45;padding:0 7px;border-radius:99px;border:1.5px solid var(--ink);white-space:nowrap;box-shadow:1.5px 1.5px 0 var(--ink)}
@@ -155,7 +161,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* 拔菜籽仔特效 */
 .fx{position:fixed;inset:0;z-index:1150;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;
-  background:radial-gradient(circle at 50% 44%,#fbf5e8 0,#f3e9d4 34%,rgba(42,38,34,.86) 100%);animation:fxin .25s ease-out;transition:opacity .3s}
+  background:radial-gradient(circle at 50% 44%,#fbf5e8 0,#f3e9d4 34%,rgba(75,58,47,.86) 100%);animation:fxin .25s ease-out;transition:opacity .3s}
 .fx.bye{opacity:0}
 @keyframes fxin{from{opacity:0}}
 .fx-rays{position:absolute;left:50%;top:44%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;border-radius:50%;opacity:0;
@@ -196,7 +202,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .toast{position:fixed;z-index:1200;left:50%;bottom:calc(var(--sb) + 150px);transform:translate(-50%,-8px);opacity:0;transition:.2s;background:var(--ink);color:var(--cream);padding:9px 16px;border-radius:6px;font-size:14px;max-width:86vw;text-align:center;pointer-events:none}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
-.modal{position:fixed;inset:0;z-index:1100;background:rgba(42,38,34,.55);display:grid;place-items:center;padding:24px max(16px,var(--sr)) 24px max(16px,var(--sl))}
+.modal{position:fixed;inset:0;z-index:1100;background:rgba(75,58,47,.55);display:grid;place-items:center;padding:24px max(16px,var(--sr)) 24px max(16px,var(--sl))}
 .modal .box{background:var(--card);border:2px solid var(--ink);border-radius:10px;box-shadow:5px 5px 0 var(--ink);padding:20px;max-width:380px;width:100%;text-align:center;max-height:92%;overflow:auto}
 .modal h2{font-family:var(--disp);font-size:26px;margin:4px 0 6px}
 .modal p{margin:6px 0;line-height:1.65;color:var(--muted);font-size:14px}
@@ -210,13 +216,61 @@ button{font:inherit;color:inherit;cursor:pointer}
 #pocket{position:fixed;inset:0;z-index:1300;background:#000;color:#5a5348;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:var(--disp);touch-action:none}
 #pocket .n{font-size:54px;color:#8a7f6e;font-variant-numeric:tabular-nums}
 #pocket .h{font-size:14px;font-family:var(--body)}
-#pocket .ring{width:90px;height:90px;border-radius:50%;border:3px solid #2a2622;margin-top:30px;display:grid;place-items:center;font-size:13px;font-family:var(--body)}
+#pocket .ring{width:90px;height:90px;border-radius:50%;border:3px solid #4b3a2f;margin-top:30px;display:grid;place-items:center;font-size:13px;font-family:var(--body)}
 #pocket .ring.hold{border-color:var(--red);color:var(--red)}
 .sim{position:fixed;z-index:600;left:max(12px,var(--sl));bottom:calc(84px + var(--sb));background:var(--ink);color:var(--cream);font-size:12px;padding:6px 10px;border-radius:6px}
+
+/* ───── 繪本童話風 ───── */
+html,body{background:var(--grain),var(--wash),var(--paper)}
+#map{background:#f1e6cd}
+.leaflet-tile-pane{filter:sepia(.5) saturate(.62) hue-rotate(-6deg) contrast(.86) brightness(1.08)}
+/* 整張地圖蓋一層紙紋，像畫在圖畫紙上 */
+#map::after{content:'';position:absolute;inset:0;z-index:450;pointer-events:none;background:var(--grain),var(--wash);mix-blend-mode:multiply}
+.panel,.chip,.fab,.sheet,.dock,.modal .box,.btn,.close,.slot,.lm,.bag button,.cards button,.leaflet-control-attribution{background-image:var(--grain)}
+.panel{border:2px solid var(--ink);border-radius:18px 14px 20px 13px;box-shadow:var(--soft)}
+.chip{border-width:2px;box-shadow:var(--soft-sm)}
+.chip.warn{box-shadow:var(--soft-sm)}
+.fab{border-width:2px;box-shadow:var(--soft);border-radius:47% 53% 50% 50% / 52% 48% 52% 48%}
+.fab:active,.btn:active{transform:translateY(2px) scale(.97);box-shadow:var(--soft-sm)}
+.dock{border-top:0;border-radius:22px 22px 0 0;box-shadow:0 -3px 14px rgba(75,58,47,.14)}
+.dock button{font-size:13px}
+.dock button .g{border-width:2px;border-radius:14px 11px 14px 12px}
+.dock button.act .g{box-shadow:var(--soft-sm);transform:rotate(-4deg)}
+.sheet{border-top:0;border-radius:26px 26px 0 0;box-shadow:0 -4px 22px rgba(75,58,47,.18)}
+.sheet::before{content:'';display:block;width:46px;height:5px;border-radius:3px;background:var(--line);margin:-8px auto 10px}
+.btn{border-width:2px;border-radius:16px 13px 17px 12px;box-shadow:var(--soft-sm);font-weight:700}
+.btn.pri{background-color:var(--red)}
+.slot{border-width:2px;border-radius:18px}
+.bar{height:10px;border-width:1.5px;border-radius:6px}
+.bar i{background:repeating-linear-gradient(-45deg,var(--leaf) 0 6px,#86b55f 6px 11px);border-radius:5px}
+.modal .box{border-radius:24px;box-shadow:0 10px 30px rgba(75,58,47,.3)}
+.toast{border-radius:16px;box-shadow:var(--soft)}
+.sim{border-radius:12px}
+/* 地圖上的點：圓滾滾的蠟筆貼紙，白邊、柔和陰影 */
+.pt{border:2.5px solid #fffaf0;box-shadow:0 0 0 1.5px var(--ink),0 3px 5px rgba(75,58,47,.3)}
+.pt.dec{border:3px solid var(--c);box-shadow:0 0 0 2px #fffaf0,0 0 0 3.5px var(--ink),0 3px 6px rgba(75,58,47,.3)}
+.pt.wild{box-shadow:0 0 0 1.5px var(--ink),0 2px 4px rgba(75,58,47,.25)}
+.pt.lmk{border-radius:14px;box-shadow:0 0 0 2px #fffaf0,0 0 0 3.5px var(--ink),0 4px 8px rgba(75,58,47,.3)}
+.me .tag{box-shadow:var(--soft-sm);border-width:2px}
+.me .fl{filter:drop-shadow(0 3px 2px rgba(75,58,47,.35))}
+.heroes .st.cur{border-radius:16px}
+/* 色鉛筆／蠟筆筆觸：線條微微抖動，色塊有顆粒（只用在菜籽仔與飾品圖上） */
+.me .fl svg,.st svg,.slot svg,.dex .cell svg,.fx-pull svg,.fx-out svg,.modal .big svg,.pcard .ic svg,.bag svg,.cell svg{filter:url(#crayon)}
+.fx{background:var(--grain),radial-gradient(circle at 50% 44%,#fffaf0 0,#f6eedb 34%,rgba(75,58,47,.82) 100%)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<!-- 蠟筆筆觸濾鏡：線條邊緣微微抖動＋色塊上的紙紋顆粒 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="crayon" x="-6%" y="-6%" width="112%" height="112%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="2" seed="4" result="w"/>
+    <feDisplacementMap in="SourceGraphic" in2="w" scale="2.6" xChannelSelector="R" yChannelSelector="G" result="d"/>
+    <feTurbulence type="fractalNoise" baseFrequency="1.3" numOctaves="1" seed="9" result="g"/>
+    <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -1.1 0 0 0 1.45" result="ga"/>
+    <feComposite in="d" in2="ga" operator="in"/>
+  </filter>
+</defs></svg>
 <div id="map" aria-label="地圖"></div>
 
 <div class="top">
@@ -272,9 +326,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 'use strict';
 /* ───────── 基本資料 ───────── */
 const $ = s => document.querySelector(s);
-const APP_VER = '11/17 滑拔音樂版';
-const CREAM = '#f6ecd8';
-const INK = {red:'#c8452c', yellow:'#b8861f', blue:'#2d5a8a', green:'#4f7a3a'};
+const APP_VER = '11/17 繪本版';
+const CREAM = '#fdf6e6';
+const INK = {red:'#e0694a', yellow:'#e2a83a', blue:'#5b8fc4', green:'#72a24e'};
 const TYPE_ORDER = ['red','yellow','blue','green'];
 const TYPES = {
   red:   {name:'香火芽', where:'廟宇、古蹟、小吃店', power:'傍晚 5 點後收集花瓣變多（每 3 隻 +1，最多 +3）'},
@@ -384,7 +438,7 @@ const DB = (() => {
 
 /* ───────── 圖像（郵票版畫風 SVG） ───────── */
 /* 飾品：17 種 × 4 屬性 = 68 款，每款造型都不一樣（郵票版畫風、深色描邊） */
-const DK = '#2a2622', DW = '#fbf5e8';
+const DK = '#4b3a2f', DW = '#fbf5e8';
 const dO = (c, w = 1.6) => `fill="${c}" stroke="${DK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
 const dL = (c, w = 1.6) => `fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"`;
 const dT = (d, c, w) => `<path d="${d}" ${dL(DK, w + 2)}/><path d="${d}" ${dL(c, w)}/>`;   // 有描邊的粗線（吸管、提把）
@@ -600,7 +654,7 @@ const decorDefs = (P, sil) => `<defs><filter id="dh" x="-25%" y="-25%" width="15
   `<filter id="ds" x="-25%" y="-25%" width="150%" height="150%"><feMorphology in="SourceAlpha" operator="dilate" radius="2.4" result="d"/><feFlood flood-color="#efe5cf"/><feComposite in2="d" operator="in" result="h"/><feFlood flood-color="#d8c8a8"/><feComposite in2="SourceAlpha" operator="in" result="s"/><feMerge><feMergeNode in="h"/><feMergeNode in="s"/></feMerge></filter></defs>`;
 const HATS = {postbox:'translate(43 33) scale(1.35)', helmet:'translate(39 35) scale(1.2)'};
 /* 菜籽仔本體：深色輪廓、亮面與陰影、各屬性自己的頭頂、身上花紋和表情 */
-const SHADE = {red:{d:'#962f1d', l:'#e57a5c'}, yellow:{d:'#8a6212', l:'#e0b552'}, blue:{d:'#1d3f66', l:'#5d8dbf'}, green:{d:'#33561f', l:'#7aa75a'}};
+const SHADE = {red:{d:'#b8472e', l:'#f4a283'}, yellow:{d:'#b07d1c', l:'#f3cf7a'}, blue:{d:'#3b6a9a', l:'#9cc2e6'}, green:{d:'#4c7b33', l:'#a8cf84'}};
 function topArt(type, c){
   const {I, D, L, O, sil} = c, o = `stroke="${O}" stroke-width="2.2" stroke-linejoin="round"`;
   switch(type){
@@ -652,7 +706,7 @@ function faceArt(type, c){
 }
 function sproutArt(sp, ink, paper){
   const sil = !!ink, I = ink || INK[sp.type], P = paper || CREAM;
-  const c = {I, P, sil, O: sil ? I : '#2a2622', D: sil ? I : SHADE[sp.type].d, L: sil ? I : SHADE[sp.type].l};
+  const c = {I, P, sil, O: sil ? I : '#4b3a2f', D: sil ? I : SHADE[sp.type].d, L: sil ? I : SHADE[sp.type].l};
   const ol = `stroke="${c.O}" stroke-width="2.6" stroke-linejoin="round"`;
   let s = topArt(sp.type, c) +
     `<rect x="50" y="121" width="12" height="10" rx="4" fill="${I}" ${ol}/><rect x="78" y="121" width="12" height="10" rx="4" fill="${I}" ${ol}/>` +
@@ -672,10 +726,12 @@ function sproutSVG(sp, cls=''){ return `<svg class="${cls}" viewBox="30 4 116 13
 function stampSVG(sp, bg='#fbf5e8', opt={}){
   const I = INK[sp.type], unknown = opt.unknown;
   const art = unknown ? sproutArt({type:sp.type, decor:sp.decor}, '#d8c8a8', '#efe5cf') : sproutArt(sp);
-  const gold = sp.rare ? `<rect x="15" y="15" width="120" height="140" fill="none" stroke="#c9a23a" stroke-width="3"/><path d="M122 22 l2.5 5 5.5 .8 -4 3.9 1 5.5 -5 -2.6 -5 2.6 1 -5.5 -4 -3.9 5.5 -.8z" fill="#c9a23a"/>` : '';
+  const gold = sp.rare ? `<rect x="15" y="15" width="120" height="140" rx="12" fill="none" stroke="#e2b23c" stroke-width="3" stroke-dasharray="7 4"/><path d="M122 22 l2.5 5 5.5 .8 -4 3.9 1 5.5 -5 -2.6 -5 2.6 1 -5.5 -4 -3.9 5.5 -.8z" fill="#c9a23a"/>` : '';
   const label = opt.label === false ? '' : `<text x="75" y="150" text-anchor="middle" font-size="12" font-family="LXGW WenKai TC, Kaiti TC, serif" fill="${unknown?'#b4a68a':I}">${opt.label || TYPES[sp.type].name}</text>`;
-  return `<svg viewBox="0 0 150 170" aria-hidden="true"><rect x="5" y="5" width="140" height="160" fill="${CREAM}" stroke="${bg}" stroke-width="8" stroke-dasharray="0 10" stroke-linecap="round"/>` +
-    `<rect x="12" y="12" width="126" height="146" fill="none" stroke="${unknown?'#d8c8a8':I}" stroke-width="1.5"/>${gold}` +
+  // 繪本小卡：圓角紙卡、類型色的蠟筆框、背後一團淡淡的水彩
+  const L = unknown ? '#ece2cc' : SHADE[sp.type].l;
+  return `<svg viewBox="0 0 150 170" aria-hidden="true"><rect x="6" y="6" width="138" height="158" rx="18" fill="${CREAM}" stroke="${unknown?'#e3d3b6':I}" stroke-width="3.2"/>` +
+    `<ellipse cx="76" cy="92" rx="54" ry="46" fill="${L}" opacity=".38"/><ellipse cx="60" cy="74" rx="26" ry="18" fill="#fff" opacity=".35"/>${gold}` +
     `<g transform="translate(14 6) scale(.86)">${art}</g>${label}</svg>`;
 }
 function seedSVG(type, big){
@@ -683,7 +739,7 @@ function seedSVG(type, big){
   return `<svg viewBox="0 0 60 70" aria-hidden="true"><path d="M30 ${big?2:8} C47 22 51 40 47 52 C43 65 17 65 13 52 C9 40 13 22 30 ${big?2:8}Z" fill="${I}"/><path d="M30 20 Q24 36 30 56" stroke="${CREAM}" stroke-width="3" fill="none"/>${big?`<path d="M22 30 l4 3 M38 30 l-4 3" stroke="${CREAM}" stroke-width="2.4"/>`:''}</svg>`;
 }
 /* 當季花朵：郵票版畫風的小圖，地圖上種下的花、野生點都用這組 */
-const FO = 'stroke="#2a2622" stroke-width="1.6" stroke-linejoin="round"';
+const FO = 'stroke="#4b3a2f" stroke-width="1.6" stroke-linejoin="round"';
 const around = (n, f, off = 0) => Array.from({length:n}, (_, i) => f(off + i*360/n, i)).join('');
 const FLOWER_ART = [
   // 梅花：圓瓣淡粉、紅心、黃花蕊
@@ -836,7 +892,7 @@ document.addEventListener('visibilitychange', bgmUpdate);
 function bgmDuck(sec){ if(bgmGain && bgmTimer && AC){ const t = AC.currentTime; bgmGain.gain.cancelScheduledValues(t); bgmGain.gain.setTargetAtTime(.25, t, .05); bgmGain.gain.setTargetAtTime(.8, t + sec, .5); } }
 
 /* ───────── 拔菜籽仔的特效：往上滑把菜籽仔拔出來，啵一聲跳出來 ───────── */
-const SOIL = `<svg class="fx-soil" viewBox="0 0 220 70" aria-hidden="true"><ellipse cx="110" cy="44" rx="102" ry="24" fill="#8a6440" stroke="#2a2622" stroke-width="2.6"/>
+const SOIL = `<svg class="fx-soil" viewBox="0 0 220 70" aria-hidden="true"><ellipse cx="110" cy="44" rx="102" ry="24" fill="#8a6440" stroke="#4b3a2f" stroke-width="2.6"/>
   <path d="M28 37 Q110 13 192 37" stroke="#a9825a" stroke-width="5" fill="none" stroke-linecap="round"/>
   <circle cx="62" cy="50" r="3" fill="#6b4a2b"/><circle cx="150" cy="54" r="2.4" fill="#6b4a2b"/><circle cx="118" cy="58" r="2" fill="#6b4a2b"/><circle cx="84" cy="57" r="1.8" fill="#6b4a2b"/>
   <path d="M30 34 l-4 -10 6 7 2 -11 3 12 M178 32 l2 -11 3 9 5 -8 -3 12" stroke="#4f7a3a" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -852,7 +908,7 @@ function pluckShow(sp, done){
   const fx = document.createElement('div'); fx.className = 'fx' + (sp.rare ? ' rare' : ''); fx.style.setProperty('--c', INK[sp.type]);
   fx.innerHTML = `<div class="fx-rays"></div><div class="fx-stage"><div class="fx-hole"><div class="fx-pull">${sproutSVG(sp)}</div></div>${SOIL}<div class="fx-out">${sproutSVG(sp)}</div></div>
     <div class="fx-say">按住，往上滑拔起來！</div><div class="fx-taps"><i></i><i></i><i></i></div>
-    <div class="fx-swipe" aria-hidden="true"><svg viewBox="0 0 44 120"><path d="M22 112V14M8 30 22 12 36 30" stroke="#2a2622" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="22" cy="104" r="11" fill="${INK[sp.type]}" stroke="#2a2622" stroke-width="3"/></svg></div>`;
+    <div class="fx-swipe" aria-hidden="true"><svg viewBox="0 0 44 120"><path d="M22 112V14M8 30 22 12 36 30" stroke="#4b3a2f" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="22" cy="104" r="11" fill="${INK[sp.type]}" stroke="#4b3a2f" stroke-width="3"/></svg></div>`;
   document.body.appendChild(fx);
   const stage = fx.querySelector('.fx-stage'), pull = fx.querySelector('.fx-pull'), say = fx.querySelector('.fx-say'), rnd = (a, b) => a + Math.random()*(b-a);
   // 往上滑：手指拖多遠，菜籽仔就被拉出多少（越拉越緊）。滑到底或用力甩上去就「啵」出來，中途放手會縮回土裡。
@@ -903,7 +959,7 @@ function pluckShow(sp, done){
     particles(stage, Array.from({length:34}, (_, i) => {
       const a = rnd(0, Math.PI*2), r = rnd(90, 190), kind = i % 3;
       return {cls:'fx-p' + (kind === 2 ? ' dot' : ''), dx:Math.cos(a)*r, dy:Math.sin(a)*r - 40, r:rnd(-360, 360), s:rnd(.7, 1.4), d:rnd(0, 120),
-        html: kind === 0 ? flowerSVG(fk) : kind === 1 ? `<svg viewBox="0 0 20 20"><path d="M10 0 L12.6 7.4 20 10 12.6 12.6 10 20 7.4 12.6 0 10 7.4 7.4Z" fill="${sp.rare ? '#e3b23c' : pick(cols)}" stroke="#2a2622" stroke-width="1"/></svg>` : '',
+        html: kind === 0 ? flowerSVG(fk) : kind === 1 ? `<svg viewBox="0 0 20 20"><path d="M10 0 L12.6 7.4 20 10 12.6 12.6 10 20 7.4 12.6 0 10 7.4 7.4Z" fill="${sp.rare ? '#e3b23c' : pick(cols)}" stroke="#4b3a2f" stroke-width="1"/></svg>` : '',
         css: kind === 2 ? `background:${pick(cols)}` : ''};
     }));
     setTimeout(() => { fx.classList.add('bye'); setTimeout(() => { fx.remove(); done(); }, 300); }, sp.rare ? 2100 : 1700);
@@ -1150,7 +1206,7 @@ function wildAround(c, r){
   }
 })();
 const wildish = p => p.kind === 'wild' || p.kind === 'corner';
-const signIcon = c => `<svg viewBox="0 0 24 24"><path d="M8 15v7M16 15v7" stroke="#2a2622" stroke-width="2.2"/><rect x="2.5" y="3" width="19" height="12" rx="2.5" fill="${c}" stroke="#2a2622" stroke-width="1.5"/><path d="M7 9h10" stroke="${CREAM}" stroke-width="2" stroke-linecap="round"/></svg>`;
+const signIcon = c => `<svg viewBox="0 0 24 24"><path d="M8 15v7M16 15v7" stroke="#4b3a2f" stroke-width="2.2"/><rect x="2.5" y="3" width="19" height="12" rx="2.5" fill="${c}" stroke="#4b3a2f" stroke-width="1.5"/><path d="M7 9h10" stroke="${CREAM}" stroke-width="2" stroke-linecap="round"/></svg>`;
 
 /* ───────── 地點標記 ───────── */
 const markers = new Map();
@@ -1595,7 +1651,7 @@ async function makePostcard(file, place){
   const px = 50, py = 50, pw = 1400, ph = 800;
   const sc = Math.max(pw/photo.width, ph/photo.height), sw = pw/sc, sh = ph/sc;
   x.drawImage(photo, (photo.width-sw)/2, (photo.height-sh)/2, sw, sh, px, py, pw, ph);
-  x.strokeStyle = '#2a2622'; x.lineWidth = 3; x.strokeRect(px, py, pw, ph);
+  x.strokeStyle = '#4b3a2f'; x.lineWidth = 3; x.strokeRect(px, py, pw, ph);
   // 郵票：最新的菜籽仔
   const sp = S.sprouts.length ? S.sprouts[S.sprouts.length-1] : {type:'green', decor:null, name:'菜籽仔'};
   const svg = stampSVG(sp, CREAM, {label:sp.name}).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="340" ');
@@ -1614,7 +1670,7 @@ async function makePostcard(file, place){
   x.lineWidth = 4; for(let i=0; i<5; i++){ x.beginPath(); for(let k=0; k<=240; k+=6){ const yy = -60 + i*30 + Math.sin(k/18)*8; k ? x.lineTo(-110-k, yy) : x.moveTo(-110, yy); } x.stroke(); }
   x.restore();
   // 文字
-  x.fillStyle = '#2a2622'; x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+  x.fillStyle = '#4b3a2f'; x.textAlign = 'left'; x.textBaseline = 'alphabetic';
   x.font = '700 64px "LXGW WenKai TC", "Kaiti TC", serif'; x.fillText(place.name, px+4, py+ph+96);
   x.fillStyle = '#7a6d5e'; x.font = '30px "Noto Sans TC", sans-serif';
   x.fillText(`${place.city ? place.city + ' · ' : ''}${ds} · 今日 ${fmtN(S.today)} 步`, px+6, py+ph+148);
