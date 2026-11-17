@@ -127,17 +127,18 @@ button{font:inherit;color:inherit;cursor:pointer}
 .pt.wild.cool{opacity:.35}
 .pt.lmk{width:44px;height:44px;border-radius:6px;transform:rotate(-6deg);background:var(--cream);border:2px dashed var(--c);box-shadow:0 0 0 2px var(--cream),2px 2px 0 2px var(--ink);font-family:var(--disp);font-weight:700;color:var(--c);font-size:20px}
 .pt.lmk.done{background:var(--c);color:var(--cream)}
-/* 地圖主角芽仔 */
-.me{position:relative;width:88px;height:110px;cursor:pointer}
-.me::before{content:"";position:absolute;left:50%;top:54px;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;background:radial-gradient(circle,rgba(251,245,232,.97) 0 44%,rgba(251,245,232,0) 70%)}
+/* 地圖主角菜籽仔 */
+/* 只有芽仔身體本身可以點，旁邊的圈圈、名牌都讓點擊穿過去，才點得到旁邊的地點 */
+.leaflet-marker-icon.hero-ic{pointer-events:none!important}
+.me{position:relative;width:60px;height:86px;pointer-events:none}
 .me svg{width:100%;height:100%;display:block}
-.me .ring{position:absolute;left:50%;top:92px;width:60px;height:22px;margin:-11px 0 0 -30px;border-radius:50%;border:3px solid var(--c);animation:ring 1.8s ease-out infinite}
-.me .shadow{position:absolute;left:50%;top:92px;width:40px;height:12px;margin:-6px 0 0 -20px;border-radius:50%;background:rgba(42,38,34,.38)}
-.me .bob{position:absolute;left:6px;top:6px;width:76px;height:86px;transform-origin:50% 100%;animation:idle 2.4s ease-in-out infinite}
-.me .fl{width:100%;height:100%;filter:drop-shadow(0 0 1.6px #f6ecd8) drop-shadow(0 0 1.6px #f6ecd8) drop-shadow(2px 3px 0 rgba(42,38,34,.4))}
+.me .ring{position:absolute;left:50%;top:62px;width:44px;height:16px;margin:-8px 0 0 -22px;border-radius:50%;border:2.5px solid var(--c);animation:ring 1.8s ease-out infinite}
+.me .shadow{position:absolute;left:50%;top:62px;width:30px;height:9px;margin:-4.5px 0 0 -15px;border-radius:50%;background:rgba(42,38,34,.38)}
+.me .bob{position:absolute;left:4px;top:2px;width:52px;height:60px;transform-origin:50% 100%;animation:idle 2.4s ease-in-out infinite;pointer-events:auto;cursor:pointer}
+.me .fl{width:100%;height:100%;filter:drop-shadow(1.5px 2px 0 rgba(42,38,34,.45))}
 .left .me .fl{transform:scaleX(-1)}
 .walk .me .bob{animation:hop .42s ease-in-out infinite}
-.me .tag{position:absolute;left:50%;top:99px;transform:translateX(-50%);background:var(--c);color:var(--cream);font-family:var(--disp);font-size:12px;line-height:1.5;padding:0 8px;border-radius:99px;border:1.5px solid var(--ink);white-space:nowrap;box-shadow:1.5px 1.5px 0 var(--ink)}
+.me .tag{position:absolute;left:50%;top:67px;transform:translateX(-50%);background:var(--c);color:var(--cream);font-family:var(--disp);font-size:11px;line-height:1.45;padding:0 7px;border-radius:99px;border:1.5px solid var(--ink);white-space:nowrap;box-shadow:1.5px 1.5px 0 var(--ink)}
 @keyframes ring{from{transform:scale(.55);opacity:.95}to{transform:scale(1.7);opacity:0}}
 @keyframes idle{0%,100%{transform:scale(1,1)}50%{transform:scale(1.05,.95)}}
 @keyframes hop{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-7px) rotate(5deg)}}
@@ -152,7 +153,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .steps-hk b{color:var(--red)}
 .steps-hk input{width:60%}
 
-/* 拔芽仔特效 */
+/* 拔菜籽仔特效 */
 .fx{position:fixed;inset:0;z-index:1150;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;overflow:hidden;touch-action:manipulation;
   background:radial-gradient(circle at 50% 44%,#fbf5e8 0,#f3e9d4 34%,rgba(42,38,34,.86) 100%);animation:fxin .25s ease-out;transition:opacity .3s}
 .fx.bye{opacity:0}
@@ -237,16 +238,16 @@ button{font:inherit;color:inherit;cursor:pointer}
 </div>
 
 <nav class="dock">
-  <button data-tab="map" class="act"><span class="g">圖</span>地圖</button>
-  <button data-tab="bed"><span class="g badge" id="bedBadge">芽</span>芽床</button>
-  <button data-tab="dex"><span class="g">仔</span>芽仔</button>
-  <button data-tab="post"><span class="g">郵</span>郵便</button>
+  <button data-tab="map" class="act"><span class="g">步</span>散步</button>
+  <button data-tab="bed"><span class="g badge" id="bedBadge">菜</span>菜園</button>
+  <button data-tab="dex"><span class="g">鑑</span>圖鑑</button>
+  <button data-tab="post"><span class="g">郵</span>郵局</button>
 </nav>
 
 <section class="sheet" id="pointSheet" aria-label="地點"><button class="close" data-close>×</button><div id="pointBody"></div></section>
-<section class="sheet" id="bedSheet" aria-label="芽床"><button class="close" data-close>×</button><div id="bedBody"></div></section>
-<section class="sheet" id="dexSheet" aria-label="芽仔"><button class="close" data-close>×</button><div id="dexBody"></div></section>
-<section class="sheet" id="postSheet" aria-label="郵便"><button class="close" data-close>×</button><div id="postBody"></div></section>
+<section class="sheet" id="bedSheet" aria-label="菜園"><button class="close" data-close>×</button><div id="bedBody"></div></section>
+<section class="sheet" id="dexSheet" aria-label="圖鑑"><button class="close" data-close>×</button><div id="dexBody"></div></section>
+<section class="sheet" id="postSheet" aria-label="郵局"><button class="close" data-close>×</button><div id="postBody"></div></section>
 
 <div class="toast" id="toast" role="status"></div>
 <div id="modalRoot"></div>
@@ -348,7 +349,7 @@ let FL = JSON.parse(lsGet(FLOWER_KEY) || '[]');
 let saveTimer = null;
 function save(now){
   clearTimeout(saveTimer);
-  const go = () => { if(!lsSet(SAVE_KEY, JSON.stringify(S))) toast('存檔空間不足，請到「芽床」備份'); lsSet(FLOWER_KEY, JSON.stringify(FL)); };
+  const go = () => { if(!lsSet(SAVE_KEY, JSON.stringify(S))) toast('存檔空間不足，請到「菜園」備份'); lsSet(FLOWER_KEY, JSON.stringify(FL)); };
   if(now) go(); else saveTimer = setTimeout(go, 2500);
 }
 function todayKey(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
@@ -382,7 +383,7 @@ const dO = (c, w = 1.6) => `fill="${c}" stroke="${DK}" stroke-width="${w}" strok
 const dL = (c, w = 1.6) => `fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"`;
 const dT = (d, c, w) => `<path d="${d}" ${dL(DK, w + 2)}/><path d="${d}" ${dL(c, w)}/>`;   // 有描邊的粗線（吸管、提把）
 const dots = (pts, r, c, w = .8) => pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${r}" ${dO(c, w)}/>`).join('');
-const TC = {red:'#d9443a', yellow:'#e8b13a', blue:'#3f7cc0', green:'#5f9a45'};   // 飾品用的屬性色（比芽仔本體亮一點）
+const TC = {red:'#d9443a', yellow:'#e8b13a', blue:'#3f7cc0', green:'#5f9a45'};   // 飾品用的屬性色（比菜籽仔本體亮一點）
 
 const bobaCup = (drink, inner, straw, deco = '') => dT('M23 7 L28 -6', straw, 3) +
   `<path d="M9 9h22l-2.6 27H11.6z" fill="#fdfaf2"/><path d="M10.3 15h19.4l-2 20H12.3z" fill="${drink}"/>${inner}` +
@@ -592,7 +593,7 @@ const decorBox = k => k === 'helmet' ? '-2 -6 56 44' : k === 'postbox' ? '-2 -4 
 const decorDefs = (P, sil) => `<defs><filter id="dh" x="-25%" y="-25%" width="150%" height="150%"><feMorphology in="SourceAlpha" operator="dilate" radius="2.4" result="d"/><feFlood flood-color="${CREAM}"/><feComposite in2="d" operator="in" result="h"/><feMerge><feMergeNode in="h"/><feMergeNode in="SourceGraphic"/></feMerge></filter>` +
   `<filter id="ds" x="-25%" y="-25%" width="150%" height="150%"><feMorphology in="SourceAlpha" operator="dilate" radius="2.4" result="d"/><feFlood flood-color="#efe5cf"/><feComposite in2="d" operator="in" result="h"/><feFlood flood-color="#d8c8a8"/><feComposite in2="SourceAlpha" operator="in" result="s"/><feMerge><feMergeNode in="h"/><feMergeNode in="s"/></feMerge></filter></defs>`;
 const HATS = {postbox:'translate(43 33) scale(1.35)', helmet:'translate(39 35) scale(1.2)'};
-/* 芽仔本體：深色輪廓、亮面與陰影、各屬性自己的頭頂、身上花紋和表情 */
+/* 菜籽仔本體：深色輪廓、亮面與陰影、各屬性自己的頭頂、身上花紋和表情 */
 const SHADE = {red:{d:'#962f1d', l:'#e57a5c'}, yellow:{d:'#8a6212', l:'#e0b552'}, blue:{d:'#1d3f66', l:'#5d8dbf'}, green:{d:'#33561f', l:'#7aa75a'}};
 function topArt(type, c){
   const {I, D, L, O, sil} = c, o = `stroke="${O}" stroke-width="2.2" stroke-linejoin="round"`;
@@ -773,7 +774,7 @@ function sfx(kind, n = 1){
   } catch(e){}
 }
 
-/* ───────── 拔芽仔的特效：點三下用力拔，啵一聲跳出來 ───────── */
+/* ───────── 拔菜籽仔的特效：點三下用力拔，啵一聲跳出來 ───────── */
 const SOIL = `<svg class="fx-soil" viewBox="0 0 220 70" aria-hidden="true"><ellipse cx="110" cy="44" rx="102" ry="24" fill="#8a6440" stroke="#2a2622" stroke-width="2.6"/>
   <path d="M28 37 Q110 13 192 37" stroke="#a9825a" stroke-width="5" fill="none" stroke-linecap="round"/>
   <circle cx="62" cy="50" r="3" fill="#6b4a2b"/><circle cx="150" cy="54" r="2.4" fill="#6b4a2b"/><circle cx="118" cy="58" r="2" fill="#6b4a2b"/><circle cx="84" cy="57" r="1.8" fill="#6b4a2b"/>
@@ -843,18 +844,18 @@ function drawFlower(f){
 FL.forEach(drawFlower);
 
 let me = null, follow = true;
-/* 地圖上的主角芽仔：可以自己選一隻帶出門 */
+/* 地圖上的主角菜籽仔：可以自己選一隻帶出門 */
 const heroSp = () => S.sprouts.find(s => s.id === S.hero) || S.sprouts[S.sprouts.length-1] || null;
 const meIcon = () => {
   const sp = heroSp(), t = sp ? sp.type : 'green';
-  return L.divIcon({className:'', iconSize:[88,120], iconAnchor:[44,92], html:
+  return L.divIcon({className:'hero-ic', iconSize:[60,86], iconAnchor:[30,62], html:
     `<div class="me" style="--c:${INK[t]}"><div class="ring"></div><div class="shadow"></div><div class="bob"><div class="fl">${sproutSVG(sp || {type:'green'})}</div></div>` +
     (sp ? `<div class="tag">${esc(sp.name)}</div>` : '') + `</div>`});
 };
 const meMarker = L.marker([24.8017,120.9716], {icon:meIcon(), zIndexOffset:2000, keyboard:false});
 meMarker.on('click', () => pickHero());
 const accCircle = L.circle([24.8017,120.9716], {radius:20, color:'#2d5a8a', weight:1, fillOpacity:.08, interactive:false});
-/* 走路時讓芽仔滑到新位置，鏡頭一路跟著，芽仔一直在畫面正中間 */
+/* 走路時讓菜籽仔滑到新位置，鏡頭一路跟著，菜籽仔一直在畫面正中間 */
 let glide = null, gliding = false, faceLeft = false, recenterT = null;
 function moveHero(lat, lng){
   const from = glide ? glide.cur() : meMarker.getLatLng(), t0 = performance.now(), dur = 900;
@@ -884,16 +885,16 @@ function setFollow(on){
   follow = on; $('#locBtn').classList.toggle('on', !on); clearTimeout(recenterT);
   const z = on ? 'center' : true; map.options.touchZoom = z; map.options.scrollWheelZoom = z; map.options.doubleClickZoom = z;
   if(on && me) map.setView([me.lat, me.lng], map.getZoom(), {animate:true});
-  /* 手動拖走地圖後，15 秒沒碰就自動回到芽仔身上 */
+  /* 手動拖走地圖後，15 秒沒碰就自動回到菜籽仔身上 */
   if(!on) recenterT = setTimeout(() => { if(me) setFollow(true); }, 15000);
 }
 map.on('dragstart', () => setFollow(false));
 map.on('drag', () => { if(!follow){ clearTimeout(recenterT); recenterT = setTimeout(() => { if(me) setFollow(true); }, 15000); } });
 $('#locBtn').onclick = () => { if(!me){ toast('還沒取得位置'); return; } if(map.getZoom() < 16) map.setZoom(17, {animate:false}); setFollow(true); };
 function pickHero(){
-  if(!S.sprouts.length){ toast('孵出第一隻芽仔後，就能選牠陪你散步'); return; }
+  if(!S.sprouts.length){ toast('孵出第一隻菜籽仔後，就能選牠陪你散步'); return; }
   const cur = heroSp();
-  modal(`<h2>帶誰去散步？</h2><p>選一隻芽仔，牠會出現在地圖上陪你走。</p><div class="grid heroes">${S.sprouts.slice().reverse().map(sp =>
+  modal(`<h2>帶誰去散步？</h2><p>選一隻菜籽仔，牠會出現在地圖上陪你走。</p><div class="grid heroes">${S.sprouts.slice().reverse().map(sp =>
     `<button class="st ${cur && sp.id === cur.id ? 'cur' : ''}" data-h="${sp.id}">${stampSVG(sp, '#fbf5e8')}<div class="n">${esc(sp.name)}</div></button>`).join('')}</div>
     <div class="row" style="justify-content:center;margin-top:12px"><button class="btn ghost" id="cx">關閉</button></div>`,
     m => { m.querySelector('#cx').onclick = closeModal;
@@ -1139,7 +1140,7 @@ function openPoint(p){
 }
 function seedNeed(base){ const cut = Math.min(.2, owned('green')*.04); return Math.round(base*(1-cut)/50)*50; }
 function giveSeed(type, decor, base, src){
-  if(S.seeds.length >= 12){ toast('種子袋滿了（12 顆），先去芽床孵一孵'); return false; }
+  if(S.seeds.length >= 12){ toast('種子袋滿了（12 顆），先去菜園孵一孵'); return false; }
   S.seeds.push({id:S.nextId++, type, decor, need:seedNeed(base), prog:0, src, big:base>=5000});
   return true;
 }
@@ -1213,7 +1214,7 @@ function renderSteps(){
   $('#todaySteps').textContent = fmtN(S.today); $('#stepSub').textContent = `總計 ${fmtN(S.total)} 步`;
   const grow = S.seeds.slice(0,3), left = grow.length ? Math.min(...grow.map(s => s.need - s.prog)) : null;
   const sh = $('#seedSub'); sh.hidden = left == null; sh.classList.toggle('go', left === 0);
-  if(left != null) sh.textContent = left <= 0 ? '有芽仔可以拔了！' : `再 ${fmtN(left)} 步拔芽仔`;
+  if(left != null) sh.textContent = left <= 0 ? '有菜籽仔可以拔了！' : `再 ${fmtN(left)} 步拔菜籽仔`;
   $('#petals').textContent = fmtN(S.petals); $('#pocketSteps').textContent = fmtN(S.today);
   const ready = countBy(S.seeds.slice(0,3), s => s.prog >= s.need);
   const b = $('#bedBadge'); if(ready) b.dataset.n = ready; else delete b.dataset.n;
@@ -1300,7 +1301,7 @@ document.addEventListener('visibilitychange', () => {
 
 /* ───────── Apple 健康同步 ─────────
    網頁沒辦法直接讀健康 App，所以用 iPhone 內建的「捷徑」：捷徑讀出今天的步數、拷貝起來，
-   回到菜籽仔按「貼上」，就把螢幕關著時走的步數補進來（芽床的種子也一起長大）。 */
+   回到菜籽仔按「貼上」，就把螢幕關著時走的步數補進來（菜園的種子也一起長大）。 */
 const HK_NAME = '菜籽仔步數';
 const hkURL = () => 'shortcuts://run-shortcut?name=' + encodeURIComponent(HK_NAME);
 function renderHK(){
@@ -1328,7 +1329,7 @@ function hkModal(back){
     <li>第一次執行時，iPhone 會問能不能讀取健康資料，選「允許」。</li></ol>`;
   modal(`<div class="steps-hk"><h2>同步 Apple 健康</h2>
     ${back ? '<p>捷徑跑完了嗎？按下面的按鈕，把剛剛拷貝的步數貼進來。</p>' :
-      `<p>手機螢幕關掉時，菜籽仔沒辦法計步，但 iPhone 的「健康」一直都有在記錄。<br>同步一下，就能把那些步數補回來，芽床的種子也會一起長大。</p>`}
+      `<p>手機螢幕關掉時，菜籽仔沒辦法計步，但 iPhone 的「健康」一直都有在記錄。<br>同步一下，就能把那些步數補回來，菜園的種子也會一起長大。</p>`}
     <div class="row" style="justify-content:center;margin:10px 0">
       ${back ? '' : `<a class="btn pri" id="hkRun" href="${hkURL()}">① 執行捷徑</a>`}
       <button class="btn ${back ? 'pri' : ''}" id="hkPaste">${back ? '' : '② '}貼上步數</button></div>
@@ -1367,10 +1368,10 @@ document.querySelectorAll('.dock button').forEach(b => b.onclick = () => {
   if(t === 'post'){ renderPost(); openSheet('postSheet'); }
 });
 
-/* 芽床 */
+/* 菜園 */
 function renderBed(){
   const slots = S.seeds.slice(0,3), bag = S.seeds.slice(3);
-  let h = `<h2>芽床</h2><p class="hint">前 3 顆種子會跟著你的步數一起長大。走滿步數就能拔起來，看看是誰。</p><div class="slots">`;
+  let h = `<h2>菜園</h2><p class="hint">前 3 顆種子會跟著你的步數一起長大。走滿步數就能拔起來，看看是誰。</p><div class="slots">`;
   for(let i=0; i<3; i++){
     const s = slots[i];
     if(!s){ h += `<div class="slot"><div class="nm" style="margin:auto">空位<br>去地圖上收集種子</div></div>`; continue; }
@@ -1380,10 +1381,10 @@ function renderBed(){
       ${ready ? `<button class="btn pri" data-hatch="${s.id}">拔起來</button>` : ''}</div>`;
   }
   h += `</div><h3>種子袋 ${bag.length} / 9</h3>`;
-  h += bag.length ? `<p class="hint">點一下可以換到芽床第一格。</p><div class="bag">${bag.map(s => `<button data-front="${s.id}">${seedSVG(s.type, s.big)}${TYPES[s.type].name}${s.decor?' · '+decorName(s.decor, s.type):''}</button>`).join('')}</div>` : `<p class="hint">還沒有備用的種子。</p>`;
+  h += bag.length ? `<p class="hint">點一下可以換到菜園第一格。</p><div class="bag">${bag.map(s => `<button data-front="${s.id}">${seedSVG(s.type, s.big)}${TYPES[s.type].name}${s.decor?' · '+decorName(s.decor, s.type):''}</button>`).join('')}</div>` : `<p class="hint">還沒有備用的種子。</p>`;
   h += `<h3>存檔</h3><p class="hint">資料只存在這支手機的瀏覽器裡。偶爾備份一次，換手機或清除資料時才不會不見（明信片照片不含在備份內）。</p>
     <div class="row"><button class="btn" id="expBtn">備份存檔</button><button class="btn ghost" id="impBtn">從備份還原</button></div>`;
-  h += `<h3>設定</h3><div class="row"><button class="btn" id="sndBtn">音效：${S.sound === false ? '關' : '開'}</button><button class="btn" id="heroBtn">選陪我散步的芽仔</button></div>`;
+  h += `<h3>設定</h3><div class="row"><button class="btn" id="sndBtn">音效：${S.sound === false ? '關' : '開'}</button><button class="btn" id="heroBtn">選陪我散步的菜籽仔</button></div>`;
   $('#bedBody').innerHTML = h;
   $('#sndBtn').onclick = () => { S.sound = S.sound === false; save(); renderBed(); sfx('pick'); };
   $('#heroBtn').onclick = () => pickHero();
@@ -1409,16 +1410,16 @@ function hatch(id){
     m => { m.querySelector('#nameOk').onclick = () => { const v = m.querySelector('#nameIn').value.trim(); if(v) sp.name = v; save(); closeModal(); refreshHero(); renderBed(); openSheet('bedSheet'); }; }));
 }
 
-/* 芽仔與圖鑑 */
+/* 菜籽仔與圖鑑 */
 function renderDex(){
   const n = S.sprouts.length;
-  let h = `<h2>芽仔</h2><p class="hint">一共 ${n} 隻。名字可以點進去改。</p>`;
+  let h = `<h2>圖鑑</h2><p class="hint">一共 ${n} 隻菜籽仔。名字可以點進去改。</p>`;
   h += n ? `<div class="grid">${S.sprouts.slice().reverse().map(sp => `<button class="st" data-sp="${sp.id}">${stampSVG(sp, '#fbf5e8')}<div class="n">${esc(sp.name)}</div></button>`).join('')}</div>`
-         : `<p class="hint">還沒有芽仔。到地圖上的點收集種子，種在芽床走路養大。</p>`;
+         : `<p class="hint">還沒有菜籽仔。到地圖上的點收集種子，種在菜園走路養大。</p>`;
   h += `<h3>屬性</h3>` + TYPE_ORDER.map(t => `<p class="hint"><b style="color:${INK[t]};font-family:var(--disp);font-size:16px">${TYPES[t].name}</b> · ${TYPES[t].where}<br>能力：${TYPES[t].power}（目前 ${owned(t)} 隻）</p>`).join('');
   const has = (t, d) => S.sprouts.some(s => s.type === t && s.decor === d);
   const found = DECOR_KEYS.reduce((a, d) => a + TYPE_ORDER.filter(t => has(t, d)).length, 0) + TYPE_ORDER.filter(t => has(t, null)).length;
-  h += `<h3>圖鑑 ${found} / ${(DECOR_KEYS.length+1)*4}</h3><div class="tbl-wrap"><table class="dex"><tr><th></th>${TYPE_ORDER.map(t => `<th style="color:${INK[t]}">${TYPES[t].name}</th>`).join('')}</tr>`;
+  h += `<h3>收集表 ${found} / ${(DECOR_KEYS.length+1)*4}</h3><div class="tbl-wrap"><table class="dex"><tr><th></th>${TYPE_ORDER.map(t => `<th style="color:${INK[t]}">${TYPES[t].name}</th>`).join('')}</tr>`;
   for(const d of [null, ...DECOR_KEYS]){
     h += `<tr><td>${d ? DECOR[d].name+'<br><span style="color:var(--muted);font-size:11px">'+DECOR[d].label+'</span>' : '無飾品<br><span style="color:var(--muted);font-size:11px">野生點、景點</span>'}</td>`;
     for(const t of TYPE_ORDER) h += `<td><span class="cell">${stampSVG({type:t, decor:d}, '#fbf5e8', {unknown:!has(t,d), label:false})}</span>${d ? `<span class="vn">${has(t,d) ? decorName(d, t) : '？？？'}</span>` : ''}</td>`;
@@ -1438,10 +1439,10 @@ function showSprout(id){
            m.querySelector('#cx').onclick = closeModal; });
 }
 
-/* 郵便：郵票冊與明信片 */
+/* 郵局：郵票冊與明信片 */
 async function renderPost(){
   const cities = [...new Set(LANDMARKS.map(l => l.city))];
-  let h = `<h2>郵便</h2><p class="hint">到景點 150 公尺內就能打卡蓋郵戳，並拍一張自己的明信片。在任何地方也都能拍一張散步明信片。</p>
+  let h = `<h2>郵局</h2><p class="hint">到景點 150 公尺內就能打卡蓋郵戳，並拍一張自己的明信片。在任何地方也都能拍一張散步明信片。</p>
     <div class="row"><button class="btn pri" id="anyCard">在這裡拍明信片</button></div>`;
   for(const c of cities){
     const ls = LANDMARKS.filter(l => l.city === c); const done = countBy(ls, l => S.stamps[l.id]);
@@ -1493,7 +1494,7 @@ function showCard(c){
 function loadImg(src){ return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
 async function makePostcard(file, place){
   const photo = await loadImg(URL.createObjectURL(file));
-  const glyphs = place.name + (place.city||'') + '菜籽仔郵便景點散步郵戳' + (S.sprouts.length ? S.sprouts[S.sprouts.length-1].name : '');
+  const glyphs = place.name + (place.city||'') + '菜籽仔郵局景點散步郵戳' + (S.sprouts.length ? S.sprouts[S.sprouts.length-1].name : '');
   try { await Promise.all([document.fonts.load('700 64px "LXGW WenKai TC"', glyphs), document.fonts.load('700 30px "Noto Sans TC"', '0123456789.·今日步市縣' + (place.city||''))]); } catch(e){}
   const W = 1500, H = 1050, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
   x.fillStyle = CREAM; x.fillRect(0,0,W,H);
@@ -1501,8 +1502,8 @@ async function makePostcard(file, place){
   const sc = Math.max(pw/photo.width, ph/photo.height), sw = pw/sc, sh = ph/sc;
   x.drawImage(photo, (photo.width-sw)/2, (photo.height-sh)/2, sw, sh, px, py, pw, ph);
   x.strokeStyle = '#2a2622'; x.lineWidth = 3; x.strokeRect(px, py, pw, ph);
-  // 郵票：最新的芽仔
-  const sp = S.sprouts.length ? S.sprouts[S.sprouts.length-1] : {type:'green', decor:null, name:'芽仔'};
+  // 郵票：最新的菜籽仔
+  const sp = S.sprouts.length ? S.sprouts[S.sprouts.length-1] : {type:'green', decor:null, name:'菜籽仔'};
   const svg = stampSVG(sp, CREAM, {label:sp.name}).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="340" ');
   const stamp = await loadImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
   x.save(); x.translate(px+pw-250, py+40); x.rotate(.04); x.fillStyle = CREAM; x.fillRect(-6,-6,212,238); x.drawImage(stamp, 0, 0, 200, 227); x.restore();
@@ -1523,7 +1524,7 @@ async function makePostcard(file, place){
   x.font = '700 64px "LXGW WenKai TC", "Kaiti TC", serif'; x.fillText(place.name, px+4, py+ph+96);
   x.fillStyle = '#7a6d5e'; x.font = '30px "Noto Sans TC", sans-serif';
   x.fillText(`${place.city ? place.city + ' · ' : ''}${ds} · 今日 ${fmtN(S.today)} 步`, px+6, py+ph+148);
-  x.textAlign = 'right'; x.fillStyle = '#c8452c'; x.font = '700 30px "LXGW WenKai TC", "Kaiti TC", serif'; x.fillText('菜籽仔郵便', px+pw-4, py+ph+148);
+  x.textAlign = 'right'; x.fillStyle = '#c8452c'; x.font = '700 30px "LXGW WenKai TC", "Kaiti TC", serif'; x.fillText('菜籽仔郵局', px+pw-4, py+ph+148);
   return new Promise(res => c.toBlob(res, 'image/jpeg', .85));
 }
 
@@ -1539,7 +1540,7 @@ $('#importInput').onchange = async e => {
   const f = e.target.files && e.target.files[0]; e.target.value = ''; if(!f) return;
   try {
     const d = JSON.parse(await f.text()); if(d.app !== 'yaya' || !d.save) throw 0;
-    modal(`<h2>從備份還原？</h2><p>備份日期 ${new Date(d.at).toLocaleString('zh-TW')}，有 ${d.save.sprouts.length} 隻芽仔。目前手機上的進度會被取代。</p>
+    modal(`<h2>從備份還原？</h2><p>備份日期 ${new Date(d.at).toLocaleString('zh-TW')}，有 ${d.save.sprouts.length} 隻菜籽仔。目前手機上的進度會被取代。</p>
       <div class="row" style="justify-content:center"><button class="btn pri" id="ok">還原</button><button class="btn ghost" id="cx">取消</button></div>`, m => {
       m.querySelector('#cx').onclick = closeModal;
       m.querySelector('#ok').onclick = () => { S = Object.assign({}, DEF, d.save); FL = d.flowers || []; save(true); location.reload(); };
@@ -1553,11 +1554,11 @@ function showIntro(){
   modal(`<div class="intro"><div class="big pop">${stampSVG({type:'green', decor:'banyan'}, '#fbf5e8', {label:'菜籽仔'})}</div>
     <h2>菜籽仔</h2><ul>
     <li>地圖上的點是附近的店家、廟宇、公園和野花，走到旁邊就能收集花瓣和種子。</li>
-    <li>種子放進芽床，走路累積步數就會孵出芽仔。在哪裡撿到的種子，就會孵出戴什麼飾品的芽仔。</li>
+    <li>種子放進菜園，走路累積步數就會孵出菜籽仔。在哪裡撿到的種子，就會孵出戴什麼飾品的菜籽仔。</li>
     <li>打開「種花」，走過的路會開滿當季的花。</li>
     <li>到景點打卡，拍一張自己的明信片。</li>
     <li>手機放口袋時，可以開「口袋模式」即時計步；螢幕關著走的步數，按右上「同步健康步數」從 Apple 健康補回來。</li>
-    <li>點地圖上的芽仔，可以換一隻陪你散步。</li></ul>
+    <li>點地圖上的菜籽仔，可以換一隻陪你散步。</li></ul>
     <button class="btn pri" id="go">開始散步</button>
     <p style="font-size:12px">會請你允許定位與動作感測器。位置只用來找附近的地點，查詢時只會送出約 1 公里的範圍給 OpenStreetMap。</p></div>`,
   m => { m.querySelector('#go').onclick = async () => { await enableMotion(); startGPS(); S.onboarded = true; save(true); closeModal(); }; });

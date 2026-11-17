@@ -1,5 +1,5 @@
 // 菜籽仔：離線外殼快取。主頁面走「先連網、失敗才用快取」，更新後重開就會拿到新版。
-const CACHE = 'yaya-v6';
+const CACHE = 'yaya-v8';
 const SHELL = ['./', './index.html', './places-hsinchu.js', './places-taichung.js','./manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
