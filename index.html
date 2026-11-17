@@ -154,7 +154,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .steps-hk input{width:60%}
 
 /* 拔菜籽仔特效 */
-.fx{position:fixed;inset:0;z-index:1150;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;overflow:hidden;touch-action:manipulation;
+.fx{position:fixed;inset:0;z-index:1150;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;
   background:radial-gradient(circle at 50% 44%,#fbf5e8 0,#f3e9d4 34%,rgba(42,38,34,.86) 100%);animation:fxin .25s ease-out;transition:opacity .3s}
 .fx.bye{opacity:0}
 @keyframes fxin{from{opacity:0}}
@@ -168,6 +168,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 .fx-hole{position:absolute;left:30px;bottom:52px;width:160px;height:190px;overflow:hidden}
 .fx-pull{position:absolute;left:0;right:0;bottom:0;height:182px;transform:translateY(var(--y,58%));transition:transform .22s cubic-bezier(.3,1.7,.5,1);animation:wig 1.3s ease-in-out infinite;transform-origin:50% 100%}
 .fx-pull.tug{animation:tug .3s ease-in-out}
+.fx-pull.drag{transition:none;animation:none}
+.fx-swipe{position:absolute;left:50%;top:50%;width:44px;height:120px;margin:-60px 0 0 108px;pointer-events:none;animation:swipe 1.4s ease-in-out infinite}
+.fx-swipe svg{width:100%;height:100%;display:block}
+.fx.dragging .fx-swipe,.fx.popped .fx-swipe{display:none}
+@keyframes swipe{0%{transform:translateY(40px);opacity:0}25%{opacity:1}80%{transform:translateY(-30px);opacity:1}100%{transform:translateY(-40px);opacity:0}}
 @keyframes wig{0%,100%{rotate:-3deg}50%{rotate:3deg}}
 @keyframes tug{0%,100%{rotate:0deg}25%{rotate:-10deg}75%{rotate:10deg}}
 .fx-soil{position:absolute;left:0;bottom:20px;width:220px;height:70px}
@@ -267,7 +272,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 'use strict';
 /* ───────── 基本資料 ───────── */
 const $ = s => document.querySelector(s);
-const APP_VER = '11/17 散步菜園版';
+const APP_VER = '11/17 滑拔音樂版';
 const CREAM = '#f6ecd8';
 const INK = {red:'#c8452c', yellow:'#b8861f', blue:'#2d5a8a', green:'#4f7a3a'};
 const TYPE_ORDER = ['red','yellow','blue','green'];
@@ -775,7 +780,62 @@ function sfx(kind, n = 1){
   } catch(e){}
 }
 
-/* ───────── 拔菜籽仔的特效：點三下用力拔，啵一聲跳出來 ───────── */
+/* ───────── 背景音樂：音樂盒風的小曲，即時合成、循環播放 ───────── */
+const hz = n => { const m = /^([A-G])(#?)(\d)$/.exec(n); return 440 * Math.pow(2, ({C:-9,D:-7,E:-5,F:-4,G:-2,A:0,B:2}[m[1]] + (m[2] ? 1 : 0) + (m[3]-4)*12) / 12); };
+const BGM = {
+  eighth: 60/92/2,
+  // 每小節 8 個八分音符；'-' 延長、'.' 休止
+  mel: ['E5 - G5 - A5 G5 E5 -', 'C5 - D5 E5 - - . .', 'A4 - C5 - D5 - C5 A4', 'G4 - - - . . D5 -',
+        'E5 - G5 - C6 - A5 G5', 'E5 - G5 E5 D5 - C5 -', 'D5 - E5 D5 C5 - D5 -', 'C5 - - - . . . .'],
+  bass: ['C3', 'A2', 'F2', 'G2', 'C3', 'A2', 'F2', 'C3'],
+  bass2: ['G3', 'E3', 'C3', 'D3', 'G3', 'E3', 'G2', 'G3'],
+  chord: [['E4','G4'], ['C4','E4'], ['A3','C4'], ['B3','D4'], ['E4','G4'], ['C4','E4'], ['A3','C4'], ['E4','G4']],
+};
+let bgmGain = null, bgmTimer = null, bgmNext = 0, bgmSlot = 0;
+function mnote(f, t, dur, type, vol){
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g).connect(bgmGain); o.start(t); o.stop(t + dur + .05);
+}
+function bgmTick(){
+  if(!AC || AC.state !== 'running') return;
+  const E = BGM.eighth, bars = BGM.mel.length;
+  if(bgmNext < AC.currentTime) bgmNext = AC.currentTime + .05;
+  while(bgmNext < AC.currentTime + .5){
+    const loop = Math.floor(bgmSlot / (bars*8)), bar = Math.floor(bgmSlot / 8) % bars, k = bgmSlot % 8, t = bgmNext;
+    const line = BGM.mel[bar].split(' ');
+    if(k === 0) mnote(hz(BGM.bass[bar]), t, E*3.5, 'triangle', .16);
+    if(k === 4) mnote(hz(BGM.bass2[bar]), t, E*3, 'triangle', .11);
+    if(k % 2 === 1) for(const c of BGM.chord[bar]) mnote(hz(c), t, E*1.4, 'sine', .035);
+    // 每三輪有一輪只留伴奏，比較不會聽膩
+    if(loop % 3 !== 2 && line[k] !== '-' && line[k] !== '.'){
+      let len = 1; while(line[k+len] === '-') len++;
+      const f = hz(line[k]);
+      mnote(f, t, E*len + .35, 'triangle', .09); mnote(f*2, t, E*len*.6 + .2, 'sine', .025);
+    }
+    bgmNext += E; bgmSlot++;
+  }
+}
+function bgmOn(){ return S.music !== false && !document.hidden; }
+function bgmUpdate(){
+  if(bgmOn()){
+    sfxUnlock(); if(!AC) return;
+    if(!bgmGain){ bgmGain = AC.createGain(); bgmGain.gain.value = 0; bgmGain.connect(AC.destination); }
+    bgmGain.gain.cancelScheduledValues(AC.currentTime); bgmGain.gain.setTargetAtTime(.8, AC.currentTime, .6);
+    if(!bgmTimer){ bgmNext = 0; bgmTimer = setInterval(bgmTick, 150); bgmTick(); }
+  } else if(bgmTimer){
+    clearInterval(bgmTimer); bgmTimer = null;
+    if(bgmGain && AC) bgmGain.gain.setTargetAtTime(0, AC.currentTime, .08);
+  }
+}
+// iPhone 要等使用者第一次碰螢幕才能出聲
+document.addEventListener('pointerdown', () => { if(!bgmTimer) bgmUpdate(); }, {passive:true});
+document.addEventListener('visibilitychange', bgmUpdate);
+// 播放音效時把音樂壓小一點
+function bgmDuck(sec){ if(bgmGain && bgmTimer && AC){ const t = AC.currentTime; bgmGain.gain.cancelScheduledValues(t); bgmGain.gain.setTargetAtTime(.25, t, .05); bgmGain.gain.setTargetAtTime(.8, t + sec, .5); } }
+
+/* ───────── 拔菜籽仔的特效：往上滑把菜籽仔拔出來，啵一聲跳出來 ───────── */
 const SOIL = `<svg class="fx-soil" viewBox="0 0 220 70" aria-hidden="true"><ellipse cx="110" cy="44" rx="102" ry="24" fill="#8a6440" stroke="#2a2622" stroke-width="2.6"/>
   <path d="M28 37 Q110 13 192 37" stroke="#a9825a" stroke-width="5" fill="none" stroke-linecap="round"/>
   <circle cx="62" cy="50" r="3" fill="#6b4a2b"/><circle cx="150" cy="54" r="2.4" fill="#6b4a2b"/><circle cx="118" cy="58" r="2" fill="#6b4a2b"/><circle cx="84" cy="57" r="1.8" fill="#6b4a2b"/>
@@ -791,22 +851,52 @@ function pluckShow(sp, done){
   sfxUnlock();
   const fx = document.createElement('div'); fx.className = 'fx' + (sp.rare ? ' rare' : ''); fx.style.setProperty('--c', INK[sp.type]);
   fx.innerHTML = `<div class="fx-rays"></div><div class="fx-stage"><div class="fx-hole"><div class="fx-pull">${sproutSVG(sp)}</div></div>${SOIL}<div class="fx-out">${sproutSVG(sp)}</div></div>
-    <div class="fx-say">點三下，用力拔起來！</div><div class="fx-taps"><i></i><i></i><i></i></div>`;
+    <div class="fx-say">按住，往上滑拔起來！</div><div class="fx-taps"><i></i><i></i><i></i></div>
+    <div class="fx-swipe" aria-hidden="true"><svg viewBox="0 0 44 120"><path d="M22 112V14M8 30 22 12 36 30" stroke="#2a2622" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="22" cy="104" r="11" fill="${INK[sp.type]}" stroke="#2a2622" stroke-width="3"/></svg></div>`;
   document.body.appendChild(fx);
-  const stage = fx.querySelector('.fx-stage'), pull = fx.querySelector('.fx-pull'), rnd = (a, b) => a + Math.random()*(b-a);
-  let n = 0;
+  const stage = fx.querySelector('.fx-stage'), pull = fx.querySelector('.fx-pull'), say = fx.querySelector('.fx-say'), rnd = (a, b) => a + Math.random()*(b-a);
+  // 往上滑：手指拖多遠，菜籽仔就被拉出多少（越拉越緊）。滑到底或用力甩上去就「啵」出來，中途放手會縮回土裡。
+  const FULL = Math.min(220, innerHeight*.3), Y0 = 58, Y1 = 14;
+  let y0 = null, t0 = 0, stage_ = 0, done_ = false;
+  const setP = p => pull.style.setProperty('--y', (Y0 - (Y0 - Y1)*p) + '%');
+  const dust = k => particles(stage, Array.from({length:k}, () => ({cls:'fx-d', dx:rnd(-90, 90), dy:rnd(-90, -20), r:0, s:rnd(.6, 1.2)})));
   fx.addEventListener('pointerdown', e => {
-    e.preventDefault(); if(n >= 3) return; n++;
-    fx.querySelectorAll('.fx-taps i')[n-1].classList.add('on');
-    pull.style.setProperty('--y', [47, 34, 22][n-1] + '%');
-    pull.classList.remove('tug'); void pull.offsetWidth; pull.classList.add('tug');
-    particles(stage, Array.from({length:7}, () => ({cls:'fx-d', dx:rnd(-90, 90), dy:rnd(-90, -20), r:0, s:rnd(.6, 1.2)})));
-    sfx('tug', n);
-    try { navigator.vibrate && navigator.vibrate(25); } catch(x){}
-    if(n === 3) setTimeout(pop, 280);
+    e.preventDefault(); if(done_) return;
+    y0 = e.clientY; t0 = performance.now(); fx.classList.add('dragging'); pull.classList.add('drag'); say.textContent = '往上、往上！';
+    try { fx.setPointerCapture(e.pointerId); } catch(x){}
   });
+  fx.addEventListener('pointermove', e => {
+    if(y0 == null || done_) return; e.preventDefault();
+    const raw = Math.max(0, (y0 - e.clientY) / FULL);
+    setP(Math.min(raw, 1));
+    const st = Math.min(3, Math.floor(raw * 3 + .02));
+    while(stage_ < st){
+      stage_++; fx.querySelectorAll('.fx-taps i')[stage_-1].classList.add('on');
+      if(stage_ < 3){ sfx('tug', stage_); dust(7); try { navigator.vibrate && navigator.vibrate(20); } catch(x){} }
+    }
+    if(raw >= 1) finish();
+  });
+  const release = e => {
+    if(y0 == null || done_) return;
+    const dy = y0 - e.clientY, v = dy / Math.max(1, performance.now() - t0);  // 像素/毫秒
+    y0 = null;
+    if(dy > FULL*.45 && v > .9){ finish(); return; }   // 快速往上甩也算
+    pull.classList.remove('drag'); fx.classList.remove('dragging'); setP(0);
+    pull.classList.remove('tug'); void pull.offsetWidth; pull.classList.add('tug');
+    stage_ = 0; fx.querySelectorAll('.fx-taps i').forEach(i => i.classList.remove('on'));
+    if(dy > 12){ say.textContent = '再用力一點，一路滑上去！'; sfx('tug', 0); }
+  };
+  fx.addEventListener('pointerup', release);
+  fx.addEventListener('pointercancel', release);
+  function finish(){
+    if(done_) return; done_ = true;
+    pull.classList.remove('drag'); setP(1); dust(12); sfx('tug', 3);
+    fx.querySelectorAll('.fx-taps i').forEach(i => i.classList.add('on'));
+    try { navigator.vibrate && navigator.vibrate(25); } catch(x){}
+    setTimeout(pop, 160);
+  }
   function pop(){
-    fx.classList.add('popped'); sfx(sp.rare ? 'rare' : 'pop');
+    fx.classList.add('popped'); bgmDuck(2.5); sfx(sp.rare ? 'rare' : 'pop');
     try { navigator.vibrate && navigator.vibrate([30, 40, 70]); } catch(x){}
     fx.querySelector('.fx-say').textContent = sp.rare ? '珍藏款！' : '啵！';
     const fk = flowerNow(), cols = [INK[sp.type], SHADE[sp.type].l, '#f2c230', CREAM];
@@ -1042,7 +1132,7 @@ function wildAround(c, r){
   const out = []; const ci0 = Math.floor(c.lat/WSTEP), cj0 = Math.floor(c.lng/WSTEP); const n = Math.ceil(r/110);
   for(let i=-n; i<=n; i++) for(let j=-n; j<=n; j++){
     const ci = ci0+i, cj = cj0+j, h = hash2(ci, cj);
-    if(h % 100 >= 60) continue;
+    if(h % 100 >= 40) continue;
     const p = {id:'w'+ci+'_'+cj, lat:(ci + ((h>>>8)%1000)/1000)*WSTEP, lng:(cj + ((h>>>18)%1000)/1000)*WSTEP, kind:'wild', name:'路邊野花', type:(h%2?'green':'yellow'), decor:null};
     if(dist(c,p) <= r && !nearPoi(p.lat, p.lng, 40)) out.push(p);
   }
@@ -1055,6 +1145,7 @@ function wildAround(c, r){
   }
   for(const [id, lat, lng, name] of (window.LOCAL_CORNERS || [])){
     const h = hash2(Math.round(lat*1e5), Math.round(lng*1e5));
+    if((h >>> 4) % 100 >= 30) continue;   // 街角招牌只留約三成，不要太擠
     addPoi({id, lat, lng, name, decor:null, type:(h%2 ? 'green' : 'yellow'), kind:'corner'});
   }
 })();
@@ -1125,7 +1216,7 @@ function openPoint(p){
       <div class="row">${inRange ? `<button class="btn pri" id="lmStamp">${done?'再拍一張明信片':'打卡＋拍明信片'}</button>` : `<span class="btn" aria-disabled="true">走到 ${rangeOf(p)} 公尺內就能打卡</span>`}</div>`;
   } else {
     const cool = isCool(p);
-    const gives = wildish(p) ? `花瓣，有機會撿到${p.kind==='corner'?TYPES[p.type].name:''}種子` : `花瓣，有機會撿到「${decorName(p.decor, p.type)}」${TYPES[p.type].name}種子`;
+    const gives = wildish(p) ? `花瓣，有機會撿到${p.kind==='corner'?TYPES[p.type].name:''}種子` : `花瓣，有機會撿到戴「${DECOR[p.decor].name}」的種子（顏色隨機）`;
     const icon = p.kind==='wild' ? `<div class="ic" style="background:${CREAM};border:1.5px solid var(--ink)">${flowerIcon(FLOWERS[flowerNow()].c)}</div>` :
       p.kind==='corner' ? `<div class="ic" style="background:${CREAM};border:1.5px solid var(--ink)"><span style="width:40px;height:40px;display:block">${signIcon(INK[p.type])}</span></div>` :
       `<div class="ic" style="background:${CREAM};border:2.5px solid ${INK[p.type]}"><svg viewBox="${decorBox(p.decor)}">${decorArt(p.decor, p.type)}</svg></div>`;
@@ -1154,7 +1245,8 @@ function collect(p){
   const chance = (wildish(p) ? .14 : .32) + Math.min(.16, owned('yellow')*.02);
   let msg = `花瓣 +${petals}`;
   if(Math.random() < chance){
-    const type = wildish(p) ? p.type : (Math.random() < .75 ? p.type : pick(TYPE_ORDER));
+    // 地標：飾品固定（看是哪一類地方），顏色四種隨機
+    const type = wildish(p) ? p.type : pick(TYPE_ORDER);
     if(giveSeed(type, p.decor, wildish(p) ? 1000 : 2000, pointLabel(p))) msg += `，撿到${TYPES[type].name}的種子！`;
   }
   toast(msg); save(); refreshAll(); closeSheets();
@@ -1385,9 +1477,10 @@ function renderBed(){
   h += bag.length ? `<p class="hint">點一下可以換到菜園第一格。</p><div class="bag">${bag.map(s => `<button data-front="${s.id}">${seedSVG(s.type, s.big)}${TYPES[s.type].name}${s.decor?' · '+decorName(s.decor, s.type):''}</button>`).join('')}</div>` : `<p class="hint">還沒有備用的種子。</p>`;
   h += `<h3>存檔</h3><p class="hint">資料只存在這支手機的瀏覽器裡。偶爾備份一次，換手機或清除資料時才不會不見（明信片照片不含在備份內）。</p>
     <div class="row"><button class="btn" id="expBtn">備份存檔</button><button class="btn ghost" id="impBtn">從備份還原</button></div>`;
-  h += `<h3>設定</h3><p class="hint">目前版本：${APP_VER}</p><div class="row"><button class="btn" id="sndBtn">音效：${S.sound === false ? '關' : '開'}</button><button class="btn" id="heroBtn">選陪我散步的菜籽仔</button></div>`;
+  h += `<h3>設定</h3><p class="hint">目前版本：${APP_VER}</p><div class="row"><button class="btn" id="sndBtn">音效：${S.sound === false ? '關' : '開'}</button><button class="btn" id="bgmBtn">音樂：${S.music === false ? '關' : '開'}</button><button class="btn" id="heroBtn">選陪我散步的菜籽仔</button></div>`;
   $('#bedBody').innerHTML = h;
   $('#sndBtn').onclick = () => { S.sound = S.sound === false; save(); renderBed(); sfx('pick'); };
+  $('#bgmBtn').onclick = () => { S.music = S.music === false; save(); renderBed(); bgmUpdate(); };
   $('#heroBtn').onclick = () => pickHero();
   $('#bedBody').querySelectorAll('[data-hatch]').forEach(b => b.onclick = () => hatch(+b.dataset.hatch));
   $('#bedBody').querySelectorAll('[data-front]').forEach(b => b.onclick = () => {
