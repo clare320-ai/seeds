@@ -267,6 +267,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 'use strict';
 /* ───────── 基本資料 ───────── */
 const $ = s => document.querySelector(s);
+const APP_VER = '11/17 散步菜園版';
 const CREAM = '#f6ecd8';
 const INK = {red:'#c8452c', yellow:'#b8861f', blue:'#2d5a8a', green:'#4f7a3a'};
 const TYPE_ORDER = ['red','yellow','blue','green'];
@@ -1384,7 +1385,7 @@ function renderBed(){
   h += bag.length ? `<p class="hint">點一下可以換到菜園第一格。</p><div class="bag">${bag.map(s => `<button data-front="${s.id}">${seedSVG(s.type, s.big)}${TYPES[s.type].name}${s.decor?' · '+decorName(s.decor, s.type):''}</button>`).join('')}</div>` : `<p class="hint">還沒有備用的種子。</p>`;
   h += `<h3>存檔</h3><p class="hint">資料只存在這支手機的瀏覽器裡。偶爾備份一次，換手機或清除資料時才不會不見（明信片照片不含在備份內）。</p>
     <div class="row"><button class="btn" id="expBtn">備份存檔</button><button class="btn ghost" id="impBtn">從備份還原</button></div>`;
-  h += `<h3>設定</h3><div class="row"><button class="btn" id="sndBtn">音效：${S.sound === false ? '關' : '開'}</button><button class="btn" id="heroBtn">選陪我散步的菜籽仔</button></div>`;
+  h += `<h3>設定</h3><p class="hint">目前版本：${APP_VER}</p><div class="row"><button class="btn" id="sndBtn">音效：${S.sound === false ? '關' : '開'}</button><button class="btn" id="heroBtn">選陪我散步的菜籽仔</button></div>`;
   $('#bedBody').innerHTML = h;
   $('#sndBtn').onclick = () => { S.sound = S.sound === false; save(); renderBed(); sfx('pick'); };
   $('#heroBtn').onclick = () => pickHero();
@@ -1566,7 +1567,12 @@ function showIntro(){
 refreshAll(); renderPoints(); ensureCells();
 if(!S.onboarded) showIntro();
 else { startGPS(); if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') $('#motionChip').hidden = false; else enableMotion(); }
-if('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+if('serviceWorker' in navigator && location.protocol === 'https:'){
+  /* 有新版的 sw.js 接手時自動重新整理一次，打開 App 就是最新版 */
+  const hadSW = !!navigator.serviceWorker.controller; let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if(hadSW && !reloaded){ reloaded = true; save(true); location.reload(); } });
+  navigator.serviceWorker.register('sw.js', {updateViaCache:'none'}).then(r => r.update()).catch(() => {});
+}
 
 /* 測試用：網址加上 #sim，點地圖就會走過去 */
 if(location.hash === '#sim'){
