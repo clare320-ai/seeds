@@ -70,7 +70,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .sheet .hint{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.6}
 .close{position:absolute;top:12px;right:max(14px,var(--sr));width:34px;height:34px;border-radius:50%;border:1.5px solid var(--ink);background:var(--paper);font-size:18px;line-height:1}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border:1.5px solid var(--ink);border-radius:6px;background:var(--paper);box-shadow:2px 2px 0 var(--ink);font-weight:500}
+.btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border:1.5px solid var(--ink);border-radius:6px;background:var(--paper);box-shadow:2px 2px 0 var(--ink);font-weight:500}
 .btn:active{transform:translate(2px,2px);box-shadow:none}
 .btn.pri{background:var(--red);color:var(--cream)}
 .btn.ghost{box-shadow:none;background:none}
@@ -127,8 +127,65 @@ button{font:inherit;color:inherit;cursor:pointer}
 .pt.wild.cool{opacity:.35}
 .pt.lmk{width:44px;height:44px;border-radius:6px;transform:rotate(-6deg);background:var(--cream);border:2px dashed var(--c);box-shadow:0 0 0 2px var(--cream),2px 2px 0 2px var(--ink);font-family:var(--disp);font-weight:700;color:var(--c);font-size:20px}
 .pt.lmk.done{background:var(--c);color:var(--cream)}
-.me{width:46px;height:52px;filter:drop-shadow(0 0 2px var(--cream)) drop-shadow(0 0 2px var(--cream))}
-.me svg{width:100%;height:100%}
+/* 地圖主角芽仔 */
+.me{position:relative;width:88px;height:110px;cursor:pointer}
+.me::before{content:"";position:absolute;left:50%;top:54px;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;background:radial-gradient(circle,rgba(251,245,232,.97) 0 44%,rgba(251,245,232,0) 70%)}
+.me svg{width:100%;height:100%;display:block}
+.me .ring{position:absolute;left:50%;top:92px;width:60px;height:22px;margin:-11px 0 0 -30px;border-radius:50%;border:3px solid var(--c);animation:ring 1.8s ease-out infinite}
+.me .shadow{position:absolute;left:50%;top:92px;width:40px;height:12px;margin:-6px 0 0 -20px;border-radius:50%;background:rgba(42,38,34,.38)}
+.me .bob{position:absolute;left:6px;top:6px;width:76px;height:86px;transform-origin:50% 100%;animation:idle 2.4s ease-in-out infinite}
+.me .fl{width:100%;height:100%;filter:drop-shadow(0 0 1.6px #f6ecd8) drop-shadow(0 0 1.6px #f6ecd8) drop-shadow(2px 3px 0 rgba(42,38,34,.4))}
+.left .me .fl{transform:scaleX(-1)}
+.walk .me .bob{animation:hop .42s ease-in-out infinite}
+.me .tag{position:absolute;left:50%;top:99px;transform:translateX(-50%);background:var(--c);color:var(--cream);font-family:var(--disp);font-size:12px;line-height:1.5;padding:0 8px;border-radius:99px;border:1.5px solid var(--ink);white-space:nowrap;box-shadow:1.5px 1.5px 0 var(--ink)}
+@keyframes ring{from{transform:scale(.55);opacity:.95}to{transform:scale(1.7);opacity:0}}
+@keyframes idle{0%,100%{transform:scale(1,1)}50%{transform:scale(1.05,.95)}}
+@keyframes hop{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-7px) rotate(5deg)}}
+.heroes .st.cur{outline:3px solid var(--red);outline-offset:2px;border-radius:6px}
+.seedsub{display:block;margin-top:3px;padding:1px 0 0;border:0;border-top:1px dashed var(--line);background:none;width:100%;text-align:left;font-size:11.5px;color:var(--leaf);font-weight:500}
+.seedsub.go{color:var(--red);font-weight:700;animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{50%{opacity:.45}}
+.hk{color:#e0485a}
+.bump{animation:bump .6s cubic-bezier(.2,1.8,.4,1)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.35) rotate(-8deg)}100%{transform:scale(1)}}
+.steps-hk ol{text-align:left;padding-left:1.3em;margin:8px 0 12px;font-size:13.5px;line-height:1.7;color:var(--ink)}
+.steps-hk b{color:var(--red)}
+.steps-hk input{width:60%}
+
+/* 拔芽仔特效 */
+.fx{position:fixed;inset:0;z-index:1150;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;overflow:hidden;touch-action:manipulation;
+  background:radial-gradient(circle at 50% 44%,#fbf5e8 0,#f3e9d4 34%,rgba(42,38,34,.86) 100%);animation:fxin .25s ease-out;transition:opacity .3s}
+.fx.bye{opacity:0}
+@keyframes fxin{from{opacity:0}}
+.fx-rays{position:absolute;left:50%;top:44%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;border-radius:50%;opacity:0;
+  background:repeating-conic-gradient(var(--c) 0 8deg,transparent 8deg 22deg);-webkit-mask:radial-gradient(circle,#000 0,transparent 55%);mask:radial-gradient(circle,#000 0,transparent 55%)}
+.fx.rare .fx-rays{background:repeating-conic-gradient(#e3b23c 0 8deg,transparent 8deg 22deg)}
+.fx.popped .fx-rays{opacity:.4;animation:spin 9s linear infinite,raysin .5s ease-out}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes raysin{from{opacity:0;transform:scale(.3)}}
+.fx-stage{position:relative;width:220px;height:240px}
+.fx-hole{position:absolute;left:30px;bottom:52px;width:160px;height:190px;overflow:hidden}
+.fx-pull{position:absolute;left:0;right:0;bottom:0;height:182px;transform:translateY(var(--y,58%));transition:transform .22s cubic-bezier(.3,1.7,.5,1);animation:wig 1.3s ease-in-out infinite;transform-origin:50% 100%}
+.fx-pull.tug{animation:tug .3s ease-in-out}
+@keyframes wig{0%,100%{rotate:-3deg}50%{rotate:3deg}}
+@keyframes tug{0%,100%{rotate:0deg}25%{rotate:-10deg}75%{rotate:10deg}}
+.fx-soil{position:absolute;left:0;bottom:20px;width:220px;height:70px}
+.fx-out{position:absolute;left:30px;bottom:52px;width:160px;height:182px;opacity:0;pointer-events:none}
+.fx.popped .fx-hole{visibility:hidden}
+.fx.popped .fx-out{animation:jump 1s cubic-bezier(.2,1.3,.4,1) forwards}
+@keyframes jump{0%{opacity:1;transform:translateY(70px) scale(.7)}35%{opacity:1;transform:translateY(-80px) scale(1.14) rotate(-7deg)}62%{transform:translateY(-34px) scale(.97) rotate(5deg)}100%{opacity:1;transform:translateY(-40px) scale(1.05)}}
+.fx-say{position:relative;font-family:var(--disp);font-size:23px;font-weight:700;color:var(--ink);text-shadow:0 0 6px #fbf5e8,0 0 6px #fbf5e8}
+.fx.popped .fx-say{font-size:46px;color:var(--c);animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+.fx.rare.popped .fx-say{color:#c9962a}
+.fx-taps{position:relative;display:flex;gap:10px}
+.fx-taps i{width:15px;height:15px;border-radius:50%;border:2px solid var(--ink);background:var(--cream)}
+.fx-taps i.on{background:var(--c)}
+.fx.popped .fx-taps{visibility:hidden}
+.fx-p,.fx-d{position:absolute;left:50%;top:42%;width:24px;height:24px;margin:-12px;pointer-events:none;opacity:0;animation:fly 1.25s cubic-bezier(.12,.75,.3,1) forwards}
+.fx-p svg{width:100%;height:100%;display:block}
+.fx-p.dot{width:10px;height:10px;margin:-5px;border-radius:50%;border:1.5px solid var(--ink)}
+.fx-d{top:auto;bottom:66px;width:8px;height:8px;margin:-4px;border-radius:50%;background:#7a5a3a;animation-duration:.6s}
+@keyframes fly{0%{transform:translate(0,0) scale(.4) rotate(0);opacity:1}75%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(var(--s)) rotate(var(--r));opacity:0}}
 
 .toast{position:fixed;z-index:1200;left:50%;bottom:calc(var(--sb) + 150px);transform:translate(-50%,-8px);opacity:0;transition:.2s;background:var(--ink);color:var(--cream);padding:9px 16px;border-radius:6px;font-size:14px;max-width:86vw;text-align:center;pointer-events:none}
 .toast.show{opacity:1;transform:translate(-50%,0)}
@@ -161,9 +218,11 @@ button{font:inherit;color:inherit;cursor:pointer}
     <div class="lbl">今日步數</div>
     <div class="num" id="todaySteps">0</div>
     <div class="sub" id="stepSub">總計 0 步</div>
+    <button class="seedsub" id="seedSub" hidden></button>
   </div>
   <div class="chips">
     <div class="chip" title="花瓣">花瓣 <b id="petals">0</b></div>
+    <button class="chip" id="hkChip"><span class="hk">♥</span><span id="hkTxt">同步健康步數</span></button>
     <button class="chip" id="motionChip" hidden>點我開啟計步</button>
     <div class="chip" id="poiChip" hidden></div>
     <div class="chip" id="zoomChip" hidden>放大地圖才看得到地點</div>
@@ -533,22 +592,69 @@ const decorBox = k => k === 'helmet' ? '-2 -6 56 44' : k === 'postbox' ? '-2 -4 
 const decorDefs = (P, sil) => `<defs><filter id="dh" x="-25%" y="-25%" width="150%" height="150%"><feMorphology in="SourceAlpha" operator="dilate" radius="2.4" result="d"/><feFlood flood-color="${CREAM}"/><feComposite in2="d" operator="in" result="h"/><feMerge><feMergeNode in="h"/><feMergeNode in="SourceGraphic"/></feMerge></filter>` +
   `<filter id="ds" x="-25%" y="-25%" width="150%" height="150%"><feMorphology in="SourceAlpha" operator="dilate" radius="2.4" result="d"/><feFlood flood-color="#efe5cf"/><feComposite in2="d" operator="in" result="h"/><feFlood flood-color="#d8c8a8"/><feComposite in2="SourceAlpha" operator="in" result="s"/><feMerge><feMergeNode in="h"/><feMergeNode in="s"/></feMerge></filter></defs>`;
 const HATS = {postbox:'translate(43 33) scale(1.35)', helmet:'translate(39 35) scale(1.2)'};
-function topArt(type, I){
+/* 芽仔本體：深色輪廓、亮面與陰影、各屬性自己的頭頂、身上花紋和表情 */
+const SHADE = {red:{d:'#962f1d', l:'#e57a5c'}, yellow:{d:'#8a6212', l:'#e0b552'}, blue:{d:'#1d3f66', l:'#5d8dbf'}, green:{d:'#33561f', l:'#7aa75a'}};
+function topArt(type, c){
+  const {I, D, L, O, sil} = c, o = `stroke="${O}" stroke-width="2.2" stroke-linejoin="round"`;
   switch(type){
-    case 'red': return `<path d="M70 58 C61 48 63 40 69 34 C75 28 72 20 67 13 C82 19 87 32 79 42 C76 47 73 52 70 58Z" fill="${I}"/>`;
-    case 'yellow': return `<path d="M70 58 Q71 40 83 22" stroke="${I}" stroke-width="3.6" fill="none" stroke-linecap="round"/>` +
-      [[75,43,-35],[80,33,-45],[85,24,-55],[65,45,25],[70,35,15],[76,26,5]].map(([x,y,r]) => `<ellipse cx="${x}" cy="${y}" rx="3.8" ry="7.5" transform="rotate(${r} ${x} ${y})" fill="${I}"/>`).join('');
-    case 'blue': return `<path d="M70 20 Q82 36 80 45 Q76 55 66 51 Q59 45 70 20Z" fill="${I}"/>`;
-    default: return `<path d="M70 58 Q69 44 72 31" stroke="${I}" stroke-width="3.6" fill="none" stroke-linecap="round"/><path d="M72 33 Q87 16 106 17 Q93 33 72 33Z" fill="${I}"/><path d="M71 41 Q56 28 38 31 Q51 44 71 41Z" fill="${I}"/>`;
+    case 'red': // 香火：外焰、內焰、焰心，旁邊飄兩點火星
+      return `<path d="M70 59 C60 49 62 40 68 33 C75 26 72 19 66 11 C83 17 89 32 80 43 C77 48 74 53 70 59Z" fill="${I}" ${o}/>` +
+        (sil ? '' : `<path d="M70 55 C65 48 66 42 70 37 C73 33 73 29 71 25 C79 30 80 39 76 45 C74 49 72 52 70 55Z" fill="#f0a23a"/><path d="M70 52 C67.5 48 68 45 70 42 C72.5 45 72.5 48 70 52Z" fill="#f8de6a"/>` +
+        `<circle cx="86" cy="22" r="2.2" fill="#f0a23a" ${o.replace('2.2"','1.2"')}/><circle cx="57" cy="27" r="1.6" fill="#f8de6a" ${o.replace('2.2"','1"')}/>`);
+    case 'yellow': // 稻穗：彎垂的穗子＋兩片葉
+      return `<path d="M70 60 Q70 41 84 22" stroke="${O}" stroke-width="5.4" fill="none" stroke-linecap="round"/><path d="M70 60 Q70 41 84 22" stroke="${sil ? I : '#7d8a34'}" stroke-width="2.8" fill="none" stroke-linecap="round"/>` +
+        `<path d="M70 57 Q56 50 50 38 Q63 41 71 51Z" fill="${sil ? I : '#8fa04a'}" ${o}/>` +
+        [[75,44,-35],[80.5,34,-45],[86,25.5,-58],[65.5,45,28],[70.5,35.5,18],[76.5,27,8],[90,18,-70]].map(([x,y,r]) =>
+          `<g transform="rotate(${r} ${x} ${y})"><ellipse cx="${x}" cy="${y}" rx="4.2" ry="7.6" fill="${sil ? I : '#e9bd4c'}" ${o.replace('2.2"','1.6"')}/>${sil ? '' : `<path d="M${x} ${y-5} V${y+5}" stroke="${D}" stroke-width="1.1"/>`}</g>`).join('');
+    case 'blue': // 水滴：大水滴＋反光＋旁邊一顆小水珠
+      return `<path d="M70 17 Q84 35 82 46 Q78 57 66 53 Q57 46 70 17Z" fill="${I}" ${o}/>` +
+        (sil ? '' : `<path d="M67 30 Q62 40 64 47" stroke="#cfe3f3" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="76" cy="44" r="2" fill="${L}"/>`) +
+        `<path d="M91 26 Q96 33 95 36 Q93 40 89 38 Q86 35 91 26Z" fill="${sil ? I : L}" ${o.replace('2.2"','1.6"')}/>`;
+    default: // 竹葉：竹枝、兩片長竹葉（有葉脈）＋一片小嫩葉
+      return `<path d="M70 60 Q69 45 72 31" stroke="${O}" stroke-width="5.6" fill="none" stroke-linecap="round"/><path d="M70 60 Q69 45 72 31" stroke="${sil ? I : L}" stroke-width="3" fill="none" stroke-linecap="round"/>` +
+        (sil ? '' : `<path d="M68.6 47 h3.6" stroke="${O}" stroke-width="1.6"/>`) +
+        `<path d="M72 33 Q87 15 108 16 Q94 34 72 33Z" fill="${sil ? I : L}" ${o}/><path d="M71 41 Q55 27 36 30 Q50 45 71 41Z" fill="${I}" ${o}/>` +
+        (sil ? '' : `<path d="M75 31 Q89 21 103 18" stroke="${D}" stroke-width="1.4" fill="none"/><path d="M68 39 Q54 32 41 31.5" stroke="${D}" stroke-width="1.4" fill="none"/>`) +
+        `<path d="M72 31 Q71 20 78 13 Q81 23 72 31Z" fill="${sil ? I : '#a8c97a'}" ${o.replace('2.2"','1.6"')}/>`;
   }
 }
+function bodyMarks(type, c){
+  const {D, L, O} = c;
+  switch(type){
+    case 'red': return `<path d="M47 110 q3.5 -5 7 0 q3.5 5 7 0 M51 116 q3 -4 6 0" stroke="#f0c048" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="61.5" cy="110" r="1.6" fill="#f0c048"/>`;
+    case 'yellow': return [[46,104],[53,110],[60,115],[67,118],[74,118],[81,115],[88,110],[94,104]].map(([x,y], i) => `<path d="M${x-3} ${y-3} l6 6 M${x+3} ${y-3} l-6 6" stroke="${D}" stroke-width="1.4" opacity=".55"/>`).join('') +
+      `<circle cx="51" cy="94" r="1" fill="${D}"/><circle cx="54" cy="96.5" r="1" fill="${D}"/><circle cx="86" cy="96.5" r="1" fill="${D}"/><circle cx="89" cy="94" r="1" fill="${D}"/>`;
+    case 'blue': return `<path d="M44 108 q6.5 -5 13 0 t13 0 t13 0 t13 0" stroke="${L}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M50 118 q5 -4 10 0 t10 0 t10 0 t10 0" stroke="${L}" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".8"/>` +
+      `<circle cx="46" cy="84" r="2.4" fill="none" stroke="${L}" stroke-width="1.4"/><circle cx="43" cy="77" r="1.4" fill="none" stroke="${L}" stroke-width="1.2"/>`;
+    default: return `<path d="M38 103 Q70 113 102 103" stroke="${D}" stroke-width="2.4" fill="none"/><path d="M38 104.6 Q70 114.6 102 104.6" stroke="${L}" stroke-width="1.2" fill="none" opacity=".8"/>` +
+      `<path d="M45 119 Q70 127 95 119" stroke="${D}" stroke-width="2.2" fill="none"/><path d="M56 113 q4 -6 9 -4 q-4 5 -9 4Z" fill="${L}" stroke="${O}" stroke-width="1"/>`;
+  }
+}
+function faceArt(type, c){
+  const {P, O, sil} = c;
+  if(sil) return `<circle cx="58" cy="88" r="5" fill="${P}"/><circle cx="82" cy="88" r="5" fill="${P}"/>`;
+  const eye = (x, y) => `<circle cx="${x}" cy="${y}" r="5.6" fill="${P}" stroke="${O}" stroke-width="1.4"/><circle cx="${x+.8}" cy="${y+.9}" r="3.2" fill="${O}"/><circle cx="${x+2}" cy="${y-.6}" r="1.3" fill="#fff"/>`;
+  const cheeks = `<ellipse cx="49" cy="99" rx="5.2" ry="3" fill="#f29a8a" opacity=".8"/><ellipse cx="91" cy="99" rx="5.2" ry="3" fill="#f29a8a" opacity=".8"/>`;
+  const mouth = {
+    red: `<path d="M63.5 100 Q70 101 76.5 100 Q75 108.5 70 108.5 Q65 108.5 63.5 100Z" fill="${O}"/><path d="M66.5 105.6 Q70 103.6 73.5 105.6 Q72 108 70 108 Q68 108 66.5 105.6Z" fill="#e9707a"/>`,
+    yellow: `<path d="M63 101 Q70 109 77 101" stroke="${O}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`,
+    blue: `<path d="M64 102 q3 3 6 0 q3 3 6 0" stroke="${O}" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+    green: `<path d="M64.5 102 Q70 107 75.5 102" stroke="${O}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M53 80 q5 -3 9 0 M78 80 q4 -3 9 0" stroke="${O}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
+  }[type];
+  return eye(58, 88) + eye(82, 88) + cheeks + mouth;
+}
 function sproutArt(sp, ink, paper){
-  const I = ink || INK[sp.type], P = paper || CREAM;
-  let s = topArt(sp.type, I) +
-    `<ellipse cx="70" cy="92" rx="34" ry="35" fill="${I}"/>` +
-    `<circle cx="58" cy="88" r="5" fill="${P}"/><circle cx="82" cy="88" r="5" fill="${P}"/>` +
-    `<path d="M64 102 Q70 108 76 102" stroke="${P}" stroke-width="3" fill="none" stroke-linecap="round"/>` +
-    `<rect x="51" y="123" width="10" height="8" rx="2" fill="${I}"/><rect x="79" y="123" width="10" height="8" rx="2" fill="${I}"/>`;
+  const sil = !!ink, I = ink || INK[sp.type], P = paper || CREAM;
+  const c = {I, P, sil, O: sil ? I : '#2a2622', D: sil ? I : SHADE[sp.type].d, L: sil ? I : SHADE[sp.type].l};
+  const ol = `stroke="${c.O}" stroke-width="2.6" stroke-linejoin="round"`;
+  let s = topArt(sp.type, c) +
+    `<rect x="50" y="121" width="12" height="10" rx="4" fill="${I}" ${ol}/><rect x="78" y="121" width="12" height="10" rx="4" fill="${I}" ${ol}/>` +
+    `<path d="M40 95 Q32 99 34 109 Q40 110 43 103Z" fill="${I}" ${ol}/><path d="M100 95 Q108 99 106 109 Q100 110 97 103Z" fill="${I}" ${ol}/>` +
+    `<ellipse cx="70" cy="92" rx="34" ry="35" fill="${I}" ${ol}/>` +
+    (sil ? '' : `<path d="M95 70 C108 88 103 114 80 125 C96 112 101 92 95 70Z" fill="${c.D}" opacity=".5"/>` +
+      `<path d="M45 82 C47 71 55 64 64 61" stroke="${c.L}" stroke-width="4.2" fill="none" stroke-linecap="round"/><circle cx="43.5" cy="89" r="2" fill="${c.L}"/>` +
+      bodyMarks(sp.type, c)) +
+    faceArt(sp.type, c);
   if(sp.decor){
     const pos = HATS[sp.decor] || 'translate(88 76) scale(1.3)';
     s += decorDefs() + `<g transform="${pos}" filter="url(#${ink ? 'ds' : 'dh'})">${decorArt(sp.decor, sp.type)}</g>`;
@@ -624,6 +730,93 @@ function modal(html, onMount){
   onMount && onMount(m); return m;
 }
 function closeModal(){ $('#modalRoot').innerHTML = ''; }
+
+/* ───────── 音效（Web Audio 即時合成，不用下載音檔） ───────── */
+let AC = null;
+function sfxUnlock(){
+  try {
+    if(!AC){ const C = window.AudioContext || window.webkitAudioContext; if(!C) return; AC = new C(); }
+    if(AC.state === 'suspended') AC.resume();
+  } catch(e){}
+}
+document.addEventListener('pointerdown', sfxUnlock, {passive:true});
+function tone(f, at, dur, type='triangle', vol=.22, f2){
+  const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime + at;
+  o.type = type; o.frequency.setValueAtTime(f, t); if(f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur*.7);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g).connect(AC.destination); o.start(t); o.stop(t + dur + .05);
+}
+function noise(at, dur, freq=1800, vol=.18){
+  const n = Math.floor(AC.sampleRate * dur), b = AC.createBuffer(1, n, AC.sampleRate), d = b.getChannelData(0);
+  for(let i = 0; i < n; i++) d[i] = (Math.random()*2 - 1) * (1 - i/n);
+  const s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain(), t = AC.currentTime + at;
+  s.buffer = b; f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = .9; g.gain.value = vol;
+  s.connect(f).connect(g).connect(AC.destination); s.start(t);
+}
+const NOTE = {C5:523.3, D5:587.3, E5:659.3, G5:784, A5:880, C6:1046.5, D6:1174.7, E6:1318.5, G6:1568};
+function sfx(kind, n = 1){
+  if(S.sound === false) return;
+  sfxUnlock(); if(!AC) return;
+  try {
+    switch(kind){
+      case 'tug': noise(0, .18, 900 + n*500, .22); tone(150 + n*70, 0, .2, 'triangle', .25, 230 + n*110); break;
+      case 'pop': case 'rare':
+        noise(0, .06, 3000, .3); tone(260, 0, .14, 'sine', .4, 1300);
+        ['C5','E5','G5','C6'].forEach((k, i) => tone(NOTE[k], .16 + i*.085, .32, 'triangle', .2));
+        tone(NOTE.E6, .55, .6, 'sine', .12); tone(NOTE.G6, .55, .6, 'sine', .08);
+        if(kind === 'rare') ['D6','E6','G6','C6','E6','G6'].forEach((k, i) => tone(NOTE[k]*(i > 2 ? 2 : 1), .8 + i*.07, .4, 'sine', .1));
+        break;
+      case 'ready': tone(NOTE.G5, 0, .35, 'sine', .22); tone(NOTE.G5*2, 0, .3, 'sine', .05); tone(NOTE.C6, .14, .6, 'sine', .22); tone(NOTE.C6*2, .14, .5, 'sine', .05); break;
+      case 'pick': tone(NOTE.E5, 0, .14, 'triangle', .18); tone(NOTE.A5, .08, .22, 'triangle', .18); break;
+      case 'coin': tone(NOTE.A5, 0, .1, 'square', .07); tone(NOTE.E6, .07, .25, 'square', .07); break;
+    }
+  } catch(e){}
+}
+
+/* ───────── 拔芽仔的特效：點三下用力拔，啵一聲跳出來 ───────── */
+const SOIL = `<svg class="fx-soil" viewBox="0 0 220 70" aria-hidden="true"><ellipse cx="110" cy="44" rx="102" ry="24" fill="#8a6440" stroke="#2a2622" stroke-width="2.6"/>
+  <path d="M28 37 Q110 13 192 37" stroke="#a9825a" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <circle cx="62" cy="50" r="3" fill="#6b4a2b"/><circle cx="150" cy="54" r="2.4" fill="#6b4a2b"/><circle cx="118" cy="58" r="2" fill="#6b4a2b"/><circle cx="84" cy="57" r="1.8" fill="#6b4a2b"/>
+  <path d="M30 34 l-4 -10 6 7 2 -11 3 12 M178 32 l2 -11 3 9 5 -8 -3 12" stroke="#4f7a3a" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function particles(host, list){
+  for(const p of list){
+    const e = document.createElement('div'); e.className = p.cls;
+    e.style.cssText = `--dx:${p.dx}px;--dy:${p.dy}px;--r:${p.r}deg;--s:${p.s};animation-delay:${p.d||0}ms;${p.css||''}`;
+    e.innerHTML = p.html || ''; host.appendChild(e); setTimeout(() => e.remove(), 1600 + (p.d||0));
+  }
+}
+function pluckShow(sp, done){
+  sfxUnlock();
+  const fx = document.createElement('div'); fx.className = 'fx' + (sp.rare ? ' rare' : ''); fx.style.setProperty('--c', INK[sp.type]);
+  fx.innerHTML = `<div class="fx-rays"></div><div class="fx-stage"><div class="fx-hole"><div class="fx-pull">${sproutSVG(sp)}</div></div>${SOIL}<div class="fx-out">${sproutSVG(sp)}</div></div>
+    <div class="fx-say">點三下，用力拔起來！</div><div class="fx-taps"><i></i><i></i><i></i></div>`;
+  document.body.appendChild(fx);
+  const stage = fx.querySelector('.fx-stage'), pull = fx.querySelector('.fx-pull'), rnd = (a, b) => a + Math.random()*(b-a);
+  let n = 0;
+  fx.addEventListener('pointerdown', e => {
+    e.preventDefault(); if(n >= 3) return; n++;
+    fx.querySelectorAll('.fx-taps i')[n-1].classList.add('on');
+    pull.style.setProperty('--y', [47, 34, 22][n-1] + '%');
+    pull.classList.remove('tug'); void pull.offsetWidth; pull.classList.add('tug');
+    particles(stage, Array.from({length:7}, () => ({cls:'fx-d', dx:rnd(-90, 90), dy:rnd(-90, -20), r:0, s:rnd(.6, 1.2)})));
+    sfx('tug', n);
+    try { navigator.vibrate && navigator.vibrate(25); } catch(x){}
+    if(n === 3) setTimeout(pop, 280);
+  });
+  function pop(){
+    fx.classList.add('popped'); sfx(sp.rare ? 'rare' : 'pop');
+    try { navigator.vibrate && navigator.vibrate([30, 40, 70]); } catch(x){}
+    fx.querySelector('.fx-say').textContent = sp.rare ? '珍藏款！' : '啵！';
+    const fk = flowerNow(), cols = [INK[sp.type], SHADE[sp.type].l, '#f2c230', CREAM];
+    particles(stage, Array.from({length:34}, (_, i) => {
+      const a = rnd(0, Math.PI*2), r = rnd(90, 190), kind = i % 3;
+      return {cls:'fx-p' + (kind === 2 ? ' dot' : ''), dx:Math.cos(a)*r, dy:Math.sin(a)*r - 40, r:rnd(-360, 360), s:rnd(.7, 1.4), d:rnd(0, 120),
+        html: kind === 0 ? flowerSVG(fk) : kind === 1 ? `<svg viewBox="0 0 20 20"><path d="M10 0 L12.6 7.4 20 10 12.6 12.6 10 20 7.4 12.6 0 10 7.4 7.4Z" fill="${sp.rare ? '#e3b23c' : pick(cols)}" stroke="#2a2622" stroke-width="1"/></svg>` : '',
+        css: kind === 2 ? `background:${pick(cols)}` : ''};
+    }));
+    setTimeout(() => { fx.classList.add('bye'); setTimeout(() => { fx.remove(); done(); }, 300); }, sp.rare ? 2100 : 1700);
+  }
+}
 const countBy = (arr, f) => arr.reduce((n, x) => n + (f(x) ? 1 : 0), 0);
 const owned = t => countBy(S.sprouts, s => s.type === t);
 
@@ -650,11 +843,66 @@ function drawFlower(f){
 FL.forEach(drawFlower);
 
 let me = null, follow = true;
-const meIcon = () => L.divIcon({className:'', html:`<div class="me">${sproutSVG(S.sprouts[S.sprouts.length-1] || {type:'green'})}</div>`, iconSize:[46,52], iconAnchor:[23,46]});
-const meMarker = L.marker([24.8017,120.9716], {icon:meIcon(), interactive:false, zIndexOffset:1000});
+/* 地圖上的主角芽仔：可以自己選一隻帶出門 */
+const heroSp = () => S.sprouts.find(s => s.id === S.hero) || S.sprouts[S.sprouts.length-1] || null;
+const meIcon = () => {
+  const sp = heroSp(), t = sp ? sp.type : 'green';
+  return L.divIcon({className:'', iconSize:[88,120], iconAnchor:[44,92], html:
+    `<div class="me" style="--c:${INK[t]}"><div class="ring"></div><div class="shadow"></div><div class="bob"><div class="fl">${sproutSVG(sp || {type:'green'})}</div></div>` +
+    (sp ? `<div class="tag">${esc(sp.name)}</div>` : '') + `</div>`});
+};
+const meMarker = L.marker([24.8017,120.9716], {icon:meIcon(), zIndexOffset:2000, keyboard:false});
+meMarker.on('click', () => pickHero());
 const accCircle = L.circle([24.8017,120.9716], {radius:20, color:'#2d5a8a', weight:1, fillOpacity:.08, interactive:false});
-map.on('dragstart', () => { follow = false; });
-$('#locBtn').onclick = () => { follow = true; if(me) map.setView([me.lat, me.lng], Math.max(map.getZoom(), 17)); else toast('還沒取得位置'); };
+/* 走路時讓芽仔滑到新位置，鏡頭一路跟著，芽仔一直在畫面正中間 */
+let glide = null, gliding = false, faceLeft = false, recenterT = null;
+function moveHero(lat, lng){
+  const from = glide ? glide.cur() : meMarker.getLatLng(), t0 = performance.now(), dur = 900;
+  if(Math.abs(lng - from.lng) > 1e-6){ const left = lng < from.lng; if(left !== faceLeft){ faceLeft = left; const el = meMarker.getElement(); el && el.classList.toggle('left', left); } }
+  const far = Math.abs(lat - from.lat) + Math.abs(lng - from.lng) > 0.01 || !map.hasLayer(meMarker);
+  const el = meMarker.getElement(); el && el.classList.add('walk');
+  const cur = () => { const k = Math.min(1, (performance.now() - t0)/dur), e = k*(2-k); return L.latLng(from.lat + (lat-from.lat)*e, from.lng + (lng-from.lng)*e); };
+  glide = {cur};
+  if(far){ glide = null; meMarker.setLatLng([lat, lng]); if(follow) map.setView([lat, lng], map.getZoom(), {animate:false}); return; }
+  const step = () => {
+    if(!glide || glide.cur !== cur) return;
+    const p = cur(); meMarker.setLatLng(p);
+    if(follow){ gliding = true; map.setView(p, map.getZoom(), {animate:false}); gliding = false; }
+    if(performance.now() - t0 < dur) requestAnimationFrame(step);
+    else { glide = null; const el = meMarker.getElement(); el && el.classList.remove('walk'); if(follow){ ensureCells(); renderPoints(); } }
+  };
+  requestAnimationFrame(step);
+  /* 畫面在背景時動畫不會跑，時間到就直接放到終點 */
+  setTimeout(() => { if(glide && glide.cur === cur){ glide = null; step0(lat, lng); } }, dur + 200);
+}
+function step0(lat, lng){
+  meMarker.setLatLng([lat, lng]); const el = meMarker.getElement(); el && el.classList.remove('walk');
+  if(follow){ map.setView([lat, lng], map.getZoom(), {animate:false}); }
+}
+function refreshHero(){ meMarker.setIcon(meIcon()); const el = meMarker.getElement(); el && el.classList.toggle('left', faceLeft); }
+function setFollow(on){
+  follow = on; $('#locBtn').classList.toggle('on', !on); clearTimeout(recenterT);
+  const z = on ? 'center' : true; map.options.touchZoom = z; map.options.scrollWheelZoom = z; map.options.doubleClickZoom = z;
+  if(on && me) map.setView([me.lat, me.lng], map.getZoom(), {animate:true});
+  /* 手動拖走地圖後，15 秒沒碰就自動回到芽仔身上 */
+  if(!on) recenterT = setTimeout(() => { if(me) setFollow(true); }, 15000);
+}
+map.on('dragstart', () => setFollow(false));
+map.on('drag', () => { if(!follow){ clearTimeout(recenterT); recenterT = setTimeout(() => { if(me) setFollow(true); }, 15000); } });
+$('#locBtn').onclick = () => { if(!me){ toast('還沒取得位置'); return; } if(map.getZoom() < 16) map.setZoom(17, {animate:false}); setFollow(true); };
+function pickHero(){
+  if(!S.sprouts.length){ toast('孵出第一隻芽仔後，就能選牠陪你散步'); return; }
+  const cur = heroSp();
+  modal(`<h2>帶誰去散步？</h2><p>選一隻芽仔，牠會出現在地圖上陪你走。</p><div class="grid heroes">${S.sprouts.slice().reverse().map(sp =>
+    `<button class="st ${cur && sp.id === cur.id ? 'cur' : ''}" data-h="${sp.id}">${stampSVG(sp, '#fbf5e8')}<div class="n">${esc(sp.name)}</div></button>`).join('')}</div>
+    <div class="row" style="justify-content:center;margin-top:12px"><button class="btn ghost" id="cx">關閉</button></div>`,
+    m => { m.querySelector('#cx').onclick = closeModal;
+      m.querySelectorAll('[data-h]').forEach(b => b.onclick = () => { S.heroAuto = false; setHero(+b.dataset.h); }); });
+}
+function setHero(id){
+  S.hero = id; save(); refreshHero();
+  const sp = heroSp(); closeModal(); if(sp){ toast(`${sp.name}跟你出門囉！`); sfx('pick'); }
+}
 
 /* ───────── 地點：OpenStreetMap ───────── */
 const POIS = new Map();          // id → poi
@@ -857,7 +1105,7 @@ function renderPoints(){
     nm._st = state; nm.on('click', () => openPoint(p)); markers.set(id, nm);
   }
 }
-map.on('moveend', () => { ensureCells(); renderPoints(); });
+map.on('moveend', () => { if(gliding) return; ensureCells(); renderPoints(); });
 
 /* ───────── 地點卡片與收集 ───────── */
 let curPoint = null;
@@ -954,12 +1202,18 @@ function addSteps(n){
   rollDay(); S.today += n; S.total += n;
   for(const s of S.seeds.slice(0,3)){
     s.prog = Math.min(s.need, s.prog + n);
-    if(s.prog >= s.need && !readyNotified.has(s.id)){ readyNotified.add(s.id); toast(`${TYPES[s.type].name}的種子可以拔起來了！`); }
+    if(s.prog >= s.need && !readyNotified.has(s.id)){
+      readyNotified.add(s.id); toast(`${TYPES[s.type].name}的種子可以拔起來了！`); sfx('ready');
+      const b = $('#bedBadge'); b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
+    }
   }
   renderSteps(); save();
 }
 function renderSteps(){
   $('#todaySteps').textContent = fmtN(S.today); $('#stepSub').textContent = `總計 ${fmtN(S.total)} 步`;
+  const grow = S.seeds.slice(0,3), left = grow.length ? Math.min(...grow.map(s => s.need - s.prog)) : null;
+  const sh = $('#seedSub'); sh.hidden = left == null; sh.classList.toggle('go', left === 0);
+  if(left != null) sh.textContent = left <= 0 ? '有芽仔可以拔了！' : `再 ${fmtN(left)} 步拔芽仔`;
   $('#petals').textContent = fmtN(S.petals); $('#pocketSteps').textContent = fmtN(S.today);
   const ready = countBy(S.seeds.slice(0,3), s => s.prog >= s.need);
   const b = $('#bedBadge'); if(ready) b.dataset.n = ready; else delete b.dataset.n;
@@ -971,12 +1225,12 @@ let lastFix = null, gotFirst = false;
 function onPos(pos){
   const c = pos.coords; const fix = {lat:c.latitude, lng:c.longitude, acc:c.accuracy || 20, t:pos.timestamp || Date.now()};
   me = fix;
-  meMarker.setLatLng([fix.lat, fix.lng]); accCircle.setLatLng([fix.lat, fix.lng]).setRadius(fix.acc);
-  if(!map.hasLayer(meMarker)){ meMarker.addTo(map); accCircle.addTo(map); }
+  accCircle.setLatLng([fix.lat, fix.lng]).setRadius(fix.acc);
+  if(!map.hasLayer(meMarker)){ meMarker.setLatLng([fix.lat, fix.lng]).addTo(map); accCircle.addTo(map); refreshHero(); }
+  else moveHero(fix.lat, fix.lng);
   $('#gpsDot').classList.toggle('on', fix.acc < 40); $('#gpsTxt').textContent = fix.acc < 40 ? `定位 ±${Math.round(fix.acc)}m` : `訊號弱 ±${Math.round(fix.acc)}m`;
   $('#gpsChip').classList.remove('warn');
-  if(!gotFirst){ gotFirst = true; map.setView([fix.lat, fix.lng], 17); }
-  else if(follow) map.panTo([fix.lat, fix.lng], {animate:true});
+  if(!gotFirst){ gotFirst = true; map.setView([fix.lat, fix.lng], 17); setFollow(true); }
   if(fix.acc <= 35){
     if(!lastFix) lastFix = fix;
     else {
@@ -1037,9 +1291,64 @@ $('#pocketBtn').onclick = async () => {
   ring.addEventListener('pointerdown', start); ring.addEventListener('pointerup', reset); ring.addEventListener('pointerleave', reset); ring.addEventListener('pointercancel', reset);
 })();
 document.addEventListener('visibilitychange', () => {
-  if(document.visibilityState === 'visible'){ rollDay(); renderSteps(); if(!$('#pocket').hidden) lockOn(); lastFix = null; }
+  if(document.visibilityState === 'visible'){
+    rollDay(); renderSteps(); renderHK(); if(!$('#pocket').hidden) lockOn(); lastFix = null;
+    if(S.hkPending && Date.now() - S.hkPending < 10*60e3){ S.hkPending = 0; save(); hkModal(true); }
+  }
   else save(true);
 });
+
+/* ───────── Apple 健康同步 ─────────
+   網頁沒辦法直接讀健康 App，所以用 iPhone 內建的「捷徑」：捷徑讀出今天的步數、拷貝起來，
+   回到菜籽仔按「貼上」，就把螢幕關著時走的步數補進來（芽床的種子也一起長大）。 */
+const HK_NAME = '菜籽仔步數';
+const hkURL = () => 'shortcuts://run-shortcut?name=' + encodeURIComponent(HK_NAME);
+function renderHK(){
+  const stale = !S.hkLast || Date.now() - S.hkLast > 30*60e3;
+  $('#hkTxt').textContent = !S.hkLast ? '同步健康步數' : stale ? '同步健康步數' : '健康已同步';
+  $('#hkChip').classList.toggle('warn', !!S.hkLast && stale && new Date(S.hkLast).toDateString() !== new Date().toDateString());
+}
+function applyHealth(raw){
+  const m = String(raw || '').replace(/[,，\s]/g, '').match(/\d+(\.\d+)?/);
+  const H = m ? Math.floor(+m[0]) : NaN;
+  if(!(H >= 0 && H < 200000)){ toast('讀不到步數，請先執行捷徑，或直接輸入數字'); return false; }
+  rollDay(); S.hkLast = Date.now(); S.hkSetup = true;
+  const add = H - S.today;
+  if(add > 0){ addSteps(add); toast(`從 Apple 健康補上 ${fmtN(add)} 步！`); sfx('coin'); }
+  else { save(); toast(`健康 App 今天 ${fmtN(H)} 步，菜籽仔已經算到了`); }
+  renderHK(); return true;
+}
+function hkModal(back){
+  const guide = `<ol>
+    <li>打開 iPhone 的「<b>捷徑</b>」App，按右上角「＋」。</li>
+    <li>按「加入動作」，搜尋「<b>健康樣本</b>」，選「尋找健康樣本」。<br>類型改成「步數」，再按「加入過濾條件」，設成「開始日期」「是今天」。</li>
+    <li>再加入動作，搜尋「<b>統計</b>」，選「計算統計資料」，改成「總和」。</li>
+    <li>再加入動作，搜尋「<b>剪貼</b>」，選「拷貝到剪貼板」。</li>
+    <li>按最上面的名稱，改成「<b>${HK_NAME}</b>」（一字不差），按完成。</li>
+    <li>第一次執行時，iPhone 會問能不能讀取健康資料，選「允許」。</li></ol>`;
+  modal(`<div class="steps-hk"><h2>同步 Apple 健康</h2>
+    ${back ? '<p>捷徑跑完了嗎？按下面的按鈕，把剛剛拷貝的步數貼進來。</p>' :
+      `<p>手機螢幕關掉時，菜籽仔沒辦法計步，但 iPhone 的「健康」一直都有在記錄。<br>同步一下，就能把那些步數補回來，芽床的種子也會一起長大。</p>`}
+    <div class="row" style="justify-content:center;margin:10px 0">
+      ${back ? '' : `<a class="btn pri" id="hkRun" href="${hkURL()}">① 執行捷徑</a>`}
+      <button class="btn ${back ? 'pri' : ''}" id="hkPaste">${back ? '' : '② '}貼上步數</button></div>
+    <p style="font-size:12.5px">或直接輸入「健康」App 裡今天的步數：</p>
+    <div class="row" style="justify-content:center"><input id="hkIn" inputmode="numeric" placeholder="例如 8532" aria-label="今天的步數"><button class="btn" id="hkOk">補上</button></div>
+    ${S.hkSetup && !back ? `<details style="margin-top:10px;text-align:left"><summary style="font-size:13px;color:var(--muted)">怎麼建立捷徑？</summary>${guide}</details>` : back ? '' : `<h3 style="font-family:var(--disp);margin:14px 0 2px">第一次使用：建立捷徑（約 1 分鐘）</h3>${guide}`}
+    <p style="font-size:12px">捷徑跑完會停在「捷徑」App，請按左上角「◀ 菜籽仔」或滑回來。同一天重複同步不會重複計算。</p>
+    <div class="row" style="justify-content:center"><button class="btn ghost" id="cx">關閉</button></div></div>`,
+  m => {
+    const run = m.querySelector('#hkRun'); if(run) run.onclick = () => { S.hkPending = Date.now(); save(true); };
+    m.querySelector('#hkPaste').onclick = async () => {
+      try { const t = await navigator.clipboard.readText(); if(applyHealth(t)) closeModal(); }
+      catch(e){ toast('沒辦法讀剪貼板，請在下面直接輸入數字'); m.querySelector('#hkIn').focus(); }
+    };
+    m.querySelector('#hkOk').onclick = () => { if(applyHealth(m.querySelector('#hkIn').value)) closeModal(); };
+    m.querySelector('#cx').onclick = closeModal;
+  });
+}
+$('#hkChip').onclick = () => hkModal(false);
+$('#seedSub').onclick = () => { renderBed(); openSheet('bedSheet'); };
 window.addEventListener('pagehide', () => save(true));
 
 /* ───────── 分頁 ───────── */
@@ -1074,7 +1383,10 @@ function renderBed(){
   h += bag.length ? `<p class="hint">點一下可以換到芽床第一格。</p><div class="bag">${bag.map(s => `<button data-front="${s.id}">${seedSVG(s.type, s.big)}${TYPES[s.type].name}${s.decor?' · '+decorName(s.decor, s.type):''}</button>`).join('')}</div>` : `<p class="hint">還沒有備用的種子。</p>`;
   h += `<h3>存檔</h3><p class="hint">資料只存在這支手機的瀏覽器裡。偶爾備份一次，換手機或清除資料時才不會不見（明信片照片不含在備份內）。</p>
     <div class="row"><button class="btn" id="expBtn">備份存檔</button><button class="btn ghost" id="impBtn">從備份還原</button></div>`;
+  h += `<h3>設定</h3><div class="row"><button class="btn" id="sndBtn">音效：${S.sound === false ? '關' : '開'}</button><button class="btn" id="heroBtn">選陪我散步的芽仔</button></div>`;
   $('#bedBody').innerHTML = h;
+  $('#sndBtn').onclick = () => { S.sound = S.sound === false; save(); renderBed(); sfx('pick'); };
+  $('#heroBtn').onclick = () => pickHero();
   $('#bedBody').querySelectorAll('[data-hatch]').forEach(b => b.onclick = () => hatch(+b.dataset.hatch));
   $('#bedBody').querySelectorAll('[data-front]').forEach(b => b.onclick = () => {
     const i = S.seeds.findIndex(s => s.id === +b.dataset.front); const [s] = S.seeds.splice(i,1); S.seeds.unshift(s); save(); renderBed(); });
@@ -1087,13 +1399,14 @@ function hatch(id){
   const same = s.decor ? countBy(S.sprouts, x => x.decor === s.decor) : 0;
   const rareChance = s.big ? .35 : (same >= 10 ? .25 : .06);
   const sp = {id:S.nextId++, type:s.type, decor:s.decor, rare:Math.random() < rareChance, name:pick(NICK), at:Date.now(), src:s.src};
-  S.sprouts.push(sp); S.hatched++; save(); refreshAll();
-  meMarker.setIcon(meIcon());
+  S.sprouts.push(sp); S.hatched++; readyNotified.delete(s.id); save(); refreshAll();
+  if(!S.hero || S.heroAuto !== false) S.hero = sp.id; refreshHero();
   const unlockMsg = s.decor && same + 1 === 10 ? `<p>「${DECOR[s.decor].name}」集滿 10 隻，之後更容易出珍藏款！</p>` : '';
-  modal(`<div class="big pop">${stampSVG(sp, '#fbf5e8')}</div><h2>${sp.rare?'珍藏款！':'新夥伴！'}</h2>
+  closeSheets();
+  pluckShow(sp, () => modal(`<div class="big pop">${stampSVG(sp, '#fbf5e8')}</div><h2>${sp.rare?'珍藏款！':'新夥伴！'}</h2>
     <p>${TYPES[sp.type].name}${sp.decor?' · 戴著'+decorName(sp.decor, sp.type):''}<br>來自 ${esc(sp.src||'路邊')}</p>${unlockMsg}
     <input id="nameIn" maxlength="8" value="${esc(sp.name)}" aria-label="名字"><div class="row" style="justify-content:center"><button class="btn pri" id="nameOk">就叫這個名字</button></div>`,
-    m => { m.querySelector('#nameOk').onclick = () => { const v = m.querySelector('#nameIn').value.trim(); if(v) sp.name = v; save(); closeModal(); renderBed(); }; });
+    m => { m.querySelector('#nameOk').onclick = () => { const v = m.querySelector('#nameIn').value.trim(); if(v) sp.name = v; save(); closeModal(); refreshHero(); renderBed(); openSheet('bedSheet'); }; }));
 }
 
 /* 芽仔與圖鑑 */
@@ -1119,8 +1432,9 @@ function showSprout(id){
   const sp = S.sprouts.find(s => s.id === id); if(!sp) return;
   modal(`<div class="big">${stampSVG(sp, '#fbf5e8')}</div><input id="nameIn" maxlength="8" value="${esc(sp.name)}" aria-label="名字">
     <p>${TYPES[sp.type].name}${sp.decor?' · '+decorName(sp.decor, sp.type):''}${sp.rare?' · 珍藏款':''}<br>${new Date(sp.at).toLocaleDateString('zh-TW')} 在 ${esc(sp.src||'路邊')} 孵出</p>
-    <div class="row" style="justify-content:center"><button class="btn pri" id="nameOk">儲存</button><button class="btn ghost" id="cx">關閉</button></div>`,
-    m => { m.querySelector('#nameOk').onclick = () => { const v = m.querySelector('#nameIn').value.trim(); if(v){ sp.name = v; save(); } closeModal(); renderDex(); };
+    <div class="row" style="justify-content:center"><button class="btn pri" id="nameOk">儲存</button>${heroSp() === sp ? '<span class="hint" style="margin:0">正在陪你散步</span>' : '<button class="btn" id="walkWith">帶牠散步</button>'}<button class="btn ghost" id="cx">關閉</button></div>`,
+    m => { m.querySelector('#nameOk').onclick = () => { const v = m.querySelector('#nameIn').value.trim(); if(v){ sp.name = v; save(); refreshHero(); } closeModal(); renderDex(); };
+           const w = m.querySelector('#walkWith'); if(w) w.onclick = () => { S.heroAuto = false; setHero(sp.id); closeSheets(); };
            m.querySelector('#cx').onclick = closeModal; });
 }
 
@@ -1234,7 +1548,7 @@ $('#importInput').onchange = async e => {
 };
 
 /* ───────── 開始 ───────── */
-function refreshAll(){ renderSteps(); renderFlowerBtn(); }
+function refreshAll(){ renderSteps(); renderFlowerBtn(); renderHK(); }
 function showIntro(){
   modal(`<div class="intro"><div class="big pop">${stampSVG({type:'green', decor:'banyan'}, '#fbf5e8', {label:'菜籽仔'})}</div>
     <h2>菜籽仔</h2><ul>
@@ -1242,7 +1556,8 @@ function showIntro(){
     <li>種子放進芽床，走路累積步數就會孵出芽仔。在哪裡撿到的種子，就會孵出戴什麼飾品的芽仔。</li>
     <li>打開「種花」，走過的路會開滿當季的花。</li>
     <li>到景點打卡，拍一張自己的明信片。</li>
-    <li>手機放口袋時，請開「口袋模式」讓畫面保持亮著，才能即時計步。</li></ul>
+    <li>手機放口袋時，可以開「口袋模式」即時計步；螢幕關著走的步數，按右上「同步健康步數」從 Apple 健康補回來。</li>
+    <li>點地圖上的芽仔，可以換一隻陪你散步。</li></ul>
     <button class="btn pri" id="go">開始散步</button>
     <p style="font-size:12px">會請你允許定位與動作感測器。位置只用來找附近的地點，查詢時只會送出約 1 公里的範圍給 OpenStreetMap。</p></div>`,
   m => { m.querySelector('#go').onclick = async () => { await enableMotion(); startGPS(); S.onboarded = true; save(true); closeModal(); }; });
