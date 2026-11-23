@@ -330,7 +330,7 @@ svg.pic{filter:none!important}   /* ChatGPT 畫的圖本身就有筆觸，不再
 'use strict';
 /* ───────── 基本資料 ───────── */
 const $ = s => document.querySelector(s);
-const APP_VER = '11/20 新畫風版';
+const APP_VER = '11/23 大種子袋版';
 const CREAM = '#fdf6e6';
 const INK = {red:'#e0694a', yellow:'#e2a83a', blue:'#5b8fc4', green:'#72a24e'};
 const TYPE_ORDER = ['red','yellow','blue','green'];
@@ -1396,10 +1396,37 @@ function openPoint(p){
   const l = $('#lmStamp'); if(l) l.onclick = () => stampLandmark(p);
 }
 function seedNeed(base){ const cut = Math.min(.2, owned('green')*.04); return Math.round(base*(1-cut)/50)*50; }
+const SEED_MAX = 30;   // 菜園 3 格＋種子袋 27 顆
 function giveSeed(type, decor, base, src){
-  if(S.seeds.length >= 12){ toast('種子袋滿了（12 顆），先去菜園孵一孵'); return false; }
-  S.seeds.push({id:S.nextId++, type, decor, need:seedNeed(base), prog:0, src, big:base>=5000});
+  const ns = {id:S.nextId++, type, decor, need:seedNeed(base), prog:0, src, big:base>=5000};
+  if(S.seeds.length >= SEED_MAX){ seedFullModal(ns); return 'full'; }
+  S.seeds.push(ns);
   return true;
+}
+/* 種子滿了：讓玩家選一顆舊的丟掉、換成新的，或是不要新的 */
+function seedFullModal(ns){
+  const label = s => `${TYPES[s.type].name}${s.decor ? ' · ' + decorName(s.decor, s.type) : ''}${s.big ? '（大種子）' : ''}`;
+  const list = () => S.seeds.map((s, i) => `<button data-drop="${s.id}">${seedSVG(s.type, s.big)}<span>${label(s)}${i < 3 ? `<br><small style="color:var(--leaf)">菜園中 ${fmtN(s.prog)} / ${fmtN(s.need)} 步</small>` : ''}</span></button>`).join('');
+  modal(`<h2>種子滿了（${SEED_MAX} 顆）</h2>
+    <div class="row" style="justify-content:center;margin:8px 0"><span class="bag"><button disabled style="border-color:var(--red)">${seedSVG(ns.type, ns.big)}<span>新的：${label(ns)}</span></button></span></div>
+    <p>要丟掉哪一顆舊種子，換成這顆新的？丟掉的種子不會回來。</p>
+    <div class="bag" id="dropList" style="max-height:38vh;overflow:auto;justify-content:center">${list()}</div>
+    <div id="dropAsk"></div>
+    <div class="row" style="justify-content:center;margin-top:12px"><button class="btn" id="keepOld">不要新的，保留原本的</button></div>`, m => {
+    m.querySelector('#keepOld').onclick = () => { closeModal(); toast('沒有收下新種子，原本的都還在'); };
+    m.querySelectorAll('[data-drop]').forEach(b => b.onclick = () => {
+      const old = S.seeds.find(s => s.id === +b.dataset.drop); if(!old) return;
+      const growing = S.seeds.indexOf(old) < 3 && old.prog > 0;
+      m.querySelector('#dropAsk').innerHTML = `<p style="color:var(--red)">確定丟掉「${label(old)}」嗎？${growing ? `它已經長了 ${fmtN(old.prog)} 步，會一起歸零。` : ''}</p>
+        <div class="row" style="justify-content:center"><button class="btn pri" id="dropYes">丟掉，換新的</button><button class="btn ghost" id="dropNo">再想想</button></div>`;
+      m.querySelector('#dropNo').onclick = () => { m.querySelector('#dropAsk').innerHTML = ''; };
+      m.querySelector('#dropYes').onclick = () => {
+        const i = S.seeds.indexOf(old); if(i < 0) return;
+        S.seeds[i] = ns;   // 新種子放進原本的位置（如果是菜園的格子，就在菜園裡從 0 步開始長）
+        save(); refreshAll(); closeModal(); toast(`換好了！拿到${TYPES[ns.type].name}的種子`); sfx('pick');
+      };
+    });
+  });
 }
 function collect(p){
   if(isCool(p)) return;
@@ -1412,14 +1439,15 @@ function collect(p){
   if(Math.random() < chance){
     // 地標：飾品固定（看是哪一類地方），顏色四種隨機；野花點、街角招牌：飾品和顏色都隨機（驚喜種子）
     const type = pick(TYPE_ORDER), decor = wildish(p) ? pick(DECOR_KEYS) : p.decor;
-    if(giveSeed(type, decor, wildish(p) ? 1000 : 2000, pointLabel(p))) msg += `，撿到${TYPES[type].name}的種子！`;
+    const r = giveSeed(type, decor, wildish(p) ? 1000 : 2000, pointLabel(p));
+    if(r === true) msg += `，撿到${TYPES[type].name}的種子！`; else if(r === 'full') msg += '，撿到種子但袋子滿了';
   }
   toast(msg); save(); refreshAll(); closeSheets();
   const m = markers.get(p.id); if(m){ m.setIcon(iconFor(p)); m._st = true; }
 }
 function stampLandmark(p){
   const first = !S.stamps[p.id];
-  if(first){ S.stamps[p.id] = Date.now(); giveSeed(p.type, pick(DECOR_KEYS), 5000, p.name); S.petals += 10; toast(`蓋好郵戳！花瓣 +10，拿到${TYPES[p.type].name}的大種子`); save(); refreshAll(); renderPoints(); }
+  if(first){ S.stamps[p.id] = Date.now(); const r = giveSeed(p.type, pick(DECOR_KEYS), 5000, p.name); S.petals += 10; toast(r === true ? `蓋好郵戳！花瓣 +10，拿到${TYPES[p.type].name}的大種子` : '蓋好郵戳！花瓣 +10，大種子要先在袋子裡騰出位置'); save(); refreshAll(); renderPoints(); }
   pendingPlace = {name:p.name, city:p.city, landmark:true};
   $('#photoInput').click();
 }
@@ -1638,7 +1666,7 @@ function renderBed(){
       <div class="bar"><i style="width:${pct}%"></i></div><div class="pr">${fmtN(s.prog)} / ${fmtN(s.need)} 步</div>
       ${ready ? `<button class="btn pri" data-hatch="${s.id}">拔起來</button>` : ''}</div>`;
   }
-  h += `</div><h3>種子袋 ${bag.length} / 9</h3>`;
+  h += `</div><h3>種子袋 ${bag.length} / ${SEED_MAX - 3}</h3>`;
   h += bag.length ? `<p class="hint">點一下可以換到菜園第一格。</p><div class="bag">${bag.map(s => `<button data-front="${s.id}">${seedSVG(s.type, s.big)}${TYPES[s.type].name}${s.decor?' · '+decorName(s.decor, s.type):''}</button>`).join('')}</div>` : `<p class="hint">還沒有備用的種子。</p>`;
   h += `<h3>存檔</h3><p class="hint">資料只存在這支手機的瀏覽器裡。偶爾備份一次，換手機或清除資料時才不會不見（明信片照片不含在備份內）。</p>
     <div class="row"><button class="btn" id="expBtn">備份存檔</button><button class="btn ghost" id="impBtn">從備份還原</button></div>`;
