@@ -266,6 +266,30 @@ svg.pic{filter:none!important}   /* ChatGPT 畫的圖本身就有筆觸，不再
 .bloom-burst .fx-p{left:0;top:0}
 #flowerBtn.on{animation:glow 1.6s ease-in-out infinite}
 @keyframes glow{50%{box-shadow:0 0 0 5px rgba(242,194,48,.45),var(--soft)}}
+/* ───── 收集特效 ───── */
+.cfx{position:fixed;width:0;height:0;z-index:1160;pointer-events:none}
+.cfx .fx-p{left:0;top:0}
+.cfx-ring{position:absolute;left:-30px;top:-30px;width:60px;height:60px;border-radius:50%;border:4px solid #f8cf4a;animation:cring .7s ease-out forwards}
+@keyframes cring{from{transform:scale(.3);opacity:1}to{transform:scale(2.4);opacity:0}}
+.cfx-plus{position:absolute;left:0;top:-30px;transform:translateX(-50%);font-family:var(--disp);font-size:30px;font-weight:700;color:#e0694a;white-space:nowrap;
+  text-shadow:0 0 4px #fffaf0,0 0 8px #fffaf0,2px 2px 0 #fffaf0;animation:cplus 1.4s ease-out forwards}
+.cfx-plus small{font-size:15px;margin-left:2px}
+@keyframes cplus{0%{transform:translate(-50%,10px) scale(.4);opacity:0}20%{transform:translate(-50%,-10px) scale(1.25);opacity:1}70%{opacity:1}100%{transform:translate(-50%,-50px) scale(1);opacity:0}}
+.cfx-fly{position:fixed;width:22px;height:22px;z-index:1170;pointer-events:none}
+.cfx-fly svg{width:100%;height:100%;display:block}
+.cfx-fly.seed{width:30px;height:36px}
+.cfx-seed{position:fixed;width:0;height:0;z-index:1165;pointer-events:none}
+.cfx-seed svg{position:absolute;left:-22px;top:-96px;width:44px;height:52px;animation:spop 1.1s cubic-bezier(.2,1.6,.4,1) forwards;filter:drop-shadow(0 3px 3px rgba(75,58,47,.35))}
+.cfx-seed .rays{position:absolute;left:-60px;top:-130px;width:120px;height:120px;border-radius:50%;
+  background:repeating-conic-gradient(var(--c) 0 10deg,transparent 10deg 30deg);-webkit-mask:radial-gradient(circle,#000 0,transparent 65%);mask:radial-gradient(circle,#000 0,transparent 65%);animation:srays 1.1s ease-out forwards}
+@keyframes spop{0%{transform:translateY(60px) scale(.2)}50%{transform:translateY(0) scale(1.3)}100%{transform:scale(1.1)}}
+@keyframes srays{0%{opacity:0;transform:scale(.3) rotate(0)}40%{opacity:.6}100%{opacity:0;transform:scale(1.3) rotate(90deg)}}
+.cfx-stamp{position:fixed;inset:0;z-index:1180;display:grid;place-items:center;pointer-events:none;transition:opacity .45s}
+.cfx-stamp.out{opacity:0}
+.cfx-stamp .seal{width:190px;height:190px;border-radius:50%;border:7px double var(--c);color:var(--c);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  background:rgba(255,250,240,.88);font-family:var(--disp);text-align:center;padding:16px;animation:slam .45s cubic-bezier(.3,1.5,.5,1) both;transform:rotate(-12deg)}
+.cfx-stamp .sn{font-size:22px;font-weight:700;line-height:1.2}.cfx-stamp .sd{font-size:14px}.cfx-stamp .sc{font-size:13px;letter-spacing:.2em;border-top:2px solid var(--c);padding-top:4px}
+@keyframes slam{0%{transform:scale(2.6) rotate(-20deg);opacity:0}60%{transform:scale(.92) rotate(-12deg);opacity:1}100%{transform:scale(1) rotate(-12deg)}}
 /* ───── 郵局：明信片在前，集郵冊依縣市展開 ───── */
 .cards .hint{grid-column:1/-1}
 .post-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-bottom:6px}
@@ -393,7 +417,7 @@ svg.pic{filter:none!important}   /* ChatGPT 畫的圖本身就有筆觸，不再
 'use strict';
 /* ───────── 基本資料 ───────── */
 const $ = s => document.querySelector(s);
-const APP_VER = '11/24 路邊野花版';
+const APP_VER = '11/24 收集特效版';
 const CREAM = '#fdf6e6';
 const INK = {red:'#e0694a', yellow:'#e2a83a', blue:'#5b8fc4', green:'#72a24e'};
 const TYPE_ORDER = ['red','yellow','blue','green'];
@@ -1066,6 +1090,15 @@ function sfx(kind, n = 1){
       case 'ready': tone(NOTE.G5, 0, .35, 'sine', .22); tone(NOTE.G5*2, 0, .3, 'sine', .05); tone(NOTE.C6, .14, .6, 'sine', .22); tone(NOTE.C6*2, .14, .5, 'sine', .05); break;
       case 'pick': tone(NOTE.E5, 0, .14, 'triangle', .18); tone(NOTE.A5, .08, .22, 'triangle', .18); break;
       case 'coin': tone(NOTE.A5, 0, .1, 'square', .07); tone(NOTE.E6, .07, .25, 'square', .07); break;
+      // 收集地點：一串往上爬的叮叮聲＋輕輕的沙沙聲（花瓣越多串越長）
+      case 'collect': noise(0, .25, 5200, .06);
+        ['G5','A5','C6','D6','E6','G6'].slice(0, Math.min(6, 2 + n)).forEach((k, i) => tone(NOTE[k], i*.065, .22, 'triangle', .13)); break;
+      // 撿到種子：小號角般的上行和弦
+      case 'seed': ['C5','E5','G5'].forEach((k, i) => tone(NOTE[k], .35 + i*.1, .25, 'square', .06));
+        tone(NOTE.C6, .66, .7, 'triangle', .16); tone(NOTE.E6, .66, .7, 'sine', .08); tone(NOTE.G6, .66, .7, 'sine', .05); break;
+      // 蓋郵戳：低沉的「咚」＋鈴聲
+      case 'stamp': tone(90, 0, .25, 'sine', .5, 50); noise(0, .12, 400, .35);
+        tone(NOTE.G5, .2, .5, 'sine', .14); tone(NOTE.D6, .28, .7, 'sine', .12); tone(NOTE.G6, .36, .9, 'sine', .08); break;
     }
   } catch(e){}
 }
@@ -1608,21 +1641,78 @@ function collect(p){
   if(p.decor === 'boat' && owned('blue') > 0) petals *= 2;
   S.petals += petals; S.cool[p.id] = Date.now();
   const chance = .32 + Math.min(.16, owned('yellow')*.02);
-  let msg = `花瓣 +${petals}`;
-  // 野花點只給花瓣；地標：飾品固定（看是哪一類地方），顏色四種隨機
+  let msg = `花瓣 +${petals}`, seed = null;
+  // 野花點一定給花瓣、不給種子；地標：飾品固定（看是哪一類地方），顏色四種隨機
   if(!wildish(p) && Math.random() < chance){
     const type = pick(TYPE_ORDER), decor = p.decor;
     const r = giveSeed(type, decor, 2000, pointLabel(p));
-    if(r === true) msg += `，撿到${TYPES[type].name}的種子！`; else if(r === 'full') msg += '，撿到種子但袋子滿了';
+    if(r === true){ msg += `，撿到${TYPES[type].name}的種子！`; seed = type; } else if(r === 'full') msg += '，撿到種子但袋子滿了';
   }
   toast(msg); save(); refreshAll(); closeSheets();
+  collectFx(p, petals, seed);
   const m = markers.get(p.id); if(m){ m.setIcon(iconFor(p)); m._st = true; }
 }
 function stampLandmark(p){
   const first = !S.stamps[p.id];
-  if(first){ S.stamps[p.id] = Date.now(); const r = giveSeed(p.type, pick(DECOR_KEYS), 5000, p.name); S.petals += 10; toast(r === true ? `蓋好郵戳！花瓣 +10，拿到${TYPES[p.type].name}的大種子` : '蓋好郵戳！花瓣 +10，大種子要先在袋子裡騰出位置'); save(); refreshAll(); renderPoints(); }
+  if(first){ S.stamps[p.id] = Date.now(); const r = giveSeed(p.type, pick(DECOR_KEYS), 5000, p.name); S.petals += 10; toast(r === true ? `蓋好郵戳！花瓣 +10，拿到${TYPES[p.type].name}的大種子` : '蓋好郵戳！花瓣 +10，大種子要先在袋子裡騰出位置'); save(); refreshAll(); renderPoints();
+    stampFx(p); collectFx(p, 10, r === true ? p.type : null, true); }
   pendingPlace = {name:p.name, city:p.city, landmark:true};
   $('#photoInput').click();
+}
+/* ───────── 收集特效 ─────────
+   地點原地噴出一圈當季小花、跳出「+N」，花瓣一片片飛進右上角的花瓣數；撿到種子時種子彈出來，再飛進「菜園」 */
+function screenPt(p){
+  try { const r = $('#map').getBoundingClientRect(), c = map.latLngToContainerPoint([p.lat, p.lng]);
+    const x = r.left + c.x, y = r.top + c.y;
+    if(x > 0 && y > 0 && x < innerWidth && y < innerHeight) return {x, y};
+  } catch(e){}
+  return {x: innerWidth / 2, y: innerHeight * .45};
+}
+function flyTo(html, from, toEl, delay, dur, cls){
+  const t = toEl.getBoundingClientRect(), tx = t.left + t.width/2, ty = t.top + t.height/2;
+  const e = document.createElement('div'); e.className = 'cfx-fly ' + (cls || ''); e.innerHTML = html;
+  e.style.left = from.x + 'px'; e.style.top = from.y + 'px'; document.body.appendChild(e);
+  const dx = tx - from.x, dy = ty - from.y, bend = (Math.random() - .5) * 120;
+  const a = e.animate([
+    {transform:'translate(-50%,-50%) scale(.3)', opacity:0},
+    {transform:`translate(calc(-50% + ${bend*.4}px), calc(-50% - 40px)) scale(1.2)`, opacity:1, offset:.25},
+    {transform:`translate(calc(-50% + ${dx*.5 + bend}px), calc(-50% + ${dy*.5 - 30}px)) scale(1) rotate(180deg)`, opacity:1, offset:.6},
+    {transform:`translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(.5) rotate(360deg)`, opacity:.9},
+  ], {duration:dur, delay, easing:'cubic-bezier(.4,0,.6,1)', fill:'both'});
+  a.onfinish = () => { e.remove(); toEl.classList.remove('bump'); void toEl.offsetWidth; toEl.classList.add('bump'); };
+  setTimeout(() => e.remove(), delay + dur + 500);
+}
+function collectFx(p, petals, seedType, big){
+  const at = screenPt(p), k = flowerNow(), rnd = (a, b) => a + Math.random()*(b-a);
+  sfx('collect', petals);
+  try { navigator.vibrate && navigator.vibrate(20); } catch(x){}
+  // 原地一圈光環＋小花爆開
+  const host = document.createElement('div'); host.className = 'cfx'; host.style.left = at.x + 'px'; host.style.top = at.y + 'px';
+  host.innerHTML = `<div class="cfx-ring"></div><div class="cfx-plus">+${petals}<small>花瓣</small></div>`;
+  document.body.appendChild(host);
+  particles(host, Array.from({length: big ? 20 : 12}, () => { const a = rnd(0, Math.PI*2), r = rnd(40, big ? 110 : 80);
+    return {cls:'fx-p', dx:Math.cos(a)*r, dy:Math.sin(a)*r, r:rnd(-200, 200), s:rnd(.5, 1), d:rnd(0, 80), html:flowerSVG(k)}; }));
+  setTimeout(() => host.remove(), 1800);
+  // 花瓣飛進計數
+  const chip = $('#petals').closest('.chip');
+  for(let i = 0; i < Math.min(petals, 8); i++) flyTo(flowerSVG(k), at, chip, 250 + i*90, 750);
+  // 種子：彈出來、閃一下，再飛進菜園
+  if(seedType){
+    setTimeout(() => sfx('seed'), 250);
+    const s = document.createElement('div'); s.className = 'cfx-seed'; s.style.left = at.x + 'px'; s.style.top = at.y + 'px';
+    s.innerHTML = `<div class="rays" style="--c:${INK[seedType]}"></div>${seedSVG(seedType, big)}`;
+    document.body.appendChild(s);
+    setTimeout(() => { s.remove(); flyTo(seedSVG(seedType, big), {x: at.x, y: at.y - 70}, $('#bedBadge'), 0, 800, 'seed'); }, 1100);
+  }
+}
+/* 景點打卡：畫面中央「咚」地蓋下一個大郵戳 */
+function stampFx(p){
+  sfx('stamp');
+  try { navigator.vibrate && navigator.vibrate([40, 30, 60]); } catch(x){}
+  const e = document.createElement('div'); e.className = 'cfx-stamp'; e.style.setProperty('--c', INK[p.type]);
+  e.innerHTML = `<div class="seal"><div class="sn">${esc(p.name)}</div><div class="sd">${new Date().toLocaleDateString('zh-TW')}</div><div class="sc">菜籽仔郵局</div></div>`;
+  document.body.appendChild(e);
+  setTimeout(() => e.classList.add('out'), 1500); setTimeout(() => e.remove(), 2000);
 }
 
 /* ───────── 計步：動作感測器（即時）＋ GPS 備援 ───────── */
