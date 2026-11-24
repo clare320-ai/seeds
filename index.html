@@ -393,7 +393,7 @@ svg.pic{filter:none!important}   /* ChatGPT 畫的圖本身就有筆觸，不再
 'use strict';
 /* ───────── 基本資料 ───────── */
 const $ = s => document.querySelector(s);
-const APP_VER = '11/24 集郵冊版';
+const APP_VER = '11/24 路邊野花版';
 const CREAM = '#fdf6e6';
 const INK = {red:'#e0694a', yellow:'#e2a83a', blue:'#5b8fc4', green:'#72a24e'};
 const TYPE_ORDER = ['red','yellow','blue','green'];
@@ -1476,7 +1476,7 @@ function wildAround(c, r){
   for(let i=-n; i<=n; i++) for(let j=-n; j<=n; j++){
     const ci = ci0+i, cj = cj0+j, h = hash2(ci, cj);
     if(h % 100 >= 20) continue;   // 野花點：每格約兩成機率有一朵
-    const p = {id:'w'+ci+'_'+cj, lat:(ci + ((h>>>8)%1000)/1000)*WSTEP, lng:(cj + ((h>>>18)%1000)/1000)*WSTEP, kind:'wild', name:'路邊野花', type:(h%2?'green':'yellow'), decor:null};
+    const p = {id:'w'+ci+'_'+cj, lat:(ci + ((h>>>8)%1000)/1000)*WSTEP, lng:(cj + ((h>>>18)%1000)/1000)*WSTEP, kind:'wild', name:'路邊的野花', type:(h%2?'green':'yellow'), decor:null};
     if(dist(c,p) <= r && !nearPoi(p.lat, p.lng, 40)) out.push(p);
   }
   return out;
@@ -1488,14 +1488,9 @@ function wildAround(c, r){
     if(decor === 'bag' && /服飾|服裝|成衣|童裝|洋裝|衣舍|鞋|boutique/i.test(name || '')) decor = 'clothes';
     if(DECOR[decor]) addPoi({id, lat, lng, name, decor, type:DECOR[decor].type, kind:'poi'});
   }
-  for(const [id, lat, lng, name] of (window.LOCAL_CORNERS || [])){
-    const h = hash2(Math.round(lat*1e5), Math.round(lng*1e5));
-    if((h >>> 4) % 100 >= 15) continue;   // 街角招牌只留約 15%，不要太擠
-    addPoi({id, lat, lng, name, decor:null, type:(h%2 ? 'green' : 'yellow'), kind:'corner'});
-  }
 })();
-const wildish = p => p.kind === 'wild' || p.kind === 'corner';
-const signIcon = c => `<svg viewBox="0 0 24 24"><path d="M8 15v7M16 15v7" stroke="#4b3a2f" stroke-width="2.2"/><rect x="2.5" y="3" width="19" height="12" rx="2.5" fill="${c}" stroke="#4b3a2f" stroke-width="1.5"/><path d="M7 9h10" stroke="${CREAM}" stroke-width="2" stroke-linecap="round"/></svg>`;
+// 野花點：全台灣都由遊戲依座標自動產生（街角招牌已拿掉）
+const wildish = p => p.kind === 'wild';
 
 /* ───────── 地點標記 ───────── */
 const markers = new Map();
@@ -1507,7 +1502,6 @@ function iconFor(p){
     return L.divIcon({className:'', html:`<div class="pt lmk ${done?'done':''}" style="--c:${INK[p.type]}">景</div>`, iconSize:[48,48], iconAnchor:[24,24]});
   }
   if(p.kind === 'wild') return L.divIcon({className:'', html:`<div class="pt wild ${isCool(p)?'cool':''}">${flowerIcon(FLOWERS[flowerNow()].c)}</div>`, iconSize:[26,26], iconAnchor:[13,13]});
-  if(p.kind === 'corner') return L.divIcon({className:'', html:`<div class="pt wild ${isCool(p)?'cool':''}">${signIcon(INK[p.type])}</div>`, iconSize:[26,26], iconAnchor:[13,13]});
   return L.divIcon({className:'', html:`<div class="pt dec ${isCool(p)?'cool':''}" style="--c:${INK[p.type]}"><svg viewBox="-3 -4 46 46">${PLACE_ICON[p.decor]()}</svg></div>`, iconSize:[38,38], iconAnchor:[19,19]});
 }
 /* 以「地圖正在看的範圍」為準畫點（以前只畫玩家身邊 700 公尺，地圖一拖走點就不見）。
@@ -1563,9 +1557,8 @@ function openPoint(p){
     const cool = isCool(p);
     const gives = wildish(p) ? `單純收集花瓣` : `花瓣，有機會撿到戴「${DECOR[p.decor].name}」的種子（顏色隨機）`;
     const icon = p.kind==='wild' ? `<div class="ic" style="background:${CREAM};border:1.5px solid var(--ink)">${flowerIcon(FLOWERS[flowerNow()].c)}</div>` :
-      p.kind==='corner' ? `<div class="ic" style="background:${CREAM};border:1.5px solid var(--ink)"><span style="width:40px;height:40px;display:block">${signIcon(INK[p.type])}</span></div>` :
       `<div class="ic" style="background:${CREAM};border:2.5px solid ${INK[p.type]}"><svg viewBox="-3 -4 46 46">${PLACE_ICON[p.decor]()}</svg></div>`;
-    const kindLabel = p.kind==='wild' ? '野生點' : p.kind==='corner' ? '街角招牌' : DECOR[p.decor].label;
+    const kindLabel = p.kind==='wild' ? `野花點 · 當季的${FLOWERS[flowerNow()].name}` : DECOR[p.decor].label;
     body = `<div class="pcard">${icon}<div><div class="t">${esc(pointLabel(p))}</div><div class="s">${kindLabel} · ${gives}</div></div></div>
       <div class="meter">${d==null?'還沒取得你的位置':'距離 '+fmtM(d)}${cool?' · 剛收集過，'+Math.ceil((COOL_MS-(Date.now()-S.cool[p.id]))/36e5)+' 小時後再來':''}</div>
       <div class="row">${cool ? '' : inRange ? `<button class="btn pri" id="ptGet">收集</button>` : `<span class="btn" aria-disabled="true">走到 ${rangeOf(p)} 公尺內就能收集</span>`}</div>`;
@@ -1616,7 +1609,7 @@ function collect(p){
   S.petals += petals; S.cool[p.id] = Date.now();
   const chance = .32 + Math.min(.16, owned('yellow')*.02);
   let msg = `花瓣 +${petals}`;
-  // 野花點、街角招牌只給花瓣；地標：飾品固定（看是哪一類地方），顏色四種隨機
+  // 野花點只給花瓣；地標：飾品固定（看是哪一類地方），顏色四種隨機
   if(!wildish(p) && Math.random() < chance){
     const type = pick(TYPE_ORDER), decor = p.decor;
     const r = giveSeed(type, decor, 2000, pointLabel(p));
