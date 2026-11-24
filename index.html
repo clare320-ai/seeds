@@ -266,6 +266,33 @@ svg.pic{filter:none!important}   /* ChatGPT 畫的圖本身就有筆觸，不再
 .bloom-burst .fx-p{left:0;top:0}
 #flowerBtn.on{animation:glow 1.6s ease-in-out infinite}
 @keyframes glow{50%{box-shadow:0 0 0 5px rgba(242,194,48,.45),var(--soft)}}
+/* ───── 郵局：明信片在前，集郵冊依縣市展開 ───── */
+.cards .hint{grid-column:1/-1}
+.post-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-bottom:6px}
+.post-head .btn{padding:7px 12px;font-size:13.5px}
+.album{display:flex;flex-direction:column;gap:6px}
+.region{margin:10px 2px 0;font-family:var(--disp);font-size:13px;color:var(--muted);letter-spacing:.2em}
+.county{border:2px solid var(--line);border-radius:14px;background:var(--grain),var(--paper)}
+.county[open]{border-color:var(--ink);box-shadow:var(--soft-sm)}
+.county summary{list-style:none;display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer}
+.county summary::-webkit-details-marker{display:none}
+.county summary::after{content:'';width:8px;height:8px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg);margin-left:4px;transition:transform .2s}
+.county[open] summary::after{transform:rotate(-135deg)}
+.county .cn{font-family:var(--disp);font-size:17px;font-weight:700;min-width:4.2em}
+.county .cbar{flex:1;height:8px;border-radius:5px;background:#fffaf0;border:1.5px solid var(--line);overflow:hidden}
+.county .cbar i{display:block;height:100%;background:var(--red)}
+.county .cc{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;margin-left:auto}
+.county.soon{opacity:.6}
+.stamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px;padding:2px 12px 14px}
+.stamp{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.stamp .face{width:72px;height:84px;display:grid;place-items:center;font-family:var(--disp);font-size:26px;color:#cbb99a;background:#fffaf0;
+  border:2px dashed var(--line);border-radius:4px}
+/* 蓋到的郵票：屬性色底、白色鋸齒邊、裡面一圈細框，微微歪一點 */
+.stamp.got .face{color:#fffaf0;background:var(--c);border:5px dotted #fffaf0;outline:2px solid var(--c);outline-offset:-1px;border-radius:2px;
+  box-shadow:inset 0 0 0 3px var(--c),inset 0 0 0 4.5px #fffaf0,0 3px 6px rgba(75,58,47,.25);transform:rotate(-3deg)}
+.stamp.got:nth-child(2n) .face{transform:rotate(2.5deg)}
+.stamp .sn{font-size:11.5px;line-height:1.3}
+.stamp .sd{font-size:10.5px;color:var(--red)}
 /* ───── 菜園：草地、木圍籬、三塊田 ───── */
 .garden{position:relative;margin:6px -4px 14px;padding:26px 10px 12px;border-radius:20px;background:var(--grain),radial-gradient(ellipse at 30% 20%,#b9d98c,#93c26a 70%);border:2px solid var(--ink);box-shadow:var(--soft)}
 .fence{position:absolute;left:8px;right:8px;top:6px;height:22px;
@@ -366,7 +393,7 @@ svg.pic{filter:none!important}   /* ChatGPT 畫的圖本身就有筆觸，不再
 'use strict';
 /* ───────── 基本資料 ───────── */
 const $ = s => document.querySelector(s);
-const APP_VER = '11/24 地點重整版';
+const APP_VER = '11/24 集郵冊版';
 const CREAM = '#fdf6e6';
 const INK = {red:'#e0694a', yellow:'#e2a83a', blue:'#5b8fc4', green:'#72a24e'};
 const TYPE_ORDER = ['red','yellow','blue','green'];
@@ -1339,12 +1366,35 @@ function classify(t){
   return null;
 }
 const PRIORITY = {amulet:5, bento:5, postbox:4, boat:4, banyan:4, schoolbag:3, strap:2};
+/* 地點只留一半：內建資料已經挑好了（新竹、台中車站方圓 3 公里內只用內建資料，避免挑掉的點又被網路載回來）；
+   其他地方從網路載入的，每一類留一半：有名字、重要的優先，再讓留下來的點彼此分散 */
+const LOCAL_AREAS = [{lat:24.8017, lng:120.9716}, {lat:24.16419, lng:120.699952}];
+const LOCAL_IDS = new Set((window.LOCAL_PLACES || []).map(p => p[0]));
+const inLocalArea = p => LOCAL_AREAS.some(c => dist(c, p) < 2950);
+function halfPois(list){
+  const by = {}, out = [];
+  for(const p of list){
+    if(inLocalArea(p)){ if(LOCAL_IDS.has(p.id)) out.push(p); continue; }
+    (by[p.decor] = by[p.decor] || []).push(p);
+  }
+  for(const g of Object.values(by)){
+    const score = p => (PRIORITY[p.decor] || 1) + (p.name ? 2 : 0);
+    g.sort((a, b) => score(b) - score(a) || crc32(a.id) - crc32(b.id));
+    const want = Math.floor(g.length / 2) + (g.length % 2 && crc32(g[0].id) % 2 ? 1 : 0);
+    if(!want) continue;
+    const pick = d => { const got = []; for(const p of g){ if(got.every(q => dist(p, q) >= d)) got.push(p); if(got.length >= want) break; } return got; };
+    let lo = 0, hi = 600;
+    for(let i = 0; i < 14; i++){ const mid = (lo + hi) / 2; if(pick(mid).length >= want) lo = mid; else hi = mid; }
+    out.push(...pick(lo));
+  }
+  return out;
+}
 async function loadCell(ci, cj){
   const key = ci + '_' + cj;
   if(cellState.has(key)) return;
   cellState.set(key, 'loading');
   const cached = await DB.get('cells', key);
-  if(cached && Date.now() - cached.t < 14*864e5){ cached.p.forEach(addPoi); cellState.set(key,'done'); renderPoints(); return; }
+  if(cached && Date.now() - cached.t < 14*864e5){ halfPois(cached.p).forEach(p => { if(!POIS.has(p.id)) addPoi(p); }); cellState.set(key,'done'); renderPoints(); return; }
   const s = ci*CELL, w = cj*CELL, n = s+CELL, e = w+CELL, bb = `(${s.toFixed(4)},${w.toFixed(4)},${n.toFixed(4)},${e.toFixed(4)})`;
   const q = `[out:json][timeout:25];(
 node[amenity~"^(place_of_worship|post_box|post_office|cafe|ice_cream|restaurant|fast_food|food_court|marketplace|school|library|university|college|kindergarten|fountain|pharmacy|clinic|doctors|dentist|hospital|veterinary|community_centre|townhall|social_facility|police|fire_station|bank|atm)$"]${bb};
@@ -1367,7 +1417,7 @@ nwr[historic]${bb};nwr[tourism~"^(attraction|museum)$"]${bb};
   }
   if(!data){
     const tries = (cellFails.get(key) || 0) + 1; cellFails.set(key, tries);
-    if(cached){ cached.p.forEach(addPoi); cellState.set(key,'done'); setPoiStatus(-1); renderPoints(); return; }
+    if(cached){ halfPois(cached.p).forEach(p => { if(!POIS.has(p.id)) addPoi(p); }); cellState.set(key,'done'); setPoiStatus(-1); renderPoints(); return; }
     cellState.delete(key); setPoiStatus(-1, true);
     setTimeout(() => ensureCells(), Math.min(300, 20 * 2 ** tries) * 1000);
     return;
@@ -1384,7 +1434,8 @@ nwr[historic]${bb};nwr[tourism~"^(attraction|museum)$"]${bb};
   raw.sort((a,b) => b.pr - a.pr);
   const kept = [];
   for(const p of raw){ if(kept.every(k => dist(k,p) > 15)) kept.push(p); }
-  kept.forEach(p => { delete p.pr; if(!POIS.has(p.id)) addPoi(p); });
+  kept.forEach(p => delete p.pr);
+  halfPois(kept).forEach(p => { if(!POIS.has(p.id)) addPoi(p); });
   DB.put('cells', {t:Date.now(), p:kept}, key);
   cellState.set(key, 'done');
   renderPoints();
@@ -1424,7 +1475,7 @@ function wildAround(c, r){
   const out = []; const ci0 = Math.floor(c.lat/WSTEP), cj0 = Math.floor(c.lng/WSTEP); const n = Math.ceil(r/110);
   for(let i=-n; i<=n; i++) for(let j=-n; j<=n; j++){
     const ci = ci0+i, cj = cj0+j, h = hash2(ci, cj);
-    if(h % 100 >= 40) continue;
+    if(h % 100 >= 20) continue;   // 野花點：每格約兩成機率有一朵
     const p = {id:'w'+ci+'_'+cj, lat:(ci + ((h>>>8)%1000)/1000)*WSTEP, lng:(cj + ((h>>>18)%1000)/1000)*WSTEP, kind:'wild', name:'路邊野花', type:(h%2?'green':'yellow'), decor:null};
     if(dist(c,p) <= r && !nearPoi(p.lat, p.lng, 40)) out.push(p);
   }
@@ -1439,7 +1490,7 @@ function wildAround(c, r){
   }
   for(const [id, lat, lng, name] of (window.LOCAL_CORNERS || [])){
     const h = hash2(Math.round(lat*1e5), Math.round(lng*1e5));
-    if((h >>> 4) % 100 >= 30) continue;   // 街角招牌只留約三成，不要太擠
+    if((h >>> 4) % 100 >= 15) continue;   // 街角招牌只留約 15%，不要太擠
     addPoi({id, lat, lng, name, decor:null, type:(h%2 ? 'green' : 'yellow'), kind:'corner'});
   }
 })();
@@ -1929,16 +1980,41 @@ function showSprout(id){
 }
 
 /* 郵局：郵票冊與明信片 */
+/* 集郵冊：全台 22 縣市，依地區排，每個縣市可以展開／收起 */
+const COUNTIES = [
+  ['北部', ['基隆市','台北市','新北市','桃園市','新竹市','新竹縣']],
+  ['中部', ['苗栗縣','台中市','彰化縣','南投縣','雲林縣']],
+  ['南部', ['嘉義市','嘉義縣','台南市','高雄市','屏東縣']],
+  ['東部', ['宜蘭縣','花蓮縣','台東縣']],
+  ['離島', ['澎湖縣','金門縣','連江縣']],
+];
+const albumOpen = new Set();
 async function renderPost(){
-  const cities = [...new Set(LANDMARKS.map(l => l.city))];
-  let h = `<h2>郵局</h2><p class="hint">到景點 150 公尺內就能打卡蓋郵戳，並拍一張自己的明信片。在任何地方也都能拍一張散步明信片。</p>
-    <div class="row"><button class="btn pri" id="anyCard">在這裡拍明信片</button></div>`;
-  for(const c of cities){
-    const ls = LANDMARKS.filter(l => l.city === c); const done = countBy(ls, l => S.stamps[l.id]);
-    h += `<h3>${c}郵票冊 ${done} / ${ls.length}</h3><div class="lmlist">${ls.map(l => `<div class="lm ${S.stamps[l.id]?'done':''}"><span class="mk">${S.stamps[l.id]?'印':'·'}</span><span>${esc(l.name)}</span></div>`).join('')}</div>`;
+  const stampsTotal = countBy(LANDMARKS, l => S.stamps[l.id]);
+  let h = `<h2>郵局</h2>`;
+  // 先放拿過的明信片
+  h += `<div class="post-head"><h3 style="margin:10px 0 6px">我的明信片 <small id="cardCount" style="color:var(--muted);font-family:var(--body);font-size:13px"></small></h3><button class="btn pri" id="anyCard">在這裡拍明信片</button></div>
+    <div class="cards" id="cardGrid"><p class="hint">還沒有明信片。到景點打卡、或在散步途中按「在這裡拍明信片」，拍一張自己的明信片。</p></div>`;
+  // 集郵冊
+  h += `<h3>集郵冊 <small style="color:var(--muted);font-family:var(--body);font-size:13px">全台 ${stampsTotal} / ${LANDMARKS.length}</small></h3>
+    <p class="hint">走到景點 150 公尺內打卡，就能在這裡蓋上一枚郵票。點縣市可以展開或收起。</p><div class="album">`;
+  for(const [region, list] of COUNTIES){
+    h += `<div class="region">${region}</div>`;
+    for(const c of list){
+      const ls = LANDMARKS.filter(l => l.city === c), done = countBy(ls, l => S.stamps[l.id]);
+      const pct = ls.length ? Math.round(done / ls.length * 100) : 0;
+      h += `<details class="county${ls.length ? '' : ' soon'}" data-county="${c}"${albumOpen.has(c) ? ' open' : ''}><summary><span class="cn">${c}</span>` +
+        (ls.length ? `<span class="cbar"><i style="width:${pct}%"></i></span><span class="cc">${done} / ${ls.length}</span>` : `<span class="cc">景點準備中</span>`) + `</summary>`;
+      h += ls.length ? `<div class="stamps">${ls.map(l => {
+          const at = S.stamps[l.id];
+          return `<div class="stamp${at ? ' got' : ''}" style="--c:${INK[l.type]}"><div class="face">${at ? '<b>郵</b>' : '?'}</div><div class="sn">${esc(l.name)}</div>${at ? `<div class="sd">${new Date(at).toLocaleDateString('zh-TW', {month:'numeric', day:'numeric'})}</div>` : ''}</div>`;
+        }).join('')}</div>` : `<p class="hint" style="margin:6px 4px 10px">${c}的景點還在準備中，之後會陸續加入。</p>`;
+      h += `</details>`;
+    }
   }
-  h += `<h3>我的明信片</h3><div class="cards" id="cardGrid"><p class="hint">還沒有明信片。</p></div>`;
+  h += `</div>`;
   $('#postBody').innerHTML = h;
+  $('#postBody').querySelectorAll('details.county').forEach(d => d.addEventListener('toggle', () => { d.open ? albumOpen.add(d.dataset.county) : albumOpen.delete(d.dataset.county); }));
   $('#anyCard').onclick = () => {
     if(!me){ toast('還沒取得位置'); return; }
     let near = null, nd = 1e9;
@@ -1948,7 +2024,7 @@ async function renderPost(){
   };
   const cards = (await DB.all('cards')).sort((a,b) => b.at - a.at);
   const g = $('#cardGrid'); if(!g || !cards.length) return;
-  g.innerHTML = '';
+  g.innerHTML = ''; $('#cardCount').textContent = `${cards.length} 張`;
   for(const c of cards){
     const b = document.createElement('button'); const img = document.createElement('img');
     img.src = URL.createObjectURL(c.blob); img.alt = c.name; b.appendChild(img); b.onclick = () => showCard(c); g.appendChild(b);
