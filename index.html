@@ -417,7 +417,7 @@ svg.pic{filter:none!important}   /* ChatGPT 畫的圖本身就有筆觸，不再
 'use strict';
 /* ───────── 基本資料 ───────── */
 const $ = s => document.querySelector(s);
-const APP_VER = '11/24 收集特效版';
+const APP_VER = '11/24 新畫風版';
 const CREAM = '#fdf6e6';
 const INK = {red:'#e0694a', yellow:'#e2a83a', blue:'#5b8fc4', green:'#72a24e'};
 const TYPE_ORDER = ['red','yellow','blue','green'];
@@ -831,7 +831,11 @@ const HATS = {postbox:'translate(43 33) scale(1.35)', helmet:'translate(39 35) s
 /* 菜籽仔本體：深色輪廓、亮面與陰影、各屬性自己的頭頂、身上花紋和表情 */
 const SHADE = {red:{d:'#b8472e', l:'#f4a283'}, yellow:{d:'#b07d1c', l:'#f3cf7a'}, blue:{d:'#3b6a9a', l:'#9cc2e6'}, green:{d:'#4c7b33', l:'#a8cf84'}};
 /* 第二版繪本畫法：麻糬身形、漸層上色、大眼睛（ART_STYLE = 1 可切回舊版） */
-const ART_STYLE = 2;
+const ART_STYLE = 3;   // 3 = 參考 ChatGPT 原圖的版本；2 = 上一版麻糬畫法
+const OUTLINE3 = {red:'#b23a2a', yellow:'#c98a1a', blue:'#2f6aa8', green:'#4f8a2a'};
+// 第三版的身體顏色：比較亮、比較像蠟筆塗出來的飽和色
+const PAL3 = {red:{l:'#f9a486', m:'#ec5f45', d:'#cc432f'}, yellow:{l:'#fde68a', m:'#f6c43c', d:'#e29c22'},
+              blue:{l:'#acd6f8', m:'#5aa2e6', d:'#3a7cc6'}, green:{l:'#d2ec92', m:'#8fc84c', d:'#62a036'}};
 function topArt2(type, c){
   const {I, D, L, O, sil} = c, o = w => `stroke="${O}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
   const f = (id, flat) => sil ? I : `url(#${id})`;
@@ -907,6 +911,106 @@ function bodyMarks2(type, c){
     default: return `<path d="M62 120 q4 -6 9 -5 q-4 5 -9 5z M72 117 q5 -4 9 -1 q-5 3 -9 1z" fill="#e8f5d4" opacity=".9"/>`;
   }
 }
+/* 第三版（參考 ChatGPT 原圖）：圓滾滾身體、同色系深色描邊、肚子上有屬性圖案、短短的手腳、頭頂大大的屬性標誌 */
+function bodyDefs3(t){
+  const S = PAL3[t];
+  return `<defs><radialGradient id="sb3-${t}" cx="40%" cy="32%" r="78%"><stop offset="0" stop-color="${S.l}"/><stop offset=".5" stop-color="${S.m}"/><stop offset="1" stop-color="${S.d}"/></radialGradient>` +
+    ({red:`<linearGradient id="fl3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#e2412c"/><stop offset=".7" stop-color="#f2763a"/><stop offset="1" stop-color="#f79a3a"/></linearGradient>`,
+      yellow:`<linearGradient id="lf3y" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9fd06a"/><stop offset="1" stop-color="#4f9a3a"/></linearGradient>`,
+      blue:`<radialGradient id="wd3" cx="38%" cy="45%" r="70%"><stop offset="0" stop-color="#d8ecfc"/><stop offset=".6" stop-color="#8cc0ee"/><stop offset="1" stop-color="#5590cc"/></radialGradient>`,
+      green:`<linearGradient id="bs3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8da78"/><stop offset="1" stop-color="#6faa45"/></linearGradient>` +
+        `<linearGradient id="lf3g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9fd06a"/><stop offset="1" stop-color="#4f9a3a"/></linearGradient>`}[t]) + `</defs>`;
+}
+function topArt3(t, c){
+  const {I, O, sil} = c, o = w => `stroke="${O}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+  const F = (id, col) => sil ? I : (id ? `url(#${id})` : col);
+  switch(t){
+    case 'red': // 大火焰＋底下兩片金色葉子＋左邊兩顆小火星
+      return `<path d="M70 61 C55 59 49 46 55 33 C57 39 61 42 64 40 C60 29 64 17 75 7 C74 18 80 22 84 30 C86 26 86 22 85 18 C93 28 94 45 87 53 C83 58 77 61 70 61Z" fill="${F('fl3')}" ${o(2.4)}/>` +
+        (sil ? '' : `<path d="M70 59 C62 57 58 49 62 41 C64 45 67 46 68 43 C67 36 70 28 75 23 C75 32 80 36 81 42 C83 50 78 57 70 59Z" fill="#f7a23e"/>` +
+          `<path d="M70 57 C65 55 64 49 67 45 C68.5 48 71 48 72 44.5 C76 48 77 55 70 57Z" fill="#fde98e"/>`) +
+        `<path d="M70 61 Q60 49 48 53 Q57 63 70 61Z" fill="${F(0, '#f2b44a')}" ${o(2)}/><path d="M70 61 Q80 49 92 53 Q83 63 70 61Z" fill="${F(0, '#f2b44a')}" ${o(2)}/>` +
+        (sil ? '' : `<path d="M69 60 Q60 54 52 54 M71 60 Q80 54 88 54" stroke="#c98a2a" stroke-width="1.1" fill="none"/>`) +
+        `<path d="M50 20 C53 24 54.5 27 54.5 29.5 C54.5 32 52.5 33.6 50 33.6 C47.5 33.6 45.5 32 45.5 29.5 C45.5 27 47 24 50 20Z" fill="${F(0, '#f7a23e')}" ${o(1.5)}/>` +
+        `<path d="M42 36 C44 38.6 45 40.4 45 42 C45 43.8 43.7 45 42 45 C40.3 45 39 43.8 39 42 C39 40.4 40 38.6 42 36Z" fill="${F(0, '#fbc75a')}" ${o(1.3)}/>`;
+    case 'yellow': // 頭頂小捲毛＋兩片綠葉＋一串往右垂的飽滿稻穗
+      return `<path d="M72 44 Q82 18 98 19 Q112 22 112 50" stroke="${O}" stroke-width="4.6" fill="none" stroke-linecap="round"/>` +
+        `<path d="M72 44 Q82 18 98 19 Q112 22 112 50" stroke="${sil ? I : '#c99a32'}" stroke-width="2.2" fill="none" stroke-linecap="round"/>` +
+        `<path d="M70 47 C62 36 51 33 42 37 C50 45 61 49 70 47Z" fill="${F('lf3y')}" ${o(2)}/><path d="M71 45 C68 33 72 21 80 12 C82 25 78 36 71 45Z" fill="${F('lf3y')}" ${o(2)}/>` +
+        (sil ? '' : `<path d="M68 46 Q56 39 46 38 M71 42 Q73 28 79 16" stroke="#3f7a2e" stroke-width="1.1" fill="none" stroke-linecap="round"/>`) +
+        [[79,28,-60],[85,21,-40],[92,17,-10],[100,17,15],[107,21,40],[112,28,60],[114,36,80],[114,45,95],[112,53,110],[88,27,-30],[96,25,10],[103,28,40],[107,36,65],[108,45,85]].map(([x,y,r]) =>
+          `<ellipse cx="${x}" cy="${y}" rx="4.3" ry="7" transform="rotate(${r} ${x} ${y})" fill="${F(0, '#f4c64e')}" ${o(1.4)}/>` +
+          (sil ? '' : `<ellipse cx="${x-.8}" cy="${y-1.4}" rx="1.1" ry="2.4" transform="rotate(${r} ${x} ${y})" fill="#fff4c8" opacity=".85"/>`)).join('') +
+        `<path d="M64 60 Q61 50 68 46 Q73 43 74 37 Q80 47 76 60Z" fill="${F(0, PAL3.yellow.m)}" ${o(2.2)}/>`;
+    case 'blue': // 頭頂一顆大水滴（和身體連在一起）＋旁邊跳著一顆小水珠
+      return `<path d="M70 12 C78 27 89 37 89 48 C89 57 81 63 70 63 C59 63 51 57 51 48 C51 37 62 27 70 12Z" fill="${F('wd3')}" ${o(2.4)}/>` +
+        (sil ? '' : `<path d="M62 46 Q62 36 68 28" stroke="#fff" stroke-width="3.6" fill="none" stroke-linecap="round" opacity=".85"/><circle cx="62.5" cy="52" r="2.1" fill="#fff" opacity=".8"/>`) +
+        `<path d="M97 22 C100.5 27 103.5 31 103.5 35 C103.5 38.8 100.8 41 97 41 C93.2 41 90.5 38.8 90.5 35 C90.5 31 93.5 27 97 22Z" fill="${F('wd3')}" ${o(1.8)}/>` +
+        (sil ? '' : `<path d="M94 35 Q94 31 96.4 28.4" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/>`);
+    default: // 竹筍尖帽（綁著草繩）＋右邊兩片竹葉
+      return `<path d="M78 37 C88 26 100 23 112 25 C103 35 91 40 78 37Z" fill="${F('lf3g')}" ${o(2)}/><path d="M80 44 C92 43 103 49 109 58 C96 59 87 54 80 44Z" fill="${F('lf3g')}" ${o(2)}/>` +
+        (sil ? '' : `<path d="M80 37 Q95 30 108 26 M82 45 Q96 49 106 56" stroke="#3f7a2e" stroke-width="1.1" fill="none" stroke-linecap="round"/>`) +
+        `<path d="M57 62 Q59 40 70 10 Q81 40 83 62Z" fill="${F('bs3')}" ${o(2.4)}/>` +
+        (sil ? '' : `<path d="M70 12 Q66 32 62 58 M70 12 Q73 34 76 46" stroke="#5f9a3a" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".8"/>` +
+          `<path d="M63 36 Q70 40 77 34" stroke="#fff6c8" stroke-width="1.4" fill="none" opacity=".7"/>`) +
+        [`M61 44 L80 53`, `M80 42 L60 52`, `M58.5 56 Q70 61 81.5 55`].map(d => `<path d="${d}" stroke="${O}" stroke-width="4.6" fill="none" stroke-linecap="round"/><path d="${d}" stroke="${sil ? I : '#eccb6a'}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`).join('');
+  }
+}
+function faceArt3(t, c){
+  const {P, O, sil} = c;
+  if(sil) return `<ellipse cx="58" cy="92" rx="5" ry="6" fill="${P}"/><ellipse cx="82" cy="92" rx="5" ry="6" fill="${P}"/>`;
+  const K = '#2e2018';
+  const eye = x => `<ellipse cx="${x}" cy="92" rx="5.4" ry="6.6" fill="${K}"/><ellipse cx="${x}" cy="94" rx="4" ry="4" fill="#5a3a2a" opacity=".6"/><circle cx="${x+1.8}" cy="89" r="2.3" fill="#fff"/><circle cx="${x-1.8}" cy="95.4" r="1" fill="#fff" opacity=".85"/>`;
+  const happy = x => `<path d="M${x-6} 94 Q${x} 87 ${x+6} 94" stroke="${K}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+  const wink = x => `<path d="M${x-5} 89 L${x+4} 92.5 L${x-5} 96" stroke="${K}" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const cheeks = `<ellipse cx="46.5" cy="101" rx="6.4" ry="4" fill="#ff7f86" opacity=".45"/><ellipse cx="93.5" cy="101" rx="6.4" ry="4" fill="#ff7f86" opacity=".45"/>`;
+  const open = `<path d="M64 100 Q70 101.6 76 100 Q75.2 108.6 70 108.6 Q64.8 108.6 64 100Z" fill="#8a2c2c" stroke="${K}" stroke-width="1.3" stroke-linejoin="round"/>` +
+    `<path d="M66.2 105.4 Q70 102.8 73.8 105.4 Q72.6 108.2 70 108.2 Q67.4 108.2 66.2 105.4Z" fill="#f47a86"/>`;
+  const smile = `<path d="M65 102 Q70 106.6 75 102" stroke="${K}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+  const brows = `<path d="M51 82 L61 86 M89 82 L79 86" stroke="${O}" stroke-width="2.4" stroke-linecap="round"/>`;
+  return {
+    red:    brows + eye(58) + eye(82) + cheeks + open,
+    yellow: eye(58) + eye(82) + cheeks + open + `<path d="M53 82 Q57 80 61 82 M79 82 Q83 80 87 82" stroke="${O}" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".6"/>`,
+    blue:   happy(58) + happy(82) + cheeks + open,
+    green:  eye(58) + wink(82) + cheeks + open,
+  }[t];
+}
+function bellyArt3(t){
+  switch(t){
+    case 'red': // 奶油色的漩渦
+      return `<path d="M47 113 Q58 103 71 108 Q82 113 77 121 Q72 127 66 122 Q62 117 69 116" stroke="#fde2b4" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9"/>` +
+        `<path d="M74 110 Q85 104 94 110" stroke="#fde2b4" stroke-width="4" fill="none" stroke-linecap="round" opacity=".9"/>`;
+    case 'yellow': // 奶油色肚子＋散落的米粒
+      return `<ellipse cx="70" cy="113" rx="21" ry="13" fill="#fff1c8" opacity=".8"/>` +
+        [[60,110,-30],[70,107,0],[80,110,30],[64,118,-15],[76,118,15],[70,114,0]].map(([x,y,r]) => `<ellipse cx="${x}" cy="${y}" rx="1.7" ry="3.2" transform="rotate(${r} ${x} ${y})" fill="#e8ac36"/>`).join('');
+    case 'blue': // 兩道白色波浪
+      return `<path d="M48 109 q5.5 -5 11 0 t11 0 t11 0 t11 0" stroke="#eef6fd" stroke-width="3.6" fill="none" stroke-linecap="round" opacity=".9"/>` +
+        `<path d="M53 119 q4.25 -4 8.5 0 t8.5 0 t8.5 0 t8.5 0" stroke="#eef6fd" stroke-width="3.2" fill="none" stroke-linecap="round" opacity=".85"/>`;
+    default: // 奶油色肚子＋一枝竹葉
+      return `<ellipse cx="70" cy="113" rx="21" ry="13" fill="#f6f6cf" opacity=".8"/>` +
+        `<path d="M61 123 Q69 114 81 104" stroke="#4f8a34" stroke-width="1.6" fill="none" stroke-linecap="round"/>` +
+        [[66,116,-60,1],[71,111,-55,1],[76,107,-50,1],[63,113,30,0],[69,108,35,0],[75,104,40,0]].map(([x,y,r]) => `<ellipse cx="${x}" cy="${y}" rx="1.8" ry="4.6" transform="rotate(${r} ${x} ${y})" fill="#6fae4a"/>`).join('');
+  }
+}
+function bodyArt3(sp, c){
+  const t = sp.type, {I, sil} = c, S = PAL3[t];
+  const O = c.O, ol = `stroke="${O}" stroke-width="2.4" stroke-linejoin="round"`;
+  const fill = sil ? I : `url(#sb3-${t})`, mid = sil ? I : S.m;
+  const BODY = 'M70 57 C93 57 107 75 107 97 C107 118 92 129 70 129 C48 129 33 118 33 97 C33 75 47 57 70 57Z';
+  return (sil ? '' : bodyDefs3(t)) +
+    (t === 'yellow' ? '' : topArt3(t, c)) +
+    // 腳、手（在身體後面）
+    `<ellipse cx="56" cy="128" rx="9.5" ry="6" fill="${mid}" ${ol}/><ellipse cx="84" cy="128" rx="9.5" ry="6" fill="${mid}" ${ol}/>` +
+    `<ellipse cx="33" cy="104" rx="8.4" ry="7" transform="rotate(-25 33 104)" fill="${mid}" ${ol}/>` +
+    `<ellipse cx="107" cy="104" rx="8.4" ry="7" transform="rotate(25 107 104)" fill="${mid}" ${ol}/>` +
+    `<path d="${BODY}" fill="${fill}" ${ol}/>` +
+    (t === 'yellow' ? topArt3(t, c) : '') +
+    (sil ? '' :
+      `<ellipse cx="52" cy="72" rx="8" ry="4.4" transform="rotate(-35 52 72)" fill="#fff" opacity=".5"/><circle cx="44" cy="82" r="2" fill="#fff" opacity=".5"/>` +
+      `<path d="M100 84 C105 100 99 118 85 125" stroke="${S.d}" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".3"/>` +
+      bellyArt3(t)) +
+    faceArt3(t, c);
+}
 function topArt(type, c){
   const {I, D, L, O, sil} = c, o = `stroke="${O}" stroke-width="2.2" stroke-linejoin="round"`;
   switch(type){
@@ -964,9 +1068,9 @@ function sproutArt(sp, ink, paper){
   const k = artKey(sp);
   if(k) return `<image href="${artUrl(k)}" x="30" y="4" width="116" height="132" preserveAspectRatio="xMidYMax meet"${ink ? ' filter="url(#sil)"' : ''}/>`;
   const sil = !!ink, I = ink || INK[sp.type], P = paper || CREAM;
-  const c = {I, P, sil, O: sil ? I : '#4b3a2f', D: sil ? I : SHADE[sp.type].d, L: sil ? I : SHADE[sp.type].l};
+  const c = {I, P, sil, O: sil ? I : ART_STYLE === 3 ? OUTLINE3[sp.type] : '#4b3a2f', D: sil ? I : SHADE[sp.type].d, L: sil ? I : SHADE[sp.type].l};
   const ol = `stroke="${c.O}" stroke-width="2.6" stroke-linejoin="round"`;
-  let s = ART_STYLE === 2 ? bodyArt2(sp, c) : topArt(sp.type, c) +
+  let s = ART_STYLE === 3 ? bodyArt3(sp, c) : ART_STYLE === 2 ? bodyArt2(sp, c) : topArt(sp.type, c) +
     `<rect x="50" y="121" width="12" height="10" rx="4" fill="${I}" ${ol}/><rect x="78" y="121" width="12" height="10" rx="4" fill="${I}" ${ol}/>` +
     `<path d="M40 95 Q32 99 34 109 Q40 110 43 103Z" fill="${I}" ${ol}/><path d="M100 95 Q108 99 106 109 Q100 110 97 103Z" fill="${I}" ${ol}/>` +
     `<ellipse cx="70" cy="92" rx="34" ry="35" fill="${I}" ${ol}/>` +
