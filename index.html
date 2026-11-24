@@ -366,14 +366,14 @@ svg.pic{filter:none!important}   /* ChatGPT 畫的圖本身就有筆觸，不再
 'use strict';
 /* ───────── 基本資料 ───────── */
 const $ = s => document.querySelector(s);
-const APP_VER = '11/24 菜園改造版';
+const APP_VER = '11/24 地點重整版';
 const CREAM = '#fdf6e6';
 const INK = {red:'#e0694a', yellow:'#e2a83a', blue:'#5b8fc4', green:'#72a24e'};
 const TYPE_ORDER = ['red','yellow','blue','green'];
 const TYPES = {
   red:   {name:'香火芽', where:'廟宇、古蹟、小吃店', power:'傍晚 5 點後收集花瓣變多（每 3 隻 +1，最多 +3）'},
   yellow:{name:'稻穗芽', where:'市場、麵包店、便利商店、飲料店', power:'撿到種子的機率提高（每隻 +2%，最多 +16%）'},
-  blue:  {name:'溪流芽', where:'河邊、湖邊、海邊、藥局診所', power:'有牠在，水邊地點的花瓣加倍'},
+  blue:  {name:'溪流芽', where:'河邊、湖邊、海邊、藥局、服飾店', power:'有牠在，水邊地點的花瓣加倍'},
   green: {name:'竹風芽', where:'公園、學校、車站、公車站、活動中心', power:'種子孵化需要的步數變少（每隻 −4%，最多 −20%）'},
 };
 const DECOR = {
@@ -388,7 +388,7 @@ const DECOR = {
   postbox:  {name:'郵局小物',  label:'郵筒',     type:'red'},
   helmet:   {name:'安全帽',    label:'機車行',   type:'red'},
   boat:     {name:'小紙船',    label:'水邊',     type:'blue'},
-  medbag:   {name:'藥包袋',    label:'藥局診所', type:'blue'},
+  medbag:   {name:'藥包袋',    label:'藥局',     type:'blue'},
   megaphone:{name:'大聲公',    label:'活動中心', type:'green'},
   schoolbag:{name:'書包',      label:'學校',     type:'green'},
   banyan:   {name:'榕樹葉',    label:'公園',     type:'green'},
@@ -1309,6 +1309,9 @@ function setPoiStatus(delta, failed){
   else if(poiFailed){ c.hidden = false; c.classList.add('warn'); c.textContent = '地點伺服器忙碌，稍後自動重試'; }
   else c.hidden = true;
 }
+// 跟 Python zlib.crc32 一樣的雜湊，內建資料和線上資料用同一套規則挑出要拿掉的餐廳
+const crc32 = (() => { const T = Array.from({length:256}, (_, n) => { let c = n; for(let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
+  return s => { let c = 0xFFFFFFFF; for(const b of new TextEncoder().encode(s)) c = T[(c ^ b) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }; })();
 function classify(t){
   const n = t.name || '';
   if(t.amenity==='place_of_worship' || t.building==='temple') return 'amulet';
@@ -1322,7 +1325,10 @@ function classify(t){
   if(['restaurant','fast_food','food_court'].includes(t.amenity)) return 'bawan';
   if(t.amenity==='marketplace' || ['supermarket','greengrocer','butcher','seafood'].includes(t.shop)) return 'basket';
   if(t.shop==='motorcycle' || t.shop==='motorcycle_repair') return 'helmet';
-  if(['pharmacy','clinic','doctors','dentist','hospital','veterinary'].includes(t.amenity) || t.shop==='chemist' || t.shop==='medical_supply') return 'medbag';
+  // 診所、醫院、牙醫、獸醫都不收；只留藥局
+  const isPharmacy = t.amenity === 'pharmacy' || t.shop === 'chemist' || t.healthcare === 'pharmacy';
+  if(!isPharmacy && (['clinic','doctors','dentist','hospital','veterinary'].includes(t.amenity) || t.healthcare || /診所|醫院|牙醫|牙科/.test(n))) return null;
+  if(t.amenity === 'pharmacy' || t.shop==='chemist' || t.shop==='medical_supply') return 'medbag';
   if(['community_centre','townhall','social_facility','police','fire_station'].includes(t.amenity) || t.office==='government') return 'megaphone';
   if(['school','library','university','college','kindergarten'].includes(t.amenity)) return 'schoolbag';
   if(['park','garden','playground','nature_reserve','pitch','dog_park','sports_centre','fitness_station'].includes(t.leisure) || t.natural==='wood' || t.tourism==='viewpoint' || t.tourism==='artwork') return 'banyan';
@@ -1370,6 +1376,8 @@ nwr[historic]${bb};nwr[tourism~"^(attraction|museum)$"]${bb};
   const raw = [];
   for(const el of data.elements || []){
     const t = el.tags || {}; const decor = classify(t); if(!decor) continue;
+    // 餐廳太多：固定拿掉三成（跟內建資料用同樣的規則）
+    if(decor === 'bawan' && crc32('o' + el.type[0] + el.id) % 10 < 3) continue;
     const lat = el.lat ?? (el.center && el.center.lat), lng = el.lon ?? (el.center && el.center.lon); if(lat == null) continue;
     raw.push({id:'o'+el.type[0]+el.id, lat, lng, name:t['name:zh'] || t.name || '', decor, type:DECOR[decor].type, kind:'poi', pr:(PRIORITY[decor]||1) + (t.name?1:0)});
   }
